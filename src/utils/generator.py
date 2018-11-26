@@ -113,8 +113,7 @@ class Generator(Sequence):
         return self._crop_imgs(imgs, idx)
 
     def _apply_transform(self, img, transform_selection):
-        """Rotates and flips input image according to transform_selection
-        """
+        """Rotates and flips input image according to transform_selection."""
         rotate = {0: lambda x: x,
                   1: lambda x: np.rot90(x, k=1, axes=(1, 0)),  # rotate right
                   2: lambda x: np.rot90(x, k=1, axes=(0, 1))}  # rotate left
@@ -132,8 +131,7 @@ class Generator(Sequence):
         return img
 
     def _transform_batch(self, batch, transforms):
-        """ Transforms each individual image of the batch independently
-        """
+        """Transforms each individual image of the batch independently."""
         t_batch = np.array([self._apply_transform(img, transforms[i])
                             for i, img in enumerate(batch)])
         return t_batch

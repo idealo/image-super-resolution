@@ -4,15 +4,12 @@ if [ -z $1 ]; then
   exit
 fi
 
-createmachine="false"
 build="false"
 no_d="false"
 install="false"
 
 for var in "$@"; do
-  if [ $var = "create-machine" ]; then
-    createmachine="true"
-  elif [ $var = "build" ]; then
+  if [ $var = "build" ]; then
     build="true"
   elif [ $var = "no_d" ]; then
     no_d="true"
@@ -21,15 +18,6 @@ for var in "$@"; do
   fi
 done
 
-if [ $createmachine = "true" ]; then
-  docker-machine create --driver amazonec2 \
---amazonec2-region eu-central-1 --amazonec2-zone=a \
---amazonec2-ami ami-cbccf120 \
---amazonec2-instance-type p2.xlarge \
---amazonec2-vpc-id vpc-f3bcb89b \
---amazonec2-root-size 95 \
-$machine_name
-fi
 script_dir="$( cd "$(dirname "$0")" ; pwd -P )"
 main_dir="$(dirname $script_dir)"
 

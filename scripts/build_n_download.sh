@@ -17,7 +17,7 @@ done
 
 if [ $build = "true" ]; then
   echo "Creating Docker image"
-  sudo nvidia-docker build -f $main_dir/Dockerfile-gpu -t isr $main_dir
+  sudo nvidia-docker build -f $main_dir/Dockerfile.gpu -t isr $main_dir
 fi
 
 if [ $install = "true" ]; then
