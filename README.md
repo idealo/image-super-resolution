@@ -28,7 +28,7 @@ Below we show the original low resolution image (center), the super scaled outpu
 
 1. Install [Docker](https://docs.docker.com/install/)
 
-2. Build docker image `sudo docker build -t isr .`
+2. Build docker image `sudo docker build -t isr . -f Dockerfile.cpu`
 
 In order to train remotely  **AWS EC2** with GPU
 
