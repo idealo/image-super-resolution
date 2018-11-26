@@ -1,0 +1,6 @@
+*
+!src/
+!scripts/
+!weights/sample_weights/
+!weights/sample_weights/DIV2K_E086_X2_D20G64C6.hdf5
+!config.json
