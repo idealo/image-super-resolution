@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 script_dir="$( cd "$(dirname "$0")" ; pwd -P )"
 main_dir="$(dirname $script_dir)"
 
@@ -9,8 +10,8 @@ if [ $1 = "train" ]; then
     echo "Training on DIV2K dataset."
     python3 $main_dir/src/run.py --train --div2k
   else
-    echo "ERROR: Only available with div2k training set for now."
-    error=1
+    echo "Training on custom dataset."
+    python3 $main_dir/src/run.py --train
   fi
 elif [ $1 = "test" ]; then
     if [ $2 = "pre-trained" ]; then

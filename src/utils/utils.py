@@ -68,7 +68,7 @@ def load_configuration(args, config_file='./config.json'):
         args.update(json_dict['pre-trained'])
     if args['pytest']:
         args.update(json_dict['pytest'])
-        
+
 
 def get_parser():
     parser = argparse.ArgumentParser()

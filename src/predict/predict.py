@@ -14,6 +14,7 @@ class Predictor:
     Can receive a path for the weights or can let the user browse through the
     weights directory for the desired weights.
     """
+
     def __init__(self, test_arguments):
         # Select pre-trained weights
         self.weights_path, _ = browse_weights(weights_path=test_arguments['weights_path'])
@@ -50,7 +51,7 @@ class Predictor:
             imwrite(output_path, SR_img)
 
     def forward_pass(self, file_path):
-        LR_img = imread(str(file_path)) / 255.
+        LR_img = imread(str(file_path)) / 255.0
         LR_img = np.expand_dims(LR_img, axis=0)
         SR_img = self.model.rdn.predict(LR_img)
         return np.clip(SR_img, 0, 1) * 255

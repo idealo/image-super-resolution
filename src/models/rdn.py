@@ -12,9 +12,7 @@ def make_model(**model_parameters):
     return RDN(**model_parameters)
 
 
-class RDN():
-    """This class contains the Residual Dense Network architecture.
-    """
+class RDN:
     def __init__(self, D, C, G, G0=64, c_dim=3, scale=2, kernel_size=3, learning_rate=1e-5):
         self.D = D
         self.C = C
@@ -30,8 +28,7 @@ class RDN():
         self.rdn = self.build_rdn(optimizer_rdn)
 
     def UPN(self, input_layer):
-        """Upscaling layers
-        """
+        """Upscaling layers."""
         x = Conv2D(64, kernel_size=5, strides=1, padding='same', name='UPN1')(input_layer)
         x = Activation('relu', name='UPN1_Relu')(x)
         x = Conv2D(32, kernel_size=3, padding='same', name='UPN2')(x)
@@ -43,15 +40,14 @@ class RDN():
     def RDBs(self, input_layer):
         """RDBs blocks.
         Input F_0, output concatenation of RDBs output feature maps.
-        Outputs G0 feature maps
+        # output G0 feature maps
         """
         rdb_concat = list()
         rdb_in = input_layer
         for d in range(1, self.D + 1):
             x = rdb_in
             for c in range(1, self.C + 1):
-                F_dc = Conv2D(self.G, kernel_size=self.kernel_size, padding='same',
-                              name='F_%d_%d' % (d, c))(x)
+                F_dc = Conv2D(self.G, kernel_size=self.kernel_size, padding='same', name='F_%d_%d' % (d, c))(x)
                 F_dc = Activation('relu', name='F_%d_%d_Relu' % (d, c))(F_dc)
                 # concatenate input and output of ConvRelu block
                 # x = [input_layer,F_11(input_layer),F_12([input_layer,F_11(input_layer)]), F_13..]
@@ -83,10 +79,7 @@ class RDN():
         SR = Conv2D(self.c_dim, kernel_size=self.kernel_size, padding='same', name='SR')(FU)
 
         # Single component loss
-        model = Model(inputs=LR_input,
-                      outputs=SR)
+        model = Model(inputs=LR_input, outputs=SR)
 
-        model.compile(loss='mse',
-                      optimizer=optimizer,
-                      metrics=[PSNR])
+        model.compile(loss='mse', optimizer=optimizer, metrics=[PSNR])
         return model
