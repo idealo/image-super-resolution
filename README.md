@@ -1,4 +1,4 @@
-# Image Super-Resolution with Keras and Docker
+# Image Super-Resolution
 
 <img src="figures/butterfly.png">
 
@@ -28,21 +28,22 @@ Below we show the original low resolution image (center), the super scaled outpu
 
 1. Install [Docker](https://docs.docker.com/install/)
 
-2. Build docker image `sudo docker build -t isr . -f Dockerfile.cpu`
+2. Install [Anaconda](https://www.anaconda.com/)
+
+3. Create a conda environment `conda env create -n isr-env -f src/environment.yml`
+
+4. Build docker image for local usage `docker build -t isr . -f Dockerfile.cpu`
 
 In order to train remotely  **AWS EC2** with GPU
 
-3. Install [Docker Machine](https://docs.docker.com/machine/install-machine/)
+5. Install [Docker Machine](https://docs.docker.com/machine/install-machine/)
 
-4. Install [AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
+6. Install [AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 
-5. Set up an [EC2 instance](https://github.com/idealo/nvidia-docker-keras)
-
-6. Install [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) on the EC2 instance
+7. Set up an [EC2 instance](https://github.com/idealo/nvidia-docker-keras) with [nvidia-docker](https://github.com/NVIDIA/nvidia-docker)
 
 ## Predict
-The default folder for tests is ```data/test/custom_test```.
-The results are saved under ```data/results/custom_results```.
+Place your images under `data/input`, the results will be saved under `/data/output`.
 
 Check `config.json` for more information on parameters and default folders.
 
@@ -57,7 +58,7 @@ From the remote machine run (using our DockerHub image)
 sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -it idealo/image-super-resolution test pre-trained
 ```
 
-## 4. Train
+## Train
 Train either locally with (or without) Docker, or on the cloud with `nvidia-docker` and AWS.
 
 ### Train on AWS with GPU support using nvidia-docker
@@ -102,15 +103,17 @@ python -m pytest -vs --disable-pytest-warnings tests
 ### Network architecture
 The main parameters of the architecture structure are:
 - D - number of Residual Dense Blocks (RDB)
-- C - number of Convolutional Layers stacked inside a RDB;
-- G - number of feature maps of each Conv Layer inside the RDBs;
-- G0 - number of feature maps for convolutions outside of RDBs and of each RBD output.
+- C - number of Convolutional Layers stacked inside a RDB
+- G - number of feature maps of each Conv Layer inside the RDBs
+- G0 - number of feature maps for convolutions outside of RDBs and of each RBD output
 
 
 <img src="figures/RDN.png" width="600">
 <br>
 
 <img src="figures/RDB.png" width="600">
+
+source: [Enhanced Deep Residual Networks for Single Image Super-Resolution](https://arxiv.org/pdf/1707.02921.pdf)
 
 ### Pre-trained weights
 Pre-trained weights on [DIV2K dataset](https://data.vision.ee.ethz.ch/cvl/DIV2K) are available under ```weights/sample_weights```. <br>

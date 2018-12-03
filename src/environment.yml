@@ -1,0 +1,11 @@
+name: image-super-resolution
+channels:
+ - defaults
+dependencies:
+ - imageio=2.4.*
+ - keras=2.2.*
+ - numpy=1.15.*
+ - python=3.6.*
+ - scikit-image=0.14.*
+ - tensorflow=1.11.*
+ - pytest==3.8.*
