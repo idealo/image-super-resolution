@@ -16,29 +16,30 @@ class UtilsClassTest(TestWithData):
         self.dataTearDown()
 
     def get_generator(self, generator_type, dataset_type):
-        """Creates a generator of the specified type, with the specified
-        dataset type
-        """
+        """Creates a generator of the specified type, with the specified dataset type."""
         self.create_random_dataset(dataset_type)
 
-        generator = Generator(input_folder=self.dataset_folder[dataset_type]['LR'],
-                              label_folder=self.dataset_folder[dataset_type]['HR'],
-                              patch_size=self.patch_size['LR'],
-                              batch_size=self.batch_size,
-                              mode=generator_type,
-                              scale=self.scale)
+        generator = Generator(
+            input_folder=self.dataset_folder[dataset_type]['LR'],
+            label_folder=self.dataset_folder[dataset_type]['HR'],
+            patch_size=self.patch_size['LR'],
+            batch_size=self.batch_size,
+            mode=generator_type,
+            scale=self.scale,
+        )
 
         return generator
 
     def test_rotation(self):
         generator = self.get_generator('train', 'correct')
-        test_image_path = os.path.join(generator.folder['LR'],
-                                       generator.img_list['LR'][0])
+        test_image_path = os.path.join(generator.folder['LR'], generator.img_list['LR'][0])
         test_image = imageio.imread(test_image_path)
 
-        rotations = {0: lambda x: x,  # no rotation
-                     1: lambda x: np.rot90(x, k=1, axes=(1, 0)),  # rotate right
-                     2: lambda x: np.rot90(x, k=1, axes=(0, 1))}  # rotate left
+        rotations = {
+            0: lambda x: x,  # no rotation
+            1: lambda x: np.rot90(x, k=1, axes=(1, 0)),  # rotate right
+            2: lambda x: np.rot90(x, k=1, axes=(0, 1)),
+        }  # rotate left
 
         for rot in rotations.keys():
             transf_check = rotations[rot](test_image)
@@ -47,13 +48,14 @@ class UtilsClassTest(TestWithData):
 
     def test_flip(self):
         generator = self.get_generator('train', 'correct')
-        test_image_path = os.path.join(generator.folder['LR'],
-                                       generator.img_list['LR'][0])
+        test_image_path = os.path.join(generator.folder['LR'], generator.img_list['LR'][0])
         test_image = imageio.imread(test_image_path)
 
-        flips = {0: lambda x: x,  # no flips
-                 1: lambda x: np.flip(x, 0),  # flip along horizontal axis
-                 2: lambda x: np.flip(x, 1)}  # flip along vertical axis
+        flips = {
+            0: lambda x: x,  # no flips
+            1: lambda x: np.flip(x, 0),  # flip along horizontal axis
+            2: lambda x: np.flip(x, 1),
+        }  # flip along vertical axis
 
         for flip in flips.keys():
             transf_check = flips[flip](test_image)
@@ -99,14 +101,14 @@ class UtilsClassTest(TestWithData):
         train_generator = self.get_generator('train', 'correct')
         x, y = train_generator.__getitem__(0)
         for batch in [x, y]:
-            self.assertTrue(np.all(batch <= 1.) and np.all(batch >= 0.))
+            self.assertTrue(np.all(batch <= 1.0) and np.all(batch >= 0.0))
             self.assertTrue(type(batch[0, 0, 0, 0]) == np.float64)
 
     def test_validation_batch_pixel_type_and_range(self):
         valid_generator = self.get_generator('valid', 'correct')
         x, y = valid_generator.__getitem__(0)
         for batch in [x, y]:
-            self.assertTrue(np.all(batch <= 1.) and np.all(batch >= 0.))
+            self.assertTrue(np.all(batch <= 1.0) and np.all(batch >= 0.0))
             self.assertTrue(type(batch[0, 0, 0, 0]) == np.float64)
 
     def test_PSNR_sanity(self):

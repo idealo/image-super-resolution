@@ -1,8 +1,6 @@
 import os
 import imageio
-import argparse
 import run
-import models
 from utils.utils import get_parser, load_model, load_configuration
 from tests.common import TestWithData
 
@@ -17,14 +15,16 @@ class RunClassTest(TestWithData):
         pass
 
     def make_model(self):
-        self.model_params = {'learning_rate': 1e-5,
-                             'kernel_size': 3,
-                             'scale': 2,
-                             'c_dim': 3,
-                             'G0': 25,
-                             'G': 50,
-                             'D': 5,
-                             'C': 3}
+        self.model_params = {
+            'learning_rate': 1e-5,
+            'kernel_size': 3,
+            'scale': 2,
+            'c_dim': 3,
+            'G0': 25,
+            'G': 50,
+            'D': 5,
+            'C': 3,
+        }
 
         self.model = load_model(self.model_params, add_vgg=False, model_name='rdn', verbose=False)
         self.rdn = self.model.rdn
@@ -36,17 +36,15 @@ class RunClassTest(TestWithData):
         self.assertTrue(('train', True) in namespace)
         self.assertTrue(('test', False) in namespace)
 
-
     def test_that_configuration_is_loaded_correctly(self):
         parser = get_parser()
         cl_args = parser.parse_args(['--train'])
         cl_args = vars(cl_args)
         load_configuration(cl_args, '../config.json')
-        self.assertTrue(cl_args['G']==72)
-        self.assertTrue(cl_args['log_dir']=='./logs')
-        self.assertTrue(cl_args['weights_dir']=='./weights')
-        self.assertTrue(cl_args['data_name']=='CUSTOM')
-
+        self.assertTrue(cl_args['G'] == 72)
+        self.assertTrue(cl_args['log_dir'] == './logs')
+        self.assertTrue(cl_args['weights_dir'] == './weights')
+        self.assertTrue(cl_args['data_name'] == 'CUSTOM')
 
     def test_that_the_output_is_of_the_correct_scale(self):
         # create random weights
@@ -56,9 +54,11 @@ class RunClassTest(TestWithData):
         # test the network with random weights
         self.create_random_dataset('correct', dataset_size=1)
         cl_args = ['--no_verbose', '--test']
-        test_args = {'test_folder': self.dataset_folder['correct']['LR'],
-                    'results_folder': self.results_folder,
-                    'weights_path': self.weights_path}
+        test_args = {
+            'test_folder': self.dataset_folder['correct']['LR'],
+            'results_folder': self.results_folder,
+            'weights_path': self.weights_path,
+        }
 
         parser = get_parser()
         cl_args = parser.parse_args(cl_args)
@@ -74,11 +74,11 @@ class RunClassTest(TestWithData):
     def test_if_train_is_executed(self):
         self.create_random_dataset('correct', dataset_size=14)
         train_arguments = {
-                            'validation_labels': self.dataset_folder['correct']['HR'],
-                            'validation_input': self.dataset_folder['correct']['LR'],
-                            'training_labels': self.dataset_folder['correct']['HR'],
-                            'training_input': self.dataset_folder['correct']['LR']
-                           }
+            'validation_labels': self.dataset_folder['correct']['HR'],
+            'validation_input': self.dataset_folder['correct']['LR'],
+            'training_labels': self.dataset_folder['correct']['HR'],
+            'training_input': self.dataset_folder['correct']['LR'],
+        }
         cl_args = ['--pytest', '--no_verbose']
         parser = get_parser()
         cl_args = parser.parse_args(cl_args)
@@ -86,4 +86,4 @@ class RunClassTest(TestWithData):
         load_configuration(cl_args, '../config.json')
         cl_args.update(train_arguments)
         run.main(cl_args)
-        self.assertTrue(1!=0)
+        self.assertTrue(1 != 0)

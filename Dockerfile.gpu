@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:latest-gpu-py3
+FROM tensorflow/tensorflow:1.11.0-gpu-py3
 
 # Install system packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -23,9 +23,8 @@ WORKDIR $TENSOR_HOME
 
 COPY src ./src
 COPY scripts ./scripts
-ADD config.json ./config.json
 COPY weights ./weights
+ADD config.json ./config.json
 
-
-ENV PYTHONPATH='./src/:$PYTHONPATH'
+ENV PYTHONPATH ./src/:$PYTHONPATH
 ENTRYPOINT ["sh", "./scripts/entrypoint.sh"]

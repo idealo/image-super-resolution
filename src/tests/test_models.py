@@ -1,4 +1,3 @@
-import os
 import numpy as np
 from trainer.train import Trainer
 from utils.utils import load_model, get_parser, load_configuration
@@ -7,14 +6,16 @@ from tests.common import TestWithData
 
 class ModelsClassTest(TestWithData):
     def setUp(self):
-        self.model_params = {'learning_rate': 1e-5,
-                             'kernel_size': 3,
-                             'scale': 2,
-                             'c_dim': 3,
-                             'G0': 25,
-                             'G': 50,
-                             'D': 5,
-                             'C': 3}
+        self.model_params = {
+            'learning_rate': 1e-5,
+            'kernel_size': 3,
+            'scale': 2,
+            'c_dim': 3,
+            'G0': 25,
+            'G': 50,
+            'D': 5,
+            'C': 3,
+        }
 
         self.model = load_model(self.model_params, add_vgg=False, model_name='rdn', verbose=False)
         self.rdn = self.model.rdn
@@ -39,7 +40,6 @@ class ModelsClassTest(TestWithData):
     def test_number_of_parameters_per_layer(self):
         map_size = self.model_params['kernel_size'] ** 2
         D = self.model_params['D']
-        G = self.model_params['G']
         C = self.model_params['C']
         G0 = self.model_params['G0']
         ch = self.model_params['c_dim']
@@ -66,15 +66,12 @@ class ModelsClassTest(TestWithData):
                 if not layer_name in params.keys():
                     raise
                 layer_param = np.prod(layer_weights[0].shape) + layer_weights[1].shape[0]
-                self.assertEqual(layer_param, params[layer_name],
-                                 'Weight number mismatch at layer %s' % (layer_name))
+                self.assertEqual(layer_param, params[layer_name], 'Weight number mismatch at layer %s' % (layer_name))
 
         tot_param = sum([params[k] for k in params.keys()])
-        self.assertEqual(tot_param, self.rdn.count_params(),
-                         'Total parameters number mismatch')
+        self.assertEqual(tot_param, self.rdn.count_params(), 'Total parameters number mismatch')
 
     def test_layer_output_shapes(self):
-        map_size = self.model_params['kernel_size'] ** 2
         D = self.model_params['D']
         G = self.model_params['G']
         C = self.model_params['C']
@@ -110,13 +107,11 @@ class ModelsClassTest(TestWithData):
             layer_name = layer.get_config()['name']
             if not layer_name in shape.keys():
                 raise
-            self.assertEqual(layer_shape, shape[layer_name],
-                             'Shape mismatch at layer %s' % (layer_name))
+            self.assertEqual(layer_shape, shape[layer_name], 'Shape mismatch at layer %s' % (layer_name))
 
     def test_if_trainable_weights_update_with_one_step(self):
         self.scale = self.model_params['scale']
-        self.img_size = {'HR': 10 * self.scale,
-                         'LR': 10}
+        self.img_size = {'HR': 10 * self.scale, 'LR': 10}
         self.dataset_size = 8
         self.create_random_dataset(type='correct')
 
@@ -126,11 +121,11 @@ class ModelsClassTest(TestWithData):
                 before_step.append(layer.get_weights()[0])
 
         train_arguments = {
-                            'validation_labels': self.dataset_folder['correct']['HR'],
-                            'validation_input': self.dataset_folder['correct']['LR'],
-                            'training_labels': self.dataset_folder['correct']['HR'],
-                            'training_input': self.dataset_folder['correct']['LR'],
-                           }
+            'validation_labels': self.dataset_folder['correct']['HR'],
+            'validation_input': self.dataset_folder['correct']['LR'],
+            'training_labels': self.dataset_folder['correct']['HR'],
+            'training_input': self.dataset_folder['correct']['LR'],
+        }
         cl_args = ['--pytest', '--no_verbose']
         parser = get_parser()
         cl_args = parser.parse_args(cl_args)
