@@ -2,7 +2,9 @@
 
 <img src="figures/butterfly.png">
 
-The goal of this project is to upscale low resolution images (currently only x2 scaling). To achieve this we used the CNN Residual Dense Network described in [Enhanced Deep Residual Networks for Single Image Super-Resolution](https://arxiv.org/pdf/1707.02921.pdf) (Zhang et al. 2018). <br> We wrote a Keras implementation of the network and set up a Docker image to carry training and testing. You can train either locally or on the cloud with AWS and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) with only a few commands.
+The goal of this project is to upscale low resolution images (currently only x2 scaling). To achieve this we used the CNN Residual Dense Network described in [Enhanced Deep Residual Networks for Single Image Super-Resolution](https://arxiv.org/pdf/1707.02921.pdf) (Zhang et al. 2018).
+
+We wrote a Keras implementation of the network and set up a Docker image to carry training and testing. You can train either locally or on the cloud with AWS and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) with only a few commands.
 
 We welcome any kind of contribution. If you wish to contribute, please see the [Contribute](#contribute) section.
 
@@ -37,7 +39,7 @@ Below we show the original low resolution image (centre), the super scaled outpu
 
 4. Build docker image for local usage `docker build -t isr . -f Dockerfile.cpu`
 
-In order to train remotely **AWS EC2** with GPU
+In order to train remotely on **AWS EC2** with GPU
 
 5. Install [Docker Machine](https://docs.docker.com/machine/install-machine/)
 
@@ -71,14 +73,12 @@ Place your training and validation datasets under `data/custom` with the followi
 - Validation low resolution images under `data/custom/lr/validation`
 - Validation high resolution images under `data/custom/hr/validation`
 
-Use the `custom-data` flag for the train command to train on this dataset.
+Use the `custom-data` flag in the train and setup commands (replace `<dataset-flag>`) to train on this dataset.
 
-We trained our model on the [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K) dataset. If you want to train on this dataset too, you can download it by running `python scripts/getDIV2K.py` from the main folder. <br>
-This will place the dataset under its default folders (check `config.json` for more details). <br>
-Use the `div2k` flag for the train command to train on this dataset.
+We trained our model on the [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K) dataset. If you want to train on this dataset too, you can download it by running `python scripts/getDIV2K.py` from the main folder. This will place the dataset under its default folders (check `config.json` for more details). Use the `div2k` flag for the train command to train on this dataset.
 
 ### Train on AWS with GPU support using nvidia-docker
-1. From the main folder run ```bash scripts/setup.sh <name-of-ec2-instance> build install update <dataset-flag>```. The available dataset-flags are `div2k`, `idealo` and `custom-data`. Make sure you downloaded the dataset first.
+1. From the main folder run ```bash scripts/setup.sh <name-of-ec2-instance> build install update <dataset-flag>```. The available dataset-flags are `div2k` and `custom-data`. Make sure you downloaded the dataset first.
 2. ssh into the machine ```docker-machine ssh <name-of-ec2-instance>```
 3. Run training with ```sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/logs/:/home/isr/logs -it isr train <dataset-flag>```
 
@@ -131,9 +131,9 @@ source: [Enhanced Deep Residual Networks for Single Image Super-Resolution](http
 
 ### Pre-trained weights
 Pre-trained weights on [DIV2K dataset](https://data.vision.ee.ethz.ch/cvl/DIV2K) are available under ```weights/sample_weights```. <br>
-The model was trained using ```--D=20 --G=64 --C=6``` as parameters (see architecture for details) for 86 epochs of 1000 batches of 8 32x32 augmented patches taken from LR images.
+The model was trained using ```--D=20 --G=64 --C=6``` as parameters (see architecture for details) for 86 epochs of 1000 batches of 8 augmented patches (32x32) taken from LR images.
 
-## Contribution
+## Contribute
 We welcome all kinds of contributions, models trained on different datasets, new model architectures and/or hyperparameters combinations that improve the performance of the currently published model.
 
 Will publish the performances of new models in this repository.
