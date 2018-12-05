@@ -1,4 +1,4 @@
-name: image-super-resolution
+name: isr-env
 channels:
  - defaults
 dependencies:

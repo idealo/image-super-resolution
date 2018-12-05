@@ -38,10 +38,10 @@ class RunClassTest(TestWithData):
 
     def test_that_configuration_is_loaded_correctly(self):
         parser = get_parser()
-        cl_args = parser.parse_args(['--train'])
+        cl_args = parser.parse_args(['--train', '--custom-data'])
         cl_args = vars(cl_args)
         load_configuration(cl_args, '../config.json')
-        self.assertTrue(cl_args['G'] == 72)
+        self.assertTrue(isinstance(cl_args['G'], int))
         self.assertTrue(cl_args['log_dir'] == './logs')
         self.assertTrue(cl_args['weights_dir'] == './weights')
         self.assertTrue(cl_args['data_name'] == 'CUSTOM')

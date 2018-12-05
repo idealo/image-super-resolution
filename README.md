@@ -2,7 +2,9 @@
 
 <img src="figures/butterfly.png">
 
-The goal of this project is to upscale low resolution images by a factor of 2. To achieve this we used the CNN Residual Dense Network described in [Enhanced Deep Residual Networks for Single Image Super-Resolution](https://arxiv.org/pdf/1707.02921.pdf) (Zhang et al. 2018). <br> We wrote a Keras implementation of the network and set up a [Docker](https://docs.docker.com/install/) image to carry training and testing, locally or on the cloud on [AWS EC2 instances](https://github.com/idealo/nvidia-docker-keras) and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker), with only a few commands.
+The goal of this project is to upscale low resolution images (currently only x2 scaling). To achieve this we used the CNN Residual Dense Network described in [Enhanced Deep Residual Networks for Single Image Super-Resolution](https://arxiv.org/pdf/1707.02921.pdf) (Zhang et al. 2018). <br> We wrote a Keras implementation of the network and set up a Docker image to carry training and testing. You can train either locally or on the cloud with AWS and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) with only a few commands.
+
+We welcome any kind of contribution. If you wish to contribute, please see the [Contribute](#contribute) section.
 
 ## Contents
 - [Sample Results](#sample-results)
@@ -11,12 +13,13 @@ The goal of this project is to upscale low resolution images by a factor of 2. T
 - [Train](#train)
 - [Unit Testing](#unit-testing)
 - [Additional Information](#additional-information)
-- [Mantainers](#mantainers)
+- [Contribute](#contribute)
+- [Maintainers](#maintainers)
 - [License](#copyright)
 
 ## Sample Results
 
-Below we show the original low resolution image (center), the super scaled output of the network (center) and the result of the baseline scaling obtained with GIMP bicubic scaling (right).
+Below we show the original low resolution image (centre), the super scaled output of the network (centre) and the result of the baseline scaling obtained with GIMP bicubic scaling (right).
 
 <br>
 <img src="figures/butterfly_comparison_SR_baseline.png">
@@ -30,41 +33,54 @@ Below we show the original low resolution image (center), the super scaled outpu
 
 2. Install [Anaconda](https://www.anaconda.com/)
 
-3. Create a conda environment `conda env create -n isr-env -f src/environment.yml`
+3. Create the conda environment `conda env create -f src/environment.yml`
 
 4. Build docker image for local usage `docker build -t isr . -f Dockerfile.cpu`
 
-In order to train remotely  **AWS EC2** with GPU
+In order to train remotely **AWS EC2** with GPU
 
 5. Install [Docker Machine](https://docs.docker.com/machine/install-machine/)
 
 6. Install [AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 
-7. Set up an [EC2 instance](https://github.com/idealo/nvidia-docker-keras) with [nvidia-docker](https://github.com/NVIDIA/nvidia-docker)
+7. Set up an EC2 instance for training with GPU support. You can follow our [nvidia-docker-keras](https://github.com/idealo/nvidia-docker-keras) project to get started
 
 ## Predict
-Place your images under `data/input`, the results will be saved under `/data/output`.
+Place your images (`png`, `jpg`) under `data/input`, the results will be saved under `/data/output`.
 
 Check `config.json` for more information on parameters and default folders.
+
+NOTE: make sure that your images only have 3 layers (the `png`  format allows for 4).
 
 ### Predict locally
 From the main folder run
 ```
-docker run -v $(pwd)/data/:/home/isr/data -it isr test pre-trained
+docker run -v $(pwd)/data/:/home/isr/data isr test pre-trained
 ```
 ### Predict on AWS with nvidia-docker
-From the remote machine run (using our DockerHub image)
+From the remote machine run (using our [DockerHub image](https://hub.docker.com/r/idealo/image-super-resolution/))
 ```
-sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -it idealo/image-super-resolution test pre-trained
+sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data idealo/image-super-resolution test pre-trained
 ```
 
 ## Train
-Train either locally with (or without) Docker, or on the cloud with `nvidia-docker` and AWS.
+Train either locally with (or without) Docker, or on the cloud with `nvidia-docker` and AWS. <br>
+Place your training and validation datasets under `data/custom` with the following structure:
+- Training low resolution images under `data/custom/lr/train`
+- Training high resolution images under `data/custom/hr/train`
+- Validation low resolution images under `data/custom/lr/validation`
+- Validation high resolution images under `data/custom/hr/validation`
+
+Use the `custom-data` flag for the train command to train on this dataset.
+
+We trained our model on the [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K) dataset. If you want to train on this dataset too, you can download it by running `python scripts/getDIV2K.py` from the main folder. <br>
+This will place the dataset under its default folders (check `config.json` for more details). <br>
+Use the `div2k` flag for the train command to train on this dataset.
 
 ### Train on AWS with GPU support using nvidia-docker
-1. Run ```setup.sh <name-of-ec2-instance> build install``` from the scripts folder. Add the `no-d` flag if you want to use a custom dataset.
+1. From the main folder run ```bash scripts/setup.sh <name-of-ec2-instance> build install update <dataset-flag>```. The available dataset-flags are `div2k`, `idealo` and `custom-data`. Make sure you downloaded the dataset first.
 2. ssh into the machine ```docker-machine ssh <name-of-ec2-instance>```
-3. Run training with ```sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/logs/:/home/isr/logs -it isr train div2k```
+3. Run training with ```sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/logs/:/home/isr/logs -it isr train <dataset-flag>```
 
 
 #### Tensorboard
@@ -79,16 +95,14 @@ docker-machine ssh <name-of-ec2-instance> -N -L 6006:localhost:6006
 
 #### Notes
 A few helpful details
-- <b>DO NOT</b> include a tensorflow version in  ```requirements.txt``` as it would interfere with the version installed in the tensorflow docker image.
-- <b>DO NOT</b> use ```Ubuntu Server 18.04 LTS``` AMI instead of ```Ubuntu Server 16.04 LTS``` AMI.
+- <b>DO NOT</b> include a Tensorflow version in ```requirements.txt``` as it would interfere with the version installed in the Tensorflow docker image
+- <b>DO NOT</b> use ```Ubuntu Server 18.04 LTS``` AMI. Use the ```Ubuntu Server 16.04 LTS``` AMI instead
 
 ### Train locally
-#### Download dataset
-Download the DIV2K dataset by running `python scripts/getDIV2K.py`. <br>
-If you want to use a custom dataset, adjust `config.json` accordingly and replace the `div2k` flag with `custom-data`.
 #### Train locally with docker
+From the main project folder run
 ```
-docker run -it isr train div2k
+docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/logs/:/home/isr/logs -it isr train <dataset-flag>
 ```
 
 
@@ -103,8 +117,8 @@ python -m pytest -vs --disable-pytest-warnings tests
 ### Network architecture
 The main parameters of the architecture structure are:
 - D - number of Residual Dense Blocks (RDB)
-- C - number of Convolutional Layers stacked inside a RDB
-- G - number of feature maps of each Conv Layer inside the RDBs
+- C - number of convolutional layers stacked inside a RDB
+- G - number of feature maps of each convolutional layers inside the RDBs
 - G0 - number of feature maps for convolutions outside of RDBs and of each RBD output
 
 
@@ -117,7 +131,12 @@ source: [Enhanced Deep Residual Networks for Single Image Super-Resolution](http
 
 ### Pre-trained weights
 Pre-trained weights on [DIV2K dataset](https://data.vision.ee.ethz.ch/cvl/DIV2K) are available under ```weights/sample_weights```. <br>
-The model was trained using  ```--D=20 --G=64 --C=6``` as parameters (see architecture for details) for 86 epochs of 1000 batches of 8 32x32 augmented patches taken from LR images.
+The model was trained using ```--D=20 --G=64 --C=6``` as parameters (see architecture for details) for 86 epochs of 1000 batches of 8 32x32 augmented patches taken from LR images.
+
+## Contribution
+We welcome all kinds of contributions, models trained on different datasets, new model architectures and/or hyperparameters combinations that improve the performance of the currently published model.
+
+Will publish the performances of new models in this repository.
 
 ## Maintainers
 * Francesco Cardinale, github: [cfrancesco](https://github.com/cfrancesco)
