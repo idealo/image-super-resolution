@@ -2,7 +2,7 @@
 
 <img src="figures/butterfly.png">
 
-The goal of this project is to upscale low resolution images (currently only x2 scaling). To achieve this we used the CNN Residual Dense Network described in [Enhanced Deep Residual Networks for Single Image Super-Resolution](https://arxiv.org/abs/1802.08797) (Zhang et al. 2018).
+The goal of this project is to upscale low resolution images (currently only x2 scaling). To achieve this we used the CNN Residual Dense Network described in [Residual Dense Network for Image Super-Resolution](https://arxiv.org/abs/1802.08797) (Zhang et al. 2018).
 
 We wrote a Keras implementation of the network and set up a Docker image to carry training and testing. You can train either locally or on the cloud with AWS and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) with only a few commands.
 
@@ -126,7 +126,7 @@ The main parameters of the architecture structure are:
 
 <img src="figures/RDB.png" width="600">
 
-source: [Enhanced Deep Residual Networks for Single Image Super-Resolution](https://arxiv.org/abs/1802.08797)
+source: [Residual Dense Network for Image Super-Resolution](https://arxiv.org/abs/1802.08797)
 
 ### Pre-trained weights
 Pre-trained model weights on [DIV2K dataset](https://data.vision.ee.ethz.ch/cvl/DIV2K) are available under ```weights/sample_weights```. <br>
