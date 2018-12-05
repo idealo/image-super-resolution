@@ -60,9 +60,9 @@ From the main folder run
 docker run -v $(pwd)/data/:/home/isr/data isr test pre-trained
 ```
 ### Predict on AWS with nvidia-docker
-From the remote machine run (using our [DockerHub image](https://hub.docker.com/r/idealo/image-super-resolution/))
+From the remote machine run (using our [DockerHub image](https://hub.docker.com/r/idealo/image-super-resolution-gpu/))
 ```
-sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data idealo/image-super-resolution test pre-trained
+sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data idealo/image-super-resolution-gpu test pre-trained
 ```
 
 ## Train
@@ -130,7 +130,7 @@ The main parameters of the architecture structure are:
 source: [Enhanced Deep Residual Networks for Single Image Super-Resolution](https://arxiv.org/pdf/1707.02921.pdf)
 
 ### Pre-trained weights
-Pre-trained weights on [DIV2K dataset](https://data.vision.ee.ethz.ch/cvl/DIV2K) are available under ```weights/sample_weights```. <br>
+Pre-trained model weights on [DIV2K dataset](https://data.vision.ee.ethz.ch/cvl/DIV2K) are available under ```weights/sample_weights```. <br>
 The model was trained using ```--D=20 --G=64 --C=6``` as parameters (see architecture for details) for 86 epochs of 1000 batches of 8 augmented patches (32x32) taken from LR images.
 
 ## Contribute
