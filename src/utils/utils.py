@@ -20,7 +20,7 @@ def load_model(model_parameters, add_vgg=False, model_name='rdn', verbose='True'
 
 def browse_weights(weights_dir='./weights', weights_path=''):
     """Weight slection function.
-    IF a selection is made, returns last epoch's number
+    If a selection is made, returns last epoch's number.
     """
     if weights_path is not '':
         _, weights_name = os.path.split(weights_path)
@@ -47,7 +47,7 @@ def browse_weights(weights_dir='./weights', weights_path=''):
 
             else:
                 exit = True
-    return None, 0
+    return '', 0
 
 
 def load_configuration(args, config_file='./config.json'):
@@ -56,11 +56,10 @@ def load_configuration(args, config_file='./config.json'):
     args.update(json_dict['folders']['weights'])
     if args['train']:
         args.update(json_dict['train'])
+    if args['custom-data']:
         args.update(json_dict['folders']['custom data'])
     if args['div2k']:
         args.update(json_dict['folders']['div2k'])
-    if args['aws-div2k']:
-        args.update(json_dict['folders']['aws-div2k'])
     if args['test']:
         args.update(json_dict['test'])
         args.update(json_dict['folders']['test'])
@@ -76,7 +75,6 @@ def get_parser():
     parser.add_argument('--pytest', action='store_true', dest='pytest')
     parser.add_argument('--train', action='store_true', dest='train')
     parser.add_argument('--div2k', action='store_true', dest='div2k')
-    parser.add_argument('--aws-div2k', action='store_true', dest='aws-div2k')
     parser.add_argument('--summary', action='store_true', dest='summary')
     parser.add_argument('--custom-data', action='store_true', dest='custom-data')
     parser.add_argument('--pre-trained', action='store_true', dest='pre-trained')

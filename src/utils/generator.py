@@ -47,9 +47,7 @@ class Generator(Sequence):
         self.img_list = {}  # list of file names
         for res in ['HR', 'LR']:
             file_names = os.listdir(self.folder[res])
-            file_names = [
-                file for file in file_names if any(file.lower().endswith(ext) for ext in self.extensions)
-            ]
+            file_names = [file for file in file_names if any(file.lower().endswith(ext) for ext in self.extensions)]
 
             if self.mode is 'valid':
                 self.img_list[res] = np.sort(file_names)[0:n_validation_samples]
@@ -110,8 +108,8 @@ class Generator(Sequence):
 
     def get_batches(self, idx):
         """Fetch a batch of images LR and HR.
-        Takes #batch_size random patches from 1 LR and 1 HR image,
-        returns the patches as a batch.
+        Takes #batch_size random patches from 1 LR and 1 HR image.
+        Returns the patches as a batch.
         """
         imgs = {}
         for res in ['LR', 'HR']:
@@ -120,8 +118,7 @@ class Generator(Sequence):
         return self._crop_imgs(imgs, idx)
 
     def _apply_transform(self, img, transform_selection):
-        """Rotates and flips input image according to transform_selection"""
-
+        """Rotates and flips input image according to transform_selection."""
         rotate = {
             0: lambda x: x,
             1: lambda x: np.rot90(x, k=1, axes=(1, 0)),  # rotate right
@@ -143,7 +140,7 @@ class Generator(Sequence):
         return img
 
     def _transform_batch(self, batch, transforms):
-        """ Transforms each individual image of the batch independently"""
+        """Transforms each individual image of the batch independently."""
 
         t_batch = np.array([self._apply_transform(img, transforms[i]) for i, img in enumerate(batch)])
         return t_batch

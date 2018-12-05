@@ -4,26 +4,58 @@ main_dir="$(dirname $script_dir)"
 
 echo "Hello. This is your favorite ISR assistant."
 echo ""
-error=0
-if [ $1 = "train" ]; then
-  if [ $2 = "div2k" ]; then
-    echo "Training on DIV2K dataset."
-    python3 $main_dir/src/run.py --train --div2k
-  else
-    echo "Training on custom dataset."
-    python3 $main_dir/src/run.py --train
-  fi
-elif [ $1 = "test" ]; then
-    if [ $2 = "pre-trained" ]; then
-      flag='--pre-trained'
-      echo "Using pre-trained weights on DIV2K dataset."
+
+data_flag="none"
+train_test_flag="none"
+weights_flag="none"
+
+for var in "$@"; do
+
+  if [ $var = "train" ]; then
+    if [ $train_test_flag = "none" ]; then
+      echo "Training session."
+      train_test_flag="--train"
     else
-      flag=''
+      echo "Select only one flag between 'test' and 'train'."
     fi
-    echo "Starting prediction."
-    echo "Reading images from default folder."
-    python3 ./src/run.py --test $flag
-else
-  echo "ERROR: Invalid run arguments."
+  elif [ $var = "test" ]; then
+    if [ $train_test_flag = "none" ]; then
+      echo "Prediction."
+      train_test_flag="--test"
+    else
+      echo "Select only one flag between 'test' and 'train'."
+    fi
+  fi
+
+  if [ $var = "div2k" ]; then
+    data_flag="--div2k"
+    echo "Training on DIV2K dataset."
+  elif [ $var = "custom-data" ]; then
+    echo "Training on custom data."
+    data_flag="--custom-data"
+  fi
+
+  if [ $var = "pre-trained" ]; then
+    echo "Using pre-trained weights on DIV2K dataset."
+    weights_flag="--pre-trained"
+  fi
+
+done
+
+if [ $train_test_flag = "--train" ] && [ $data_flag = "none" ]; then
+  echo "Specify a training dataset."
+  exit
 fi
-/bin/bash
+
+if [ $data_flag = "none" ]; then
+  data_flag=""
+fi
+if [ $weights_flag = "none" ]; then
+  weights_flag=""
+fi
+
+if [ $train_test_flag = "none" ]; then
+  echo "Missing flag. Select one and only one between 'test' and 'train'."
+else
+  python3 $main_dir/src/run.py $train_test_flag $data_flag $weights_flag
+fi
