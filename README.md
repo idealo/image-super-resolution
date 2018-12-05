@@ -33,19 +33,15 @@ Below we show the original low resolution image (centre), the super scaled outpu
 
 1. Install [Docker](https://docs.docker.com/install/)
 
-2. Install [Anaconda](https://www.anaconda.com/)
-
-3. Create the conda environment `conda env create -f src/environment.yml`
-
-4. Build docker image for local usage `docker build -t isr . -f Dockerfile.cpu`
+2. Build docker image for local usage `docker build -t isr . -f Dockerfile.cpu`
 
 In order to train remotely on **AWS EC2** with GPU
 
-5. Install [Docker Machine](https://docs.docker.com/machine/install-machine/)
+3. Install [Docker Machine](https://docs.docker.com/machine/install-machine/)
 
-6. Install [AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
+4. Install [AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 
-7. Set up an EC2 instance for training with GPU support. You can follow our [nvidia-docker-keras](https://github.com/idealo/nvidia-docker-keras) project to get started
+5. Set up an EC2 instance for training with GPU support. You can follow our [nvidia-docker-keras](https://github.com/idealo/nvidia-docker-keras) project to get started
 
 ## Predict
 Place your images (`png`, `jpg`) under `data/input`, the results will be saved under `/data/output`.
@@ -107,6 +103,9 @@ docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/logs/:/home/isr/logs -it isr
 
 
 ## Unit Testing
+To perform unit testing install [Anaconda](https://www.anaconda.com/) and create the conda environment with
+`conda env create -f src/environment.yml`.
+
 From ```./src``` folder run
 ```
 python -m pytest -vs --disable-pytest-warnings tests
