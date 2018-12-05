@@ -1,8 +1,8 @@
 import os
-from utils.generator import Generator
 from logging import info
-from utils.utils import browse_weights, load_model
 from keras.callbacks import TensorBoard, ModelCheckpoint
+from utils.generator import Generator
+from utils.utils import browse_weights, load_model
 
 
 class Trainer:
@@ -17,7 +17,6 @@ class Trainer:
         valid_folders = {'HR': train_arguments['validation_labels'], 'LR': train_arguments['validation_input']}
         self.folders = {'train': train_folders, 'valid': valid_folders}
 
-        # self.model = load_model(model_parameters, train_arguments.add_vgg)
         self.steps_per_epoch = train_arguments['steps_per_epoch']
         self.n_validation_samples = train_arguments['n_validation_samples']
         self.weights_dir = train_arguments['weights_dir']

@@ -7,14 +7,15 @@ from utils.utils import browse_weights, load_model
 
 
 class Predictor:
-    def __init__(self, test_arguments):
-        """The predictor class handles prediction, given an input model.
-        Reads input files from the folder specified in config.json.
-        Saves results in output folder specified in config.json.
+    """The predictor class handles prediction, given an input model.
+    Reads input files from the folder specified in config.json.
+    Saves results in output folder specified in config.json.
 
-        Can receive a path for the weights or can let the user browse through the
-        weights directory for the desired weights.
-        """
+    Can receive a path for the weights or can let the user browse through the
+    weights directory for the desired weights.
+    """
+
+    def __init__(self, test_arguments):
         # Select pre-trained weights
         self.weights_path, _ = browse_weights(weights_path=test_arguments['weights_path'])
         self.results_folder = test_arguments['results_folder']

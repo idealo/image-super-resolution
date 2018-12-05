@@ -1,5 +1,5 @@
-from keras.models import Model
 from utils.metrics import PSNR
+from keras.models import Model
 from keras.optimizers import Adam
 from keras.layers import UpSampling2D, concatenate
 from keras.layers import Input, Activation, Add, Conv2D
