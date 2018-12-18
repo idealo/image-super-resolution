@@ -40,15 +40,16 @@ class Predictor:
         self.load_weights()
         # Predict and store
         for file in os.listdir(self.test_folder):
-            file_path = os.path.join(self.test_folder, file)
-            output_path = os.path.join(self.results_folder, file)
-            info('\n>>> Processing', file_path)
-            start = time()
-            sr_img = self.forward_pass(file_path)[0]
-            end = time()
-            info('Elapsed time', end - start)
-            info('Result in', output_path)
-            imwrite(output_path, sr_img)
+            if not file.startswith('.'):
+                file_path = os.path.join(self.test_folder, file)
+                output_path = os.path.join(self.results_folder, file)
+                info('\n>>> Processing', file_path)
+                start = time()
+                sr_img = self.forward_pass(file_path)[0]
+                end = time()
+                info('Elapsed time', end - start)
+                info('Result in', output_path)
+                imwrite(output_path, sr_img)
 
     def forward_pass(self, file_path):
         lr_img = imread(str(file_path)) / 255.0
