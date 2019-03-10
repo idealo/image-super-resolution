@@ -8,4 +8,4 @@ dependencies:
  - python=3.6.*
  - scikit-image=0.14.*
  - tensorflow=1.11.*
- - pytest==3.8.*
+ - pytest=3.8.*
