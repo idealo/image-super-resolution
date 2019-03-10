@@ -11,7 +11,7 @@ before_install:
 - conda config --set always_yes yes
 - conda update conda
 - conda info -a
-- conda env create -n testenv -f environment.yml
+- conda env create -n testenv -f src/environment.yml
 - source activate testenv
 
 script:
