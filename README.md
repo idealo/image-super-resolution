@@ -2,6 +2,9 @@
 
 <img src="figures/butterfly.png">
 
+[![Build Status](https://travis-ci.org/idealo/image-super-resolution.svg?branch=master)](https://travis-ci.org/idealo/image-super-resolution)
+[![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://github.com/idealo/image-super-resolution/blob/master/LICENSE)
+
 The goal of this project is to upscale low resolution images (currently only x2 scaling). To achieve this we used the CNN Residual Dense Network described in [Residual Dense Network for Image Super-Resolution](https://arxiv.org/abs/1802.08797) (Zhang et al. 2018).
 
 We wrote a Keras implementation of the network and set up a Docker image to carry training and testing. You can train either locally or on the cloud with AWS and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) with only a few commands.
