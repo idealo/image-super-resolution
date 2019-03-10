@@ -15,4 +15,4 @@ before_install:
 - source activate testenv
 
 script:
-- python -m pytest -vs --disable-pytest-warnings src/tests
+- cd src/ && python -m pytest -vs --disable-pytest-warnings tests
