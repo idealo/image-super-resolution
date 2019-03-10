@@ -1,0 +1,18 @@
+language: python
+python:
+- 3.6
+
+before_install:
+- export MINICONDA=$HOME/miniconda
+- export PATH="$MINICONDA/bin:$PATH"
+- hash -r
+- wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+- bash miniconda.sh -b -f -p $MINICONDA
+- conda config --set always_yes yes
+- conda update conda
+- conda info -a
+- conda env create -n testenv -f environment.yml
+- source activate testenv
+
+script:
+- python -m pytest -vs --disable-pytest-warnings src/tests
