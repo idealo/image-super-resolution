@@ -7,4 +7,4 @@ install:
   - pip install tensorflow==1.13.1
 
 script:
-- cd tests && pytest -vs --cov=ISR --show-capture=no --disable-pytest-warnings
+- cd tests && pytest -vs --show-capture=no --disable-pytest-warnings
