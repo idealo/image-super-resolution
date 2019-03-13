@@ -90,12 +90,12 @@ The `--default` flag in the run command will tell the program to load the weight
 ### Predict locally
 From the main folder run
 ```
-docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/weights/:/home/isr/weights -it isr --predict --default --config config.yml
+docker run -v $(pwd)/data/:/home/isr/data  -v $(pwd)/weights/:/home/isr/weights -it isr --predict --default
 ```
 ### Predict on AWS with nvidia-docker
 From the remote machine run (using our [DockerHub image](https://hub.docker.com/r/idealo/image-super-resolution-gpu/))
 ```
-sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/weights/:/home/isr/weights -it idealo/image-super-resolution --predict --default --config config.yml
+sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/weights/:/home/isr/weights -it idealo/image-super-resolution --predict --default
 ```
 
 ## Train
@@ -107,7 +107,7 @@ Add you training set, including training and validation Low Res and High Res fol
 To train with the default settings set in `config.yml` follow these steps:
 1. From the main folder run ```bash scripts/setup.sh -m <name-of-ec2-instance> -b -i -u -d <data_name>```.
 2. ssh into the machine ```docker-machine ssh <name-of-ec2-instance>```
-3. Run training with ```sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/logs/:/home/isr/logs -v $(pwd)/isr/weights/:/home/isr/weights -it isr --training --default --config config.yml```
+3. Run training with ```sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/logs/:/home/isr/logs -v $(pwd)/isr/weights/:/home/isr/weights -it isr --training --default```
 
 `<data_name>` is the name of the folder containing your dataset. It must be under `./data/<data_name>`.
 
@@ -131,7 +131,7 @@ A few helpful details
 #### Train locally with docker
 From the main project folder run
 ```
-docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/logs/:/home/isr/logs -v $(pwd)/weights/:/home/isr/weights -it isr --train --default --config config.yml
+docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/logs/:/home/isr/logs -v $(pwd)/weights/:/home/isr/weights -it isr --train --default
 ```
 
 ## Installation

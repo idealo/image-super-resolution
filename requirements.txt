@@ -1,0 +1,4 @@
+imageio==2.5.0
+keras==2.2.4
+pytest==4.3.0
+tqdm==4.31.1

@@ -1,0 +1,26 @@
+site_name: Image Super-Resolution
+site_author: idealo Data Science Team
+
+nav:
+    - Home: index.md
+    - Contribution: CONTRIBUTING.md
+    - Documentation:
+      - Models:
+        - Cut VGG19: models/cut_vgg19.md
+        - Discriminator: models/discriminator.md
+        - RDN: models/rdn.md
+        - RRDN: models/rrdn.md
+      - Predict: predict/predictor.md
+      - Trainer: trainer/trainer.md
+      - Utils:
+        - Data Handler: utils/datahandler.md
+        - Logger: utils/logger.md
+        - Metrics: utils/metrics.md
+        - Train Helper: utils/train_helper.md
+        - Utils: utils/utils.md
+      - Run: run.md
+theme:
+  name: 'material'
+
+markdown_extensions:
+  - codehilite

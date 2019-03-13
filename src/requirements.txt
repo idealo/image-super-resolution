@@ -1,6 +1,0 @@
-imageio==2.4.1
-Keras==2.2.4
-numpy==1.15.2
-pytest==3.8.0
-scikit-image==0.14.0
-tensorboard==1.11.0

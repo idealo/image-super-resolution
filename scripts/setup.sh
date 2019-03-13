@@ -1,72 +1,98 @@
 #!/usr/bin/env bash
 local_script_dir="$( cd "$(dirname "$0")" ; pwd -P )"
 local_main_dir="$(dirname "$local_script_dir")"
-machine_name=$1
 aws_main_dir=/home/ubuntu/isr
-build="false"
+
+machine_name="false"
+weights="false"
 install="false"
 update="false"
-weights="true"
+build="false"
 data="false"
 
+print_usage() {
+  printf "Usage:"
+  printf "-w : upload pre-trained weights "
+  printf "-b : automatically build docker image "
+  printf "-i : install required packages "
+  printf "-u : update code base "
+  printf "-d <data_name> : upload a dataset from the data folder "
+  printf "-m <instance_name> : the name of the ec2 instance "
+}
 
-if [ -z $1 ]; then
+while getopts 'm:biuwd:' flag; do
+  case "${flag}" in
+    m) machine_name="${OPTARG}" ;;
+    b) build="true" ;;
+    i) install="true" ;;
+    u) update="true" ;;
+    w) weights="true" ;;
+    d) data="${OPTARG}" ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+if [ $machine_name = "false" ]; then
   echo "Error: Specify machine name"
   exit
 fi
 
-
-for var in "$@"; do
-  if [ $var = "build" ]; then
-    build="true"
-  elif [ $var = "install" ]; then
-    install="true"
-  elif [ $var = "div2k" ]; then
-    data="DIV2K"
-  elif [ $var = "custom-data" ]; then
-    data="custom"
-  elif [ $var = "update" ]; then
-    update="true"
-  elif [ $var = "no_weights" ]; then
-    weights="false"
-  fi
-done
-
 if [ $update = "true" ]; then
-  echo " >>> Copying local source files to remote machine."
-  docker-machine scp -r $local_main_dir/src $machine_name:$aws_main_dir
-  docker-machine scp -r $local_main_dir/config.json $machine_name:$aws_main_dir
-  docker-machine scp -r $local_main_dir/Dockerfile.gpu $machine_name:$aws_main_dir
-  docker-machine scp -r $local_main_dir/.dockerignore $machine_name:$aws_main_dir
-  docker-machine scp -r $local_main_dir/scripts/entrypoint.sh $machine_name:$aws_main_dir/scripts
+  docker-machine ssh $machine_name << EOF
+  mkdir -p $aws_main_dir/ISR
+  mkdir $aws_main_dir/scripts
+EOF
 
-  if [ $weights = "true" ]; then
-    docker-machine scp $local_main_dir/weights/sample_weights/DIV2K_E086_X2_D20G64C6.hdf5 \
-  $machine_name:$aws_main_dir/weights/sample_weights/
-  fi
+  echo " >>> Copying local source files to remote machine."
+  docker-machine scp -r $local_main_dir/ISR $machine_name:$aws_main_dir
+  docker-machine scp -r $local_main_dir/requirements.txt $machine_name:$aws_main_dir
+  docker-machine scp -r $local_main_dir/config.yml $machine_name:$aws_main_dir
+  docker-machine scp $local_main_dir/Dockerfile.gpu $machine_name:$aws_main_dir
+  docker-machine scp $local_main_dir/.dockerignore $machine_name:$aws_main_dir
+  docker-machine scp $local_main_dir/scripts/entrypoint.sh $machine_name:$aws_main_dir/scripts/
+ fi
+
+if [ $weights = "true" ]; then
+  docker-machine ssh $machine_name << EOF
+  mkdir -p $aws_main_dir/weights/sample_weights
+EOF
+  docker-machine scp $local_main_dir/weights/sample_weights/rdn-C6-D20-G64-G064-x2_div2k-e086.hdf5 \
+$machine_name:$aws_main_dir/weights/sample_weights/
+  docker-machine scp $local_main_dir/weights/sample_weights/rdn-C6-D20-G64-G064-x2_enhanced-e219.hdf5 \
+$machine_name:$aws_main_dir/weights/sample_weights/
+  docker-machine scp $local_main_dir/weights/sample_weights/rdn-C3-D10-G64-G064-x2_div2k-e134.hdf5 \
+$machine_name:$aws_main_dir/weights/sample_weights/
 fi
 
+
 if ! [ $data = "false" ]; then
+  docker-machine ssh $machine_name << EOF
+  mkdir -p $aws_main_dir/data/
+  mkdir -p $aws_main_dir/data/
+EOF
   echo " >>> Copying local data folder to remote machine. This will take some time (output is suppressed)"
-  docker-machine scp -r -q $local_main_dir/data/$data $machine_name:$aws_main_dir/data/$data
+  docker-machine scp -r -q $local_main_dir/data/$data $machine_name:$aws_main_dir/data
+  docker-machine scp -r -q $local_main_dir/data/$data $machine_name:$aws_main_dir/data
 fi
 
 if [ $build = "true" ]; then
   echo " >>> Connecting to the remote machine."
   docker-machine ssh $machine_name << EOF
     echo " >>> Creating Docker image"
-    sudo nvidia-docker build -f $aws_main_dir/Dockerfile.gpu -t isr $aws_main_dir
+    sudo nvidia-docker build -f $aws_main_dir/Dockerfile.gpu -t isr $aws_main_dir --rm
 EOF
 fi
 
 if [ $install = "true" ]; then
   echo " >>> Connecting to the remote machine."
   docker-machine ssh $machine_name << EOF
-  echo "Installing unzip"
+  echo ">>> Installing unzip and pip"
   sudo apt -y install unzip
-  echo "Updating pip"
-  pip install --upgrade pip
-  echo "Installing tensorboard"
-  pip install tensorflow
+  sudo apt -y install python3-pip
+  echo " >>> Updating pip"
+  python3 -m pip install --upgrade pip
+  echo " >>> Installing tensorboard"
+  python3 -m pip install tensorflow --user
 EOF
 fi

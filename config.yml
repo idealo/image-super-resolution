@@ -1,0 +1,56 @@
+---
+default:
+  generator: rdn
+  feat_ext: false
+  discriminator: false
+  training_set: custom
+  test_set: sample
+dirs:
+  logs: "./logs"
+  weights: "./weights"
+feat_ext:
+  vgg19:
+    layers_to_extract:
+    - 5
+    - 9
+generators:
+  rrdn:
+    C: 4
+    D: 3
+    G: 64
+    G0: 64
+    T: 4
+    x: 4
+  rdn:
+    C: 6
+    D: 20
+    G: 64
+    G0: 64
+    x: 2
+loss_weights:
+  generator: 1
+  feat_extr: 0.0833
+  discriminator: 0.01
+session:
+  prediction:
+    patch_size:
+  training:
+    steps_per_epoch: 500
+    patch_size: 40
+    batch_size: 16
+    epochs: 300
+    n_validation_samples: 100
+    lr_decay_frequency: 100
+    lr_decay_factor: 0.5
+test_sets:
+  sample: "./data/input/sample"
+training_sets:
+  custom data:
+    training_input: "./data/custom/lr/train"
+    training_labels: "./data/custom/hr/train"
+    validation_input: "./data/custom/lr/validation"
+    validation_labels: "./data/custom/hr/validation"
+    data_name: custom
+weights_paths:
+  discriminator:
+  generator: weights/sample_weights/rdn-C6-D20-G64-G064-x2_enhanced-e219.hdf5

@@ -136,3 +136,5 @@ pip-selfcheck.json
 # Custom
 .DS_Store
 .idea
+log_file
+logs/

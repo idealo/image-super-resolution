@@ -2,17 +2,9 @@ language: python
 python:
 - 3.6
 
-before_install:
-- export MINICONDA=$HOME/miniconda
-- export PATH="$MINICONDA/bin:$PATH"
-- hash -r
-- wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-- bash miniconda.sh -b -f -p $MINICONDA
-- conda config --set always_yes yes
-- conda update conda
-- conda info -a
-- conda env create -n testenv -f src/environment.yml
-- source activate testenv
+install:
+  - pip install -r src/requirements.txt
+  - pip install tensorflow==1.13.1
 
 script:
-- cd src/ && python -m pytest -vs --disable-pytest-warnings tests
+- cd tests && pytest -vs --cov=ISR --show-capture=no --disable-pytest-warnings

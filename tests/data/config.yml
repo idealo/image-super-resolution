@@ -1,0 +1,51 @@
+select_weights: 0
+steps_per_epoch: 2
+patch_size: 32
+n_validation_samples: 0
+epochs: 2
+data_name: TEST
+batch_size: 8
+rrdn:
+  C: 2
+  D: 3
+  G: 20
+  G0: 20
+  T: 2
+  x: 2
+rdn:
+  C: 3
+  D: 10
+  G: 64
+  G0: 64
+  x: 2
+lr_input: "./tests/temporary_test_data/data/lr_input"
+log_dir: "./tests/temporary_test_data/logs"
+weights_dir: "./tests/temporary_test_data/weights"
+session:
+  training:
+    patch_size: 0
+    epochs: 0
+    steps_per_epoch: 0
+    batch_size: 0
+    n_validation_samples:
+generators:
+  rdn:
+    x: 0
+training_sets:
+  test:
+    lr_train_dir:
+    hr_train_dir:
+    lr_valid_dir:
+    hr_valid_dir:
+    data_name:
+test_sets:
+  test:
+loss_weights:
+dirs:
+  logs:
+    weights:
+weights_paths:
+  generator:
+  discriminator:
+default:
+  test_set:
