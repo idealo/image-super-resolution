@@ -26,7 +26,7 @@ class RunFunctionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         logging.disable(logging.CRITICAL)
-        conf = yaml.load(open(os.path.join('data', 'config.yml'), 'r'))
+        conf = yaml.load(open(os.path.join('tests', 'data', 'config.yml'), 'r'))
         conf['default'] = {
             'feat_ext': False,
             'discriminator': False,
@@ -78,12 +78,12 @@ class RunFunctionTest(unittest.TestCase):
     @patch('ISR.trainer.trainer.Trainer', return_value=Object())
     def test_run_arguments_trainer(self, trainer, _get_module):
         with patch('yaml.load', return_value=self.conf):
-            run.run(config_file='data/config.yml', training=True, prediction=False, default=True)
+            run.run(config_file='tests/data/config.yml', training=True, prediction=False, default=True)
             trainer.assert_called_once()
 
     @patch('ISR.run._get_module', return_value=Object())
     @patch('ISR.predict.predictor.Predictor', return_value=Object())
     def test_run_arguments_predictor(self, predictor, _get_module):
         with patch('yaml.load', return_value=self.conf):
-            run.run(config_file='data/config.yml', training=False, prediction=True, default=True)
+            run.run(config_file='tests/data/config.yml', training=False, prediction=True, default=True)
             predictor.assert_called_once()

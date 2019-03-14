@@ -60,7 +60,7 @@ class UtilsClassTest(unittest.TestCase):
 
         with patch('yaml.load', return_value=base_conf) as import_module:
             session_type, generator, conf, dataset = utils.setup(
-                'data/config.yml', default, training, prediction
+                'tests/data/config.yml', default, training, prediction
             )
         self.assertTrue(session_type == 'training')
         self.assertTrue(generator == 'rrdn')
@@ -86,7 +86,7 @@ class UtilsClassTest(unittest.TestCase):
 
         with patch('yaml.load', return_value=base_conf):
             session_type, generator, conf, dataset = utils.setup(
-                'data/config.yml', default, training, prediction
+                'tests/data/config.yml', default, training, prediction
             )
         self.assertTrue(session_type == 'prediction')
         self.assertTrue(generator == 'rdn')
@@ -126,7 +126,7 @@ class UtilsClassTest(unittest.TestCase):
 
     @patch('builtins.input', return_value='0')
     def test_select_dataset(self, sel_opt):
-        conf = yaml.load(open(os.path.join('data', 'config.yml'), 'r'))
+        conf = yaml.load(open(os.path.join('tests', 'data', 'config.yml'), 'r'))
         conf['test_sets'] = {'test_test_set': {}}
         conf['training_sets'] = {'test_train_set': {}}
 

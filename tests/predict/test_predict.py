@@ -13,7 +13,7 @@ class PredictorClassTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         logging.disable(logging.CRITICAL)
-        cls.setup = yaml.load(open(os.path.join('data', 'config.yml'), 'r'))
+        cls.setup = yaml.load(open(os.path.join('tests', 'data', 'config.yml'), 'r'))
         cls.RDN = RDN(arch_params=cls.setup['rdn'], patch_size=cls.setup['patch_size'])
 
         def fake_folders(kind):

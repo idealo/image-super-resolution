@@ -149,9 +149,10 @@ python setup.py install
 ```
 
 ## Unit Testing
-From the `tests` folder run
+From the `root` directory run
 ```
-pytest -vs --cov=ISR --show-capture=no --disable-pytest-warnings
+pip install -e .
+pytest -vs --cov=ISR --show-capture=no --disable-pytest-warnings tests/
 ```
 
 ## Changelog

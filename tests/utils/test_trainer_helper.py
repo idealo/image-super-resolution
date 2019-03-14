@@ -1,7 +1,6 @@
 import os
 import unittest
 import shutil
-import numpy as np
 import yaml
 from unittest.mock import patch
 from ISR.utils.train_helper import TrainerHelper
@@ -13,7 +12,7 @@ from ISR.models.cut_vgg19 import Cut_VGG19
 class UtilsClassTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.setup = yaml.load(open(os.path.join('data', 'config.yml'), 'r'))
+        cls.setup = yaml.load(open(os.path.join('tests', 'data', 'config.yml'), 'r'))
         cls.RRDN = RRDN(arch_params=cls.setup['rrdn'], patch_size=cls.setup['patch_size'])
         cls.f_ext = Cut_VGG19(patch_size=cls.setup['patch_size'], layers_to_extract=[1, 2])
         cls.discr = Discriminator(patch_size=cls.setup['patch_size'])

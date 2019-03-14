@@ -14,7 +14,7 @@ from unittest.mock import patch, Mock
 class TrainerClassTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.setup = yaml.load(open(os.path.join('data', 'config.yml'), 'r'))
+        cls.setup = yaml.load(open(os.path.join('tests', 'data', 'config.yml'), 'r'))
         cls.RRDN = RRDN(arch_params=cls.setup['rrdn'], patch_size=cls.setup['patch_size'])
         cls.f_ext = Cut_VGG19(patch_size=cls.setup['patch_size'] * 2, layers_to_extract=[1, 2])
         cls.discr = Discriminator(patch_size=cls.setup['patch_size'] * 2)
