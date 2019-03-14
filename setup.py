@@ -10,7 +10,7 @@ setup(
     long_description_content_type='text/markdown',
     license='Apache 2.0',
     install_requires=['imageio', 'Keras==2.2.4', 'numpy==1.16.2', 'tensorflow==1.13.1', 'tqdm'],
-    extras_require={'tests': ['pytest']},
+    extras_require={'tests': ['pytest', 'pytest-cov']},
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

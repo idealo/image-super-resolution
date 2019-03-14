@@ -151,7 +151,7 @@ python setup.py install
 ## Unit Testing
 From the `root` directory run
 ```
-pip install -e .
+pip install -e .[tests]
 pytest -vs --cov=ISR --show-capture=no --disable-pytest-warnings tests/
 ```
 
