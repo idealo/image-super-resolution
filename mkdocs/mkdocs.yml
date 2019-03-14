@@ -19,6 +19,7 @@ nav:
         - Train Helper: utils/train_helper.md
         - Utils: utils/utils.md
       - Run: run.md
+    - License: LICENSE.md
 theme:
   name: 'material'
 
