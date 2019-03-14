@@ -22,6 +22,11 @@ nav:
     - License: LICENSE.md
 theme:
   name: 'material'
+  palette:
+    primary: 'blue'
+    accent: 'blue'
+  logo: 'img/logo.svg'
+  favicon: 'img/favicon.ico'
 
 markdown_extensions:
   - codehilite

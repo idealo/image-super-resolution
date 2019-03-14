@@ -7,12 +7,12 @@
 
 The goal of this project is to upscale and improve the quality of low resolution images.
 
-Includes the Keras implementations of:
+It includes the Keras implementations of:
 
-- the super-scaling Residual Dense Network described in [Residual Dense Network for Image Super-Resolution](https://arxiv.org/abs/1802.08797) (Zhang et al. 2018);
-- the super-scaling Residual in Residual Dense Network described in [ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks](https://arxiv.org/abs/1809.00219)(Wang et al. 2018)
-- a multi-output version of the Keras VGG19 network for deep features extraction used in the perceptual loss;
-- a custom discriminator network based on the one described in [Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network](https://arxiv.org/abs/1609.04802) (SRGANS, Ledig et al. 2017)
+- The super-scaling Residual Dense Network described in [Residual Dense Network for Image Super-Resolution](https://arxiv.org/abs/1802.08797) (Zhang et al. 2018)
+- The super-scaling Residual in Residual Dense Network described in [ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks](https://arxiv.org/abs/1809.00219)(Wang et al. 2018)
+- A multi-output version of the Keras VGG19 network for deep features extraction used in the perceptual loss
+- A custom discriminator network based on the one described in [Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network](https://arxiv.org/abs/1609.04802) (SRGANS, Ledig et al. 2017)
 
 Docker scripts are available to carry training and testing. Also, we provide scripts to facilitate training on the cloud with AWS and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) with only a few commands.
 
@@ -90,12 +90,12 @@ The `--default` flag in the run command will tell the program to load the weight
 ### Predict locally
 From the main folder run
 ```
-docker run -v $(pwd)/data/:/home/isr/data  -v $(pwd)/weights/:/home/isr/weights -it isr --predict --default
+docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/weights/:/home/isr/weights -it isr --predict --default --config config.yml
 ```
 ### Predict on AWS with nvidia-docker
 From the remote machine run (using our [DockerHub image](https://hub.docker.com/r/idealo/image-super-resolution-gpu/))
 ```
-sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/weights/:/home/isr/weights -it idealo/image-super-resolution --predict --default
+sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/weights/:/home/isr/weights -it idealo/image-super-resolution --predict --default --config config.yml
 ```
 
 ## Train
@@ -107,7 +107,7 @@ Add you training set, including training and validation Low Res and High Res fol
 To train with the default settings set in `config.yml` follow these steps:
 1. From the main folder run ```bash scripts/setup.sh -m <name-of-ec2-instance> -b -i -u -d <data_name>```.
 2. ssh into the machine ```docker-machine ssh <name-of-ec2-instance>```
-3. Run training with ```sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/logs/:/home/isr/logs -v $(pwd)/isr/weights/:/home/isr/weights -it isr --training --default```
+3. Run training with ```sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/logs/:/home/isr/logs -v $(pwd)/isr/weights/:/home/isr/weights -it isr --training --default --config config.yml```
 
 `<data_name>` is the name of the folder containing your dataset. It must be under `./data/<data_name>`.
 
@@ -131,7 +131,7 @@ A few helpful details
 #### Train locally with docker
 From the main project folder run
 ```
-docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/logs/:/home/isr/logs -v $(pwd)/weights/:/home/isr/weights -it isr --train --default
+docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/logs/:/home/isr/logs -v $(pwd)/weights/:/home/isr/weights -it isr --train --default --config config.yml
 ```
 
 ## Installation
@@ -149,9 +149,10 @@ python setup.py install
 ```
 
 ## Unit Testing
-From the `tests` folder run
+From the `root` directory run
 ```
-pytest -vs --cov=ISR --show-capture=no --disable-pytest-warnings
+pip install -e .[tests]
+pytest -vs --cov=ISR --show-capture=no --disable-pytest-warnings tests/
 ```
 
 ## Changelog
