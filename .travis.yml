@@ -13,7 +13,7 @@ deploy:
   local-dir: docs/
   on:
     branch: master
-  target_branch: gp-pages
+  target_branch: gh-pages
 env:
   global:
     secure: kyQNz150Rx7cagYA9Y3wIniUZX/z8w4SS33zyWuyUgcO7GFsDAr0x1o8lC3usqIiFKYlsXL40dLWSa23MR9QRw+VHwekdhZJNQ4hOD+YLRoLSbAfX2xLyHtl5QIxd7h6KCSxtmnKHlKUu2Qf29RJ9mvjwhpfh45e1gfj4TpM5rnfuQ1pO2iNOblmxRN3Q5AdapmeC3mMYeAxleFAoRAZGbCX6F+Eq7HHxh9u8brOzI3nrr0HzEz3HvLecyghRD18uz7Adgwb5Jh+7s18vqD6dagidOFFLyPwukKz5gTZcbRJGK88yhDb00cWfb6ZmVLmspC2YcCFHo6+2NOr/eND3YSJ3IPgG19u79MiaXG8lX+7SVLlzc5RPuLNSFOqCToIKm1PJQBZ+8ZzThEBO5frruKIMQKySL+bx89TRU7tI2gl9hePZcdQTdYf6tse50k/hnKNn/0XFiuac80hQIy7RG8Y+hQzNh2siVEWqTc+TkmkMqPICp+k1cvT9Sc7e/GuYS2dG53BVeog1tT5ZT2bGB9MIUDeMtGQIPOtHn61pcx/zMV8q3y9IGJPPjurJ4NaV7YcBpwcPgoaBwhlORSFw+GcpK8oXC7GPibpb3ft8fZwNrvJwI/DwMAB2MtkhM6zvor9K2fHIPZf2EPc+6CJlSG4mF3i1KQxlu+I3YDZetg=
