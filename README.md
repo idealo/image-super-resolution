@@ -201,6 +201,18 @@ Will publish the performances of new models in this repository.
 
 See [CONTRIBUTING](CONTRIBUTING.md) for more details.
 
+## Citation
+Please cite our work in your publications if it helps your research.
+
+```
+@misc{cardinale2018isr,
+  title={ISR},
+  author={Francesco Cardinale et al.},
+  year={2018},
+  howpublished={\url{https://github.com/idealo/image-super-resolution}},
+}
+```
+
 ## Maintainers
 * Francesco Cardinale, github: [cfrancesco](https://github.com/cfrancesco)
 * Zubin John, github: [valiantone](https://github.com/valiantone)
