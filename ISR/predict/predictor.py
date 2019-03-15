@@ -15,13 +15,15 @@ class Predictor:
     weights directory for the desired weights.
     """
 
-    def __init__(self, input_dir, output_dir='./data/output'):
+    def __init__(self, input_dir, output_dir='./data/output', verbose=True):
 
         self.input_dir = input_dir
         self.data_name = os.path.basename(os.path.normpath(self.input_dir))
         self.output_dir = os.path.join(output_dir, self.data_name)
         file_ls = os.listdir(self.input_dir)
         self.logger = get_logger(__name__)
+        if not verbose:
+            self.logger.setLevel(40)
         self.extensions = ('.jpeg', '.jpg', '.png')  # file extensions that are admitted
         self.img_ls = [file for file in file_ls if file.endswith(self.extensions)]
         if len(self.img_ls) < 1:
