@@ -3,7 +3,10 @@ site_author: idealo Data Science Team
 
 nav:
     - Home: index.md
-    - Contribution: CONTRIBUTING.md
+    - Tutorials:
+      - Training: tutorials/training.md
+      - Prediction: tutorials/prediction.md
+      - Docker: tutorials/docker.md
     - Documentation:
       - Models:
         - Cut VGG19: models/cut_vgg19.md
@@ -19,6 +22,7 @@ nav:
         - Train Helper: utils/train_helper.md
         - Utils: utils/utils.md
       - Run: run.md
+    - Contribution: CONTRIBUTING.md
     - License: LICENSE.md
 theme:
   name: 'material'

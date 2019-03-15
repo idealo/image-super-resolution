@@ -1,0 +1,6 @@
+- 2019-03-14 1.9.0 beta: added deep features from VGG19 and a discriminator for GAN training.
+Moved all non strictly architecture building operations outside of the model files.
+The models are combined when needed in the Trainer class.
+In order to allow for GAN training `fit_generator` function had to be replaced
+with the more granular `train_on_batch`. Now the project relies on
+custom data handlers and loggers instead of the custom Keras generator.

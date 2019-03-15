@@ -138,3 +138,12 @@ pip-selfcheck.json
 .idea
 log_file
 logs/
+mkdocs/docs/CONTRIBUTING.md
+mkdocs/docs/LICENSE.md
+mkdocs/docs/index.md
+mkdocs/docs/figures/
+mkdocs/docs/models/
+mkdocs/docs/predict/
+mkdocs/docs/run.md
+mkdocs/docs/trainer/
+mkdocs/docs/utils/

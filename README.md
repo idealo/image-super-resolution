@@ -10,7 +10,7 @@ The goal of this project is to upscale and improve the quality of low resolution
 It includes the Keras implementations of:
 
 - The super-scaling Residual Dense Network described in [Residual Dense Network for Image Super-Resolution](https://arxiv.org/abs/1802.08797) (Zhang et al. 2018)
-- The super-scaling Residual in Residual Dense Network described in [ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks](https://arxiv.org/abs/1809.00219)(Wang et al. 2018)
+- The super-scaling Residual in Residual Dense Network described in [ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks](https://arxiv.org/abs/1809.00219) (Wang et al. 2018)
 - A multi-output version of the Keras VGG19 network for deep features extraction used in the perceptual loss
 - A custom discriminator network based on the one described in [Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network](https://arxiv.org/abs/1609.04802) (SRGANS, Ledig et al. 2017)
 
@@ -20,14 +20,11 @@ We welcome any kind of contribution. If you wish to contribute, please see the [
 
 ## Contents
 - [Sample Results](#sample-results)
-- [Getting Started](#getting-started)
-- [Predict](#predict)
-- [Train](#train)
 - [Installation](#installation)
-- [Unit Testing](#unit-testing)
-- [Changelog](#changelog)
+- [Usage](#usage)
 - [Additional Information](#additional-information)
 - [Contribute](#contribute)
+- [Citation](#citation)
 - [Maintainers](#maintainers)
 - [License](#copyright)
 
@@ -64,76 +61,6 @@ Below a sample output of the RDN network re-trained on the weights provided in t
 </figure>
 </center>
 
-## Getting Started
-
-1. Install [Docker](https://docs.docker.com/install/)
-
-2. Build docker image for local usage `docker build -t isr . -f Dockerfile.cpu`
-
-In order to train remotely on **AWS EC2** with GPU
-
-3. Install [Docker Machine](https://docs.docker.com/machine/install-machine/)
-
-4. Install [AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
-
-5. Set up an EC2 instance for training with GPU support. You can follow our [nvidia-docker-keras](https://github.com/idealo/nvidia-docker-keras) project to get started
-
-## Predict
-Place your images (`png`, `jpg`) under `data/input/<data name>`, the results will be saved under `/data/output/<data name>/<model>/<training setting>`.
-
-NOTE: make sure that your images only have 3 layers (the `png` format allows for 4).
-
-Check the configuration file `config.yml` for more information on parameters and default folders.
-
-The `--default` flag in the run command will tell the program to load the weights specified in `config.yml`. It is possible though to iteratively select any option from the command line.
-
-### Predict locally
-From the main folder run
-```
-docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/weights/:/home/isr/weights -it isr --predict --default --config config.yml
-```
-### Predict on AWS with nvidia-docker
-From the remote machine run (using our [DockerHub image](https://hub.docker.com/r/idealo/image-super-resolution-gpu/))
-```
-sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/weights/:/home/isr/weights -it idealo/image-super-resolution --predict --default --config config.yml
-```
-
-## Train
-Train either locally with (or without) Docker, or on the cloud with `nvidia-docker` and AWS.
-
-Add you training set, including training and validation Low Res and High Res folders, under `training_sets` in `config.yml`.
-
-### Train on AWS with GPU support using nvidia-docker
-To train with the default settings set in `config.yml` follow these steps:
-1. From the main folder run ```bash scripts/setup.sh -m <name-of-ec2-instance> -b -i -u -d <data_name>```.
-2. ssh into the machine ```docker-machine ssh <name-of-ec2-instance>```
-3. Run training with ```sudo nvidia-docker run -v $(pwd)/isr/data/:/home/isr/data -v $(pwd)/isr/logs/:/home/isr/logs -v $(pwd)/isr/weights/:/home/isr/weights -it isr --training --default --config config.yml```
-
-`<data_name>` is the name of the folder containing your dataset. It must be under `./data/<data_name>`.
-
-
-#### Tensorboard
-The log folder is mounted on the docker image. Open another EC2 terminal and run
-```
-tensorboard --logdir /home/ubuntu/isr/logs
-```
-and locally
-```
-docker-machine ssh <name-of-ec2-instance> -N -L 6006:localhost:6006
-```
-
-#### Notes
-A few helpful details
-- <b>DO NOT</b> include a Tensorflow version in ```requirements.txt``` as it would interfere with the version installed in the Tensorflow docker image
-- <b>DO NOT</b> use ```Ubuntu Server 18.04 LTS``` AMI. Use the ```Ubuntu Server 16.04 LTS``` AMI instead
-
-### Train locally
-#### Train locally with docker
-From the main project folder run
-```
-docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/logs/:/home/isr/logs -v $(pwd)/weights/:/home/isr/weights -it isr --train --default --config config.yml
-```
-
 ## Installation
 There are two ways to install the Image Super-Resolution package:
 
@@ -148,15 +75,88 @@ cd image-super-resolution
 python setup.py install
 ```
 
-## Unit Testing
-From the `root` directory run
-```
-pip install -e .[tests]
-pytest -vs --cov=ISR --show-capture=no --disable-pytest-warnings tests/
+## Usage
+
+### Prediction
+
+Load image and prepare it
+```python
+import numpy as np
+from PIL import Image
+
+img = Image.open('data/input/test_images/sample_image.jpg')
+lr_img = np.array(img)/255.
+lr_img = np.expand_dims(lr_img, axis=0)
 ```
 
-## Changelog
-- v2: added deep features from VGG19 and a discriminator for GAN training. Moved all non strictly architecture building operations outside of the model files. The models are combined when needed in the Trainer class. In order to allow for GAN training `fit_generator` function had to be replaced with the more granular `train_on_batch`. Now the project relies on custom data handlers and loggers instead of the custom Keras generator.
+Load model and run prediction
+```python
+from ISR.models.rdn import RDN
+
+rdn = RDN(arch_params={'C':6, 'D':20, 'G':64, 'G0':64, 'x':2})
+rdn.model.load_weights('weights/rdn-C6-D20-G64-G064-x2_enhanced-e219.hdf5')
+
+sr_img = rdn.model.predict(lr_img)[0]
+sr_img = sr_img.clip(0, 1) * 255
+sr_img = np.uint8(sr_img)
+Image.fromarray(sr_img)
+```
+
+### Training
+
+Create the models
+```python
+from ISR.models.rrdn import RRDN
+from ISR.models.discriminator import Discriminator
+from ISR.models.cut_vgg19 import Cut_VGG19
+
+lr_train_patch_size = 40
+layers_to_extract = [5, 9]
+scale = 2
+hr_train_patch_size = lr_train_patch_size * scale
+
+rrdn  = RRDN(arch_params={'C':4, 'D':3, 'G':64, 'G0':64, 'T':10, 'x':scale}, patch_size=lr_train_patch_size)
+f_ext = Cut_VGG19(patch_size=hr_train_patch_size, layers_to_extract=layers_to_extract)
+discr = Discriminator(patch_size=hr_train_patch_size, kernel_size=3)
+```
+
+Create a Trainer object and give it the models
+```python
+from ISR.trainer.trainer import Trainer
+loss_weights = {
+  'generator': 0.0,
+  'feat_extr': 0.0833,
+  'discriminator': 0.01
+}
+trainer = Trainer(
+    generator=rrdn,
+    discriminator=discr,
+    feature_extractor=f_ext,
+    lr_train_dir='low_res/training/images',
+    hr_train_dir='high_res/training/images',
+    lr_valid_dir='low_res/validation/images',
+    hr_valid_dir='high_res/validation/images',
+    loss_weights=loss_weights,
+    dataname='image_dataset',
+    logs_dir='./logs',
+    weights_dir='./weights',
+    weights_generator=None,
+    weights_discriminator=None,
+    n_validation=40,
+    lr_decay_frequency=30,
+    lr_decay_factor=0.5,
+    T=0.01,
+)
+```
+
+Start training
+```python
+trainer.train(
+    epochs=80,
+    steps_per_epoch=500,
+    batch_size=16,
+)
+```
 
 ## Additional Information
 ### RDN Network architecture
@@ -199,7 +199,7 @@ We welcome all kinds of contributions, models trained on different datasets, new
 
 Will publish the performances of new models in this repository.
 
-See [CONTRIBUTING](CONTRIBUTING.md) for more details.
+See the [Contribution](CONTRIBUTING.md) guide for more details.
 
 ## Citation
 Please cite our work in your publications if it helps your research.
