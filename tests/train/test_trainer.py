@@ -7,7 +7,7 @@ from copy import copy
 from ISR.models.cut_vgg19 import Cut_VGG19
 from ISR.models.discriminator import Discriminator
 from ISR.models.rrdn import RRDN
-from ISR.trainer.trainer import Trainer
+from ISR.train.trainer import Trainer
 from unittest.mock import patch, Mock
 
 

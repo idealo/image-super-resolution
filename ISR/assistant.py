@@ -26,7 +26,7 @@ def run(config_file, default=False, training=False, prediction=False):
         pr_h.get_predictions(gen, conf['weights_paths']['generator'])
 
     elif session_type == 'training':
-        from ISR.trainer.trainer import Trainer
+        from ISR.train.trainer import Trainer
 
         hr_patch_size = lr_patch_size * scale
         if conf['default']['feat_ext']:
@@ -76,7 +76,7 @@ def run(config_file, default=False, training=False, prediction=False):
 if __name__ == '__main__':
     args = parse_args()
     np.random.seed(1000)
-    run(
+    assistant(
         config_file=args['config_file'],
         default=args['default'],
         training=args['training'],

@@ -2,7 +2,7 @@ import logging
 import os
 import unittest
 import yaml
-from ISR import run
+from ISR import assistant
 from unittest.mock import patch, Mock
 
 
@@ -74,16 +74,20 @@ class RunFunctionTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @patch('ISR.run._get_module', return_value=Object())
-    @patch('ISR.trainer.trainer.Trainer', return_value=Object())
+    @patch('ISR.assistant._get_module', return_value=Object())
+    @patch('ISR.train.trainer.Trainer', return_value=Object())
     def test_run_arguments_trainer(self, trainer, _get_module):
         with patch('yaml.load', return_value=self.conf):
-            run.run(config_file='tests/data/config.yml', training=True, prediction=False, default=True)
+            assistant.run(
+                config_file='tests/data/config.yml', training=True, prediction=False, default=True
+            )
             trainer.assert_called_once()
 
-    @patch('ISR.run._get_module', return_value=Object())
+    @patch('ISR.assistant._get_module', return_value=Object())
     @patch('ISR.predict.predictor.Predictor', return_value=Object())
     def test_run_arguments_predictor(self, predictor, _get_module):
         with patch('yaml.load', return_value=self.conf):
-            run.run(config_file='tests/data/config.yml', training=False, prediction=True, default=True)
+            assistant.run(
+                config_file='tests/data/config.yml', training=False, prediction=True, default=True
+            )
             predictor.assert_called_once()
