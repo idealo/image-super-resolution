@@ -13,16 +13,16 @@ class Predictor:
     Can receive a path for the weights or can let the user browse through the
     weights directory for the desired weights.
 
-    args:
+    Args:
         input_dir: string, path to the input directory.
         output_dir: string, path to the output directory.
         verbose: bool.
 
-    attributes:
+    Attributes:
         extensions: list of accepted image extensions.
         img_ls: list of image files in input_dir.
 
-    methods:
+    Methods:
         get_predictions: given a model and a string containing the weights' path,
             runs the predictions on the images contained in the input directory and
             stores the results in the output directory.

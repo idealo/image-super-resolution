@@ -17,11 +17,11 @@ class Trainer:
 
     Takes as input a generator that produces SR images.
     Conditionally, also a discriminator network and a feature extractor
-        to build the compontents of the perceptual loss.
+        to build the components of the perceptual loss.
     Compiles the model(s) and trains in a GANS fashion if a discriminator is provided, otherwise
     carries a regular ISR training.
 
-    args:
+    Args:
         generator: Keras model, the super-scaling, or generator, network.
         discriminator: Keras model, the discriminator network for the adversarial
             component of the perceptual loss.
@@ -46,7 +46,7 @@ class Trainer:
         lr_decay_frequency: integer, every how many epochs the learning rate is reduced.
         lr_decay_factor: 0 < float <1, learning rate reduction multiplicative factor.
 
-    methods:
+    Methods:
         train: combines the networks and triggers training with the specified settings.
 
     """

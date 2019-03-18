@@ -4,9 +4,9 @@ from ISR.utils.logger import get_logger
 
 
 class TrainerHelper:
-    """Collection of userful functions to manage training sessions.
+    """Collection of useful functions to manage training sessions.
 
-    args:
+    Args:
         generator: Keras model, the super-scaling, or generator, network.
         logs_dir: path to the directory where the tensorboard logs are saved.
         weights_dir: path to the directory where the weights are saved.
@@ -23,7 +23,7 @@ class TrainerHelper:
             weights saving the weights are despite no metric improvement.
 
 
-    methods:
+    Methods:
         print_training_setting: see docstring.
         on_epoch_end: see docstring.
         epoch_n_from_weights_name: see docstring.

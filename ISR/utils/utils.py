@@ -89,7 +89,7 @@ def browse_weights(weights_dir, model='generator'):
 def setup(config_file='config.yml', default=False, training=False, prediction=False):
     """CLI interface to set up the training or prediction session.
 
-    Takes as input the configuration file path (minus the '.py' extection)
+    Takes as input the configuration file path (minus the '.py' extension)
     and arguments parse from CLI.
     """
 

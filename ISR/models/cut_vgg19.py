@@ -15,7 +15,7 @@ class Cut_VGG19:
         patch_size: integer, defines the size of the input (patch_size x patch_size).
 
     Attributes:
-        loss_model: multi-output vgg architecure with <layers_to_extract> as output layers.
+        loss_model: multi-output vgg architecture with <layers_to_extract> as output layers.
     """
 
     def __init__(self, patch_size, layers_to_extract):

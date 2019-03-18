@@ -14,14 +14,14 @@ nav:
         - RDN: models/rdn.md
         - RRDN: models/rrdn.md
       - Predict: predict/predictor.md
-      - Trainer: trainer/trainer.md
+      - Train: train/trainer.md
       - Utils:
         - Data Handler: utils/datahandler.md
         - Logger: utils/logger.md
         - Metrics: utils/metrics.md
         - Train Helper: utils/train_helper.md
         - Utils: utils/utils.md
-      - Run: run.md
+      - Assistant: assistant.md
     - Contribution: CONTRIBUTING.md
     - License: LICENSE.md
 theme:

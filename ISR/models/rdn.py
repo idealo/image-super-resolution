@@ -17,7 +17,7 @@ class RDN:
 
     The network is the one described in https://arxiv.org/abs/1802.08797 (Zhang et al. 2018).
 
-    args:
+    Args:
         arch_params: dictionary, contains the network parameters C, D, G, G0, x.
         patch_size: integer or None, determines the input size. Only needed at
             training time, for prediction is set to None.
@@ -26,7 +26,7 @@ class RDN:
         upscaling: string, 'ups' or 'shuffle', determines which implementation
             of the upscaling layer to use.
 
-    attributes:
+    Attributes:
         C: integer, number of conv layer inside each residual dense blocks (RDB).
         D: integer, number of RDBs.
         G: integer, number of convolution output filters inside the RDBs.

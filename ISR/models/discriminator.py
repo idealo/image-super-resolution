@@ -9,11 +9,11 @@ class Discriminator:
     Implementation of the discriminator network for the adversarial
     component of the perceptual loss.
 
-    args:
+    Args:
         patch_size: integer, determines input size as (patch_size, patch_size, 3).
         kernel_size: size of the kernel in the conv blocks.
 
-    attributes:
+    Attributes:
         model: Keras model.
         name: name used to identify what discriminator is used during GANs training.
         model.name: identifies this network as the discriminator network

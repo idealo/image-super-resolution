@@ -6,7 +6,7 @@ from ISR.utils.logger import get_logger
 
 class DataHandler:
     """
-    DataHandler generate agumented batches used for training or validation.
+    DataHandler generate augmented batches used for training or validation.
 
     Args:
         lr_dir: directory containing the Low Res images.
@@ -145,7 +145,7 @@ class DataHandler:
     def get_batch(self, batch_size, idx=None):
         """
         Returns a dictionary with keys ('lr', 'hr') containing training batches
-        of Low Res and Highr Res image patches.
+        of Low Res and High Res image patches.
         """
 
         if not idx:
