@@ -4,7 +4,32 @@ from ISR.utils.logger import get_logger
 
 
 class TrainerHelper:
-    """ Collection of userful functions to manage training sessions. """
+    """Collection of userful functions to manage training sessions.
+
+    args:
+        generator: Keras model, the super-scaling, or generator, network.
+        logs_dir: path to the directory where the tensorboard logs are saved.
+        weights_dir: path to the directory where the weights are saved.
+        lr_train_dir: path to the directory containing the Low-Res images.
+        feature_extractor: Keras model, feature extractor network for the deep features
+            component of perceptual loss function.
+        discriminator: Keras model, the discriminator network for the adversarial
+            component of the perceptual loss.
+        dataname: string, used to identify what dataset is used for the training session.
+        pretrained_weights_path: dictionary, contains the paths, if any to the
+            pre-trained generator's and to the pre-trained discriminator's weights,
+            for transfer learning.
+        fallback_save_every_n_epochs: integer, determines after how many epochs that did not trigger
+            weights saving the weights are despite no metric improvement.
+
+
+    methods:
+        print_training_setting: see docstring.
+        on_epoch_end: see docstring.
+        epoch_n_from_weights_name: see docstring.
+        initialize_training: see docstring.
+
+    """
 
     def __init__(
         self,
@@ -227,7 +252,7 @@ class TrainerHelper:
 
     def initialize_training(self, object):
         """Function that is exectured prior to training.
-        
+
         Wraps up most of the functions of this class:
         load the weights if any are given, generaters names for session and weights,
         creates directories and prints the training session.

@@ -13,6 +13,31 @@ def make_model(arch_params, patch_size):
 
 
 class RDN:
+    """Implementation of the Residual Dense Network for image super-scaling.
+
+    The network is the one described in https://arxiv.org/abs/1802.08797 (Zhang et al. 2018).
+
+    args:
+        arch_params: dictionary, contains the network parameters C, D, G, G0, x.
+        patch_size: integer or None, determines the input size. Only needed at
+            training time, for prediction is set to None.
+        c_dim: integer, number of channels of the input image.
+        kernel_size: integer, common kernel size for convolutions.
+        upscaling: string, 'ups' or 'shuffle', determines which implementation
+            of the upscaling layer to use.
+
+    attributes:
+        C: integer, number of conv layer inside each residual dense blocks (RDB).
+        D: integer, number of RDBs.
+        G: integer, number of convolution output filters inside the RDBs.
+        G0: integer, number of output filters of each RDB.
+        x: integer, the scaling factor.
+        model: Keras model of the RDN.
+        name: name used to identify what upscaling network is used during training.
+        model.name: identifies this network as the generator network
+            in the compound model built by the trainer class.
+    """
+
     def __init__(self, arch_params={}, patch_size=None, c_dim=3, kernel_size=3, upscaling='ups'):
         self.params = arch_params
         self.C = self.params['C']

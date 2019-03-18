@@ -8,11 +8,24 @@ from ISR.utils.logger import get_logger
 class Predictor:
     """The predictor class handles prediction, given an input model.
 
-    Reads input files from the folder specified in config.json.
-    Saves results in output folder specified in config.json.
-
+    Loads the images in the input directory, executes training given a model
+    and saves the results in the output directory.
     Can receive a path for the weights or can let the user browse through the
     weights directory for the desired weights.
+
+    args:
+        input_dir: string, path to the input directory.
+        output_dir: string, path to the output directory.
+        verbose: bool.
+
+    attributes:
+        extensions: list of accepted image extensions.
+        img_ls: list of image files in input_dir.
+
+    methods:
+        get_predictions: given a model and a string containing the weights' path,
+            runs the predictions on the images contained in the input directory and
+            stores the results in the output directory.
     """
 
     def __init__(self, input_dir, output_dir='./data/output', verbose=True):

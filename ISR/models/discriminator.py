@@ -5,7 +5,23 @@ from keras.optimizers import Adam
 
 
 class Discriminator:
-    """ Implementation of the discriminator network for a GAN approach to ISR. """
+    """
+    Implementation of the discriminator network for the adversarial
+    component of the perceptual loss.
+
+    args:
+        patch_size: integer, determines input size as (patch_size, patch_size, 3).
+        kernel_size: size of the kernel in the conv blocks.
+
+    attributes:
+        model: Keras model.
+        name: name used to identify what discriminator is used during GANs training.
+        model.name: identifies this network as the discriminator network
+            in the compound model built by the trainer class.
+        block_param: dictionary, determines the number of filters and the strides for each
+            conv block.
+
+    """
 
     def __init__(self, patch_size, kernel_size=3):
         self.patch_size = patch_size
@@ -36,7 +52,7 @@ class Discriminator:
         return x
 
     def _build_disciminator(self):
-        """ Puts the Discriminator's layers together. """
+        """ Puts the discriminator's layers together. """
 
         HR = Input(shape=(self.patch_size, self.patch_size, 3))
         x = self._conv_block(HR, filters=64, strides=1, batch_norm=False, count=1)

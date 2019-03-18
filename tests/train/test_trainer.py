@@ -50,7 +50,7 @@ class TrainerClassTest(unittest.TestCase):
                     lr_valid_dir={'res': 'lr', 'matching': True},
                     hr_valid_dir={'res': 'hr', 'matching': True},
                     learning_rate=0.0004,
-                    loss_weights={'generator': 1.0, 'discriminator': 1.0, 'feat_extr': 1.0},
+                    loss_weights={'MSE': 1.0, 'discriminator': 1.0, 'feat_extr': 1.0},
                     logs_dir='./tests/temporary_test_data/logs',
                     weights_dir='./tests/temporary_test_data/weights',
                     dataname='TEST',

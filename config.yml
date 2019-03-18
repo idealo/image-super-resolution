@@ -28,7 +28,7 @@ generators:
     G0: 64
     x: 2
 loss_weights:
-  generator: 1
+  MSE: 1
   feat_extr: 0.0833
   discriminator: 0.01
 session:

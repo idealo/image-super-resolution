@@ -15,32 +15,62 @@ from ISR.utils.logger import get_logger
 class Trainer:
     """Class object to setup and carry the training.
 
-    Takes as input a generator that produces SR images. Conditionally, also
-    a discriminator network and a feature extractor.
+    Takes as input a generator that produces SR images.
+    Conditionally, also a discriminator network and a feature extractor
+        to build the compontents of the perceptual loss.
     Compiles the model(s) and trains in a GANS fashion if a discriminator is provided, otherwise
     carries a regular ISR training.
+
+    args:
+        generator: Keras model, the super-scaling, or generator, network.
+        discriminator: Keras model, the discriminator network for the adversarial
+            component of the perceptual loss.
+        feature_extractor: Keras model, feature extractor network for the deep features
+            component of perceptual loss function.
+        lr_train_dir: path to the directory containing the Low-Res images for training.
+        hr_train_dir: path to the directory containing the High-Res images for training.
+        lr_valid_dir: path to the directory containing the Low-Res images for validation.
+        hr_valid_dir: path to the directory containing the High-Res images for validation.
+        learning_rate: float.
+        loss_weights: dictionary, use to weigh the components of the loss function.
+            Contains 'MSE' for the MSE loss component, and can contain 'discriminator' and 'feat_extr'
+            for the discriminator and deep features components respectively.
+        logs_dir: path to the directory where the tensorboard logs are saved.
+        weights_dir: path to the directory where the weights are saved.
+        dataname: string, used to identify what dataset is used for the training session.
+        weights_generator: path to the pre-trained generator's weights, for transfer learning.
+        weights_discriminator: path to the pre-trained discriminator's weights, for transfer learning.
+        n_validation:integer, number of validation samples used at training from the validation set.
+        T: 0 < float <1, determines the 'flatness' threshold level for the training patches.
+            See the TrainerHelper class for more details.
+        lr_decay_frequency: integer, every how many epochs the learning rate is reduced.
+        lr_decay_factor: 0 < float <1, learning rate reduction multiplicative factor.
+
+    methods:
+        train: combines the networks and triggers training with the specified settings.
+
     """
 
     def __init__(
-            self,
-            generator,
-            discriminator,
-            feature_extractor,
-            lr_train_dir,
-            hr_train_dir,
-            lr_valid_dir,
-            hr_valid_dir,
-            learning_rate=0.0004,
-            loss_weights={'generator': 1.0},
-            logs_dir='logs',
-            weights_dir='weights',
-            dataname=None,
-            weights_generator=None,
-            weights_discriminator=None,
-            n_validation=None,
-            T=0.01,
-            lr_decay_frequency=100,
-            lr_decay_factor=0.5,
+        self,
+        generator,
+        discriminator,
+        feature_extractor,
+        lr_train_dir,
+        hr_train_dir,
+        lr_valid_dir,
+        hr_valid_dir,
+        learning_rate=0.0004,
+        loss_weights={'MSE': 1.0},
+        logs_dir='logs',
+        weights_dir='weights',
+        dataname=None,
+        weights_generator=None,
+        weights_discriminator=None,
+        n_validation=None,
+        T=0.01,
+        lr_decay_frequency=100,
+        lr_decay_factor=0.5,
     ):
         if discriminator:
             assert generator.patch_size * generator.scale == discriminator.patch_size
@@ -102,7 +132,7 @@ class Trainer:
         sr = self.generator.model(lr)
         outputs = [sr]
         losses = ['mse']
-        loss_weights = [self.loss_weights['generator']]
+        loss_weights = [self.loss_weights['MSE']]
         if self.discriminator:
             self.discriminator.model.trainable = False
             validity = self.discriminator.model(sr)

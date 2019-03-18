@@ -6,15 +6,16 @@ from ISR.utils.logger import get_logger
 
 class Cut_VGG19:
     """
-    Class object that fetches the pre trained VGG19 model
-    and declares <layers_to_extract> as output layers.
+    Class object that fetches keras' VGG19 model trained on the imagenet dataset
+    and declares <layers_to_extract> as output layers. Used as feature extractor
+    for the perceptual loss function.
 
     Args:
         layers_to_extract: list of layers to be declared as output layers.
         patch_size: integer, defines the size of the input (patch_size x patch_size).
 
     Attributes:
-        loss_model: multi-output vgg architecure with <layers_to_extract> as output layers. 
+        loss_model: multi-output vgg architecure with <layers_to_extract> as output layers.
     """
 
     def __init__(self, patch_size, layers_to_extract):
