@@ -93,7 +93,7 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
     and arguments parse from CLI.
     """
 
-    conf = yaml.load(open(config_file, 'r'))
+    conf = yaml.load(open(config_file, 'r'), Loader=yaml.FullLoader)
     if training:
         session_type = 'training'
     elif prediction:
@@ -104,7 +104,7 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
     if default:
         all_default = 'y'
     else:
-        all_default = input('Default options for everything? (y/[n])')
+        all_default = input('Default options for everything? (y/[n]) ')
 
     if all_default == 'y':
         generator = conf['default']['generator']

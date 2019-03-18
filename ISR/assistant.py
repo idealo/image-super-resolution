@@ -76,7 +76,7 @@ def run(config_file, default=False, training=False, prediction=False):
 if __name__ == '__main__':
     args = parse_args()
     np.random.seed(1000)
-    assistant(
+    run(
         config_file=args['config_file'],
         default=args['default'],
         training=args['training'],

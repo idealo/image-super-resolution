@@ -8,15 +8,26 @@ echo ""
 train_flag=""
 prediction_flag=""
 default_flag=""
+config_file=""
 
-for var in "$@"; do
-  if [ $var = "--training" ]; then
-    train_flag=$var
-  elif [ $var = "--prediction" ]; then
-    prediction_flag=$var
-  elif [ $var = "--default" ]; then
-    default_flag=$var
-  fi
+print_usage() {
+  printf "Usage:"
+  printf "-c : configuration file path "
+  printf "-t : training session "
+  printf "-p : prediction session "
+  printf "-d : load default values defined in config file "
+}
+
+while getopts 'ptdc:' flag; do
+  case "${flag}" in
+    c) config_file="--config ${OPTARG}" ;;
+    t) train_flag="--training" ;;
+    p) prediction_flag="--prediction" ;;
+    d) default_flag="--default" ;;
+    *) print_usage
+       exit 1 ;;
+  esac
 done
 
-python3 $main_dir/ISR/run.py $train_flag $prediction_flag $default_flag
+
+python3 $main_dir/ISR/assistant.py $train_flag $prediction_flag $default_flag $config_file

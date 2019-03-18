@@ -32,7 +32,7 @@ class Predictor:
         # Create results folder
         if not os.path.exists(self.output_dir):
             self.logger.info('Creating output directory:\n{}'.format(self.output_dir))
-            os.mkdir(self.output_dir)
+            os.makedirs(self.output_dir, exist_ok=True)
 
     def _load_weights(self):
         """ Invokes the model's load weights function if any weights are provided. """
