@@ -134,23 +134,21 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
                 conf['generators'][generator][param] = value
         else:
             logger.info('Default {} parameters.'.format(generator))
-    elif (load_weights == 'd') and (conf['weights_paths'][generator]):
+    elif (load_weights == 'd') and (conf['weights_paths']['generator']):
         logger.info('Loading default weights for {}'.format(generator))
-        logger.info(conf['weights_paths'][generator])
+        logger.info(conf['weights_paths']['generator'])
         conf['generators'][generator] = get_config_from_weights(
             conf['weights_paths']['generator'], conf['generators'][generator], generator
         )
     else:
-        conf['weights_paths'][generator] = browse_weights(conf['dirs']['weights'], generator)
-        conf['generators'][generator] = get_config_from_weights(
+        conf['weights_paths']['generator'] = browse_weights(conf['dirs']['weights'], generator)
+        conf['generators']['generator'] = get_config_from_weights(
             conf['weights_paths']['generator'], conf['generators'][generator], generator
         )
-
     logger.info('{} parameters:'.format(generator))
     logger.info(conf['generators'][generator])
-
     if session_type == 'training':
-        use_discr = input('Use GAN? (y/[n]) ')
+        use_discr = input('Use an Adversarial Network? (y/[n]) ')
         if use_discr == 'y':
             conf['default']['discriminator'] = True
             discr_w = input('Use pretrained discriminator weights? (y/[n]) ')
@@ -162,7 +160,6 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
         use_feat_ext = input('Use feature extractor? (y/[n]) ')
         if use_feat_ext == 'y':
             conf['default']['feat_ext'] = True
-
     dataset = select_dataset(session_type, conf)
 
     return session_type, generator, conf, dataset
