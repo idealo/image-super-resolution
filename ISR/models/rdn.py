@@ -1,6 +1,7 @@
 import tensorflow as tf
 from keras.layers import concatenate, Input, Activation, Add, Conv2D, Lambda, UpSampling2D
 from keras.models import Model
+from ISR.models.imagemodel import ImageModel
 
 
 def make_model(arch_params, patch_size):
@@ -12,7 +13,7 @@ def make_model(arch_params, patch_size):
     return RDN(arch_params, patch_size)
 
 
-class RDN:
+class RDN(ImageModel):
     """Implementation of the Residual Dense Network for image super-scaling.
 
     The network is the one described in https://arxiv.org/abs/1802.08797 (Zhang et al. 2018).

@@ -3,6 +3,7 @@ import os
 import numpy as np
 from time import time
 from ISR.utils.logger import get_logger
+from ISR.utils.image_processing import process_array, process_output
 
 
 class Predictor:
@@ -93,11 +94,9 @@ class Predictor:
     def _forward_pass(self, file_path):
         lr_img = imageio.imread(file_path)
         if lr_img.shape[2] == 3:
-            lr_img = lr_img / 255.0
-            lr_img = np.expand_dims(lr_img, axis=0)
+            lr_img = process_array(lr_img)
             sr_img = self.model.model.predict(lr_img)
-            sr_img = sr_img[0].clip(0, 1) * 255
-            sr_img = np.uint8(sr_img)
+            sr_img = process_output(sr_img)
             return sr_img
         else:
             self.logger.error('{} is not an image with 3 channels.'.format(file_path))
