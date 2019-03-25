@@ -3,15 +3,17 @@
 
 1. Install [Docker](https://docs.docker.com/install/)
 
-2. Build docker image for local usage `docker build -t isr . -f Dockerfile.cpu`
+2. Clone our repository: `git clone https://github.com/idealo/image-super-resolution` and cd into it
+
+3. Build docker image for local usage `docker build -t isr . -f Dockerfile.cpu`
 
 In order to train remotely on **AWS EC2** with GPU
 
-3. Install [Docker Machine](https://docs.docker.com/machine/install-machine/)
+4. Install [Docker Machine](https://docs.docker.com/machine/install-machine/)
 
-4. Install [AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
+5. Install [AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 
-5. Set up an EC2 instance for training with GPU support. You can follow our [nvidia-docker-keras](https://github.com/idealo/nvidia-docker-keras) project to get started
+6. Set up an EC2 instance for training with GPU support. You can follow our [nvidia-docker-keras](https://github.com/idealo/nvidia-docker-keras) project to get started
 
 ## Prediction
 Place your images (`png`, `jpg`) under `data/input/<data name>`, the results will be saved under `/data/output/<data name>/<model>/<training setting>`.

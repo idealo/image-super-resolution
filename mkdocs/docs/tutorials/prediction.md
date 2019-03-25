@@ -37,7 +37,7 @@ Create the RDN model, for which we provide pre-trained weights, and load them.<b
 Choose amongst the available model weights, compare the output if you wish.
 
 ```python
-from ISR.models.rdn import RDN
+from ISR.models import RDN
 ```
 ##### Large RDN model
 
@@ -135,7 +135,7 @@ Image.fromarray(sr_img)
 You can also use the predictor class to run the model on entire folders.  To do so you first need to create an output folder to collect your results, in this case `data/output`:
 
 ```python
-from ISR.predict.predictor import Predictor
+from ISR.predict import Predictor
 predictor = Predictor(input_dir='data/input/test_images/', output_dir='data/output')
 predictor.get_predictions(model=rdn, weights_path='weights/rdn-C6-D20-G64-G064-x2_enhanced-e219.hdf5')
 ```

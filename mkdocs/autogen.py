@@ -62,12 +62,13 @@ def parse_func_string(comment):
     if comment is None or len(comment) == 0:
         return {}
     comments = {}
-    paras = ('Args', 'Attributes', 'Returns', 'Raises')
+    paras = ('Args', 'Attributes', 'Methods', 'Returns', 'Raises')
     comment_parts = [
         'short_description',
         'long_description',
         'Args',
         'Attributes',
+        'Methods',
         'Returns',
         'Raises',
     ]
@@ -117,7 +118,9 @@ def parse_func_string(comment):
             elif start_with.startswith(paras[2]):
                 comments[paras[2]] = change_args_to_dict(part)
             elif start_with.startswith(paras[3]):
-                comments[paras[3]] = part
+                comments[paras[3]] = change_args_to_dict(part)
+            elif start_with.startswith(paras[4]):
+                comments[paras[4]] = part
             ind = skip_space_line(parts, ind)
         else:
             ind += 1
@@ -149,6 +152,11 @@ def to_md(comment_dict):
     if 'Attributes' in comment_dict and comment_dict['Attributes'] is not None:
         doc += '##### Attributes\n'
         for arg, des in comment_dict['Attributes'].items():
+            doc += '* **' + arg + '**: ' + des + '\n\n'
+
+    if 'Methods' in comment_dict and comment_dict['Methods'] is not None:
+        doc += '##### Methods\n'
+        for arg, des in comment_dict['Methods'].items():
             doc += '* **' + arg + '**: ' + des + '\n\n'
 
     if 'Returns' in comment_dict and comment_dict['Returns'] is not None:
@@ -201,7 +209,8 @@ def get_comments_str(file_name):
         file_contents = fd.read()
     module = ast.parse(file_contents)
 
-    function_definitions = [node for node in module.body if isinstance(node, ast.FunctionDef)]
+    function_definitions = [node for node in module.body if
+                            isinstance(node, ast.FunctionDef) and (node.name[0] != '_' or node.name[:2] == '__')]
 
     doc = get_func_comments(function_definitions)
 

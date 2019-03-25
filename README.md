@@ -125,11 +125,13 @@ discr = Discriminator(patch_size=hr_train_patch_size, kernel_size=3)
 Create a Trainer object and give it the models
 ```python
 from ISR.train import Trainer
+
 loss_weights = {
   'generator': 0.0,
   'feat_extr': 0.0833,
-  'discriminator': 0.01
+  'discriminator': 0.01,
 }
+
 trainer = Trainer(
     generator=rrdn,
     discriminator=discr,
