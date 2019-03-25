@@ -7,7 +7,9 @@
 
 The goal of this project is to upscale and improve the quality of low resolution images.
 
-It includes the Keras implementations of:
+This project contains Keras implementations of different Residual Dense Networks for Single Image Super-Resolution (ISR) as well as scripts to train these networks using content and adversarial loss components.  
+
+The implemented networks include:
 
 - The super-scaling Residual Dense Network described in [Residual Dense Network for Image Super-Resolution](https://arxiv.org/abs/1802.08797) (Zhang et al. 2018)
 - The super-scaling Residual in Residual Dense Network described in [ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks](https://arxiv.org/abs/1809.00219) (Wang et al. 2018)
@@ -43,25 +45,25 @@ The original low resolution image (left), the super scaled output of the network
 <br>
 <img src="figures/basket_comparison_SR_baseline.png">
 
-Below a sample output of the RDN network re-trained on the weights provided in the repo to achieve artefact removal and detail enhancement. For the follow up training session we used a combination of artefact removing strategies and a few forms of a perceptual loss, using combinations of the deep features of the VGG19 and the GAN's discriminator network.
+Below a comparison of dfferent methods on a noisy image: the baseline, bicubic scaling; the RDN network trained using a pixel-wise content loss; the same network re-trained on a compressed dataset using VGG19-content and adversarial components for the loss. The weights used here are available in this repo.
 
-<center>
+<p align="center">
 <figure>
-  <img src="figures/ISR-reference.png" alt="my alt text"/>
+  <img src="figures/ISR-reference.png"/>
   <figcaption>Bicubic up-scaling (baseline).</figcaption>
 </figure>
 
 
 <figure>
-  <img src="figures/ISR-vanilla-RDN.png" alt="my alt text"/>
-  <figcaption>ISR standard.</figcaption>
+  <img src="figures/ISR-vanilla-RDN.png"/>
+  <figcaption>RDN trained with pixel-wise content loss.</figcaption>
 </figure>
 
 <figure>
-  <img src="figures/ISR-gans-vgg.png" alt="my alt text"/>
-  <figcaption>ISR with artefact removal and VGG+GAN perceptual loss.</figcaption>
+  <img src="figures/ISR-gans-vgg.png"/>
+  <figcaption>RDN trained with a VGG content and adversarial loss components.</figcaption>
 </figure>
-</center>
+</p>
 
 ## Installation
 There are two ways to install the Image Super-Resolution package:
