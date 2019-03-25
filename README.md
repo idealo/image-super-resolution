@@ -1,4 +1,4 @@
-# Image Super-Resolution
+# Image Super-Resolution (ISR)
 
 <img src="figures/butterfly.png">
 
@@ -7,16 +7,20 @@
 
 The goal of this project is to upscale and improve the quality of low resolution images.
 
-It includes the Keras implementations of:
+This project contains Keras implementations of different Residual Dense Networks for Single Image Super-Resolution (ISR) as well as scripts to train these networks using content and adversarial loss components.  
+
+The implemented networks include:
 
 - The super-scaling Residual Dense Network described in [Residual Dense Network for Image Super-Resolution](https://arxiv.org/abs/1802.08797) (Zhang et al. 2018)
 - The super-scaling Residual in Residual Dense Network described in [ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks](https://arxiv.org/abs/1809.00219) (Wang et al. 2018)
 - A multi-output version of the Keras VGG19 network for deep features extraction used in the perceptual loss
 - A custom discriminator network based on the one described in [Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network](https://arxiv.org/abs/1609.04802) (SRGANS, Ledig et al. 2017)
 
-Docker scripts are available to carry training and testing. Also, we provide scripts to facilitate training on the cloud with AWS and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) with only a few commands.
+Read the full documentation at: https://idealo.github.io/image-super-resolution/
 
-We welcome any kind of contribution. If you wish to contribute, please see the [Contribute](#contribute) section.
+[Docker scripts](https://idealo.github.io/image-super-resolution/tutorials/docker/) and [Google Colab notebooks](https://github.com/idealo/image-super-resolution/tree/master/notebooks) are available to carry training and prediction. Also, we provide scripts to facilitate training on the cloud with AWS and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) with only a few commands.
+
+ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 license. We welcome any kind of contribution. If you wish to contribute, please see the [Contribute](#contribute) section.
 
 ## Contents
 - [Sample Results](#sample-results)
@@ -31,7 +35,7 @@ We welcome any kind of contribution. If you wish to contribute, please see the [
 ## Sample Results
 
 The samples use an upscaling factor of two.
-The weights used to produced these images are available under `sample_weights` (see [Additional Information](#additional-information)).
+The weights used to produced these images are available under `sample_weights` (see [Additional Information](#additional-information)). They are stored on [git lfs](https://git-lfs.github.com/). If you want to download the weights you need to run `git lfs pull` after cloning the repository.  
 
 The original low resolution image (left), the super scaled output of the network (center) and the result of the baseline scaling obtained with GIMP bicubic scaling (right).
 
@@ -41,25 +45,25 @@ The original low resolution image (left), the super scaled output of the network
 <br>
 <img src="figures/basket_comparison_SR_baseline.png">
 
-Below a sample output of the RDN network re-trained on the weights provided in the repo to achieve artefact removal and detail enhancement. For the follow up training session we used a combination of artefact removing strategies and a few forms of a perceptual loss, using combinations of the deep features of the VGG19 and the GAN's discriminator network.
+Below a comparison of dfferent methods on a noisy image: the baseline, bicubic scaling; the RDN network trained using a pixel-wise content loss; the same network re-trained on a compressed dataset using VGG19-content and adversarial components for the loss. The weights used here are available in this repo.
 
-<center>
+<p align="center">
 <figure>
-  <img src="figures/ISR-reference.png" alt="my alt text"/>
+  <img src="figures/ISR-reference.png"/>
   <figcaption>Bicubic up-scaling (baseline).</figcaption>
 </figure>
 
 
 <figure>
-  <img src="figures/ISR-vanilla-RDN.png" alt="my alt text"/>
-  <figcaption>ISR standard.</figcaption>
+  <img src="figures/ISR-vanilla-RDN.png"/>
+  <figcaption>RDN trained with pixel-wise content loss.</figcaption>
 </figure>
 
 <figure>
-  <img src="figures/ISR-gans-vgg.png" alt="my alt text"/>
-  <figcaption>ISR with artefact removal and VGG+GAN perceptual loss.</figcaption>
+  <img src="figures/ISR-gans-vgg.png"/>
+  <figcaption>RDN trained with a VGG content and adversarial loss components.</figcaption>
 </figure>
-</center>
+</p>
 
 ## Installation
 There are two ways to install the Image Super-Resolution package:
@@ -91,7 +95,7 @@ lr_img = np.expand_dims(lr_img, axis=0)
 
 Load model and run prediction
 ```python
-from ISR.models.rdn import RDN
+from ISR.models import RDN
 
 rdn = RDN(arch_params={'C':6, 'D':20, 'G':64, 'G0':64, 'x':2})
 rdn.model.load_weights('weights/rdn-C6-D20-G64-G064-x2_enhanced-e219.hdf5')
@@ -106,9 +110,9 @@ Image.fromarray(sr_img)
 
 Create the models
 ```python
-from ISR.models.rrdn import RRDN
-from ISR.models.discriminator import Discriminator
-from ISR.models.cut_vgg19 import Cut_VGG19
+from ISR.models import RRDN
+from ISR.models import Discriminator
+from ISR.models import Cut_VGG19
 
 lr_train_patch_size = 40
 layers_to_extract = [5, 9]
@@ -122,12 +126,14 @@ discr = Discriminator(patch_size=hr_train_patch_size, kernel_size=3)
 
 Create a Trainer object and give it the models
 ```python
-from ISR.trainer.trainer import Trainer
+from ISR.train import Trainer
+
 loss_weights = {
   'generator': 0.0,
   'feat_extr': 0.0833,
-  'discriminator': 0.01
+  'discriminator': 0.01,
 }
+
 trainer = Trainer(
     generator=rrdn,
     discriminator=discr,

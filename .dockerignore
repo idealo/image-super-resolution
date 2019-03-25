@@ -3,4 +3,4 @@
 !scripts
 !weights/sample_weights/*
 !config.yml
-!requirements.txt
+!setup.py

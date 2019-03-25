@@ -1,5 +1,6 @@
 # ISR Suite: HOW-TO
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/idealo/image-super-resolution/blob/master/notebooks/ISR_Traininig_Tutorial.ipynb)
 
 ## Training
 
@@ -35,9 +36,9 @@ Carefully select:
 Play around with the other architecture parameters
 
 ```python
-from ISR.models.rrdn import RRDN
-from ISR.models.discriminator import Discriminator
-from ISR.models.cut_vgg19 import Cut_VGG19
+from ISR.models import RRDN
+from ISR.models import Discriminator
+from ISR.models import Cut_VGG19
 
 lr_train_patch_size = 40
 layers_to_extract = [5, 9]
@@ -53,12 +54,14 @@ discr = Discriminator(patch_size=hr_train_patch_size, kernel_size=3)
 The Trainer object will combine the networks, manage your training data and keep you up-to-date with the training progress through Tensorboard and the command line.
 
 ```python
-from ISR.trainer.trainer import Trainer
+from ISR.train import Trainer
+
 loss_weights = {
   'generator': 0.0,
   'feat_extr': 0.0833,
-  'discriminator': 0.01
+  'discriminator': 0.01,
 }
+
 trainer = Trainer(
     generator=rrdn,
     discriminator=discr,
