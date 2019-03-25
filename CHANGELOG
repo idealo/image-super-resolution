@@ -4,3 +4,10 @@ The models are combined when needed in the Trainer class.
 In order to allow for GAN training `fit_generator` function had to be replaced
 with the more granular `train_on_batch`. Now the project relies on
 custom data handlers and loggers instead of the custom Keras generator.
+
+- 1.9.2 beta: Included tutorial notebooks, modified init files for less verbose import statements.
+Comprehensive docstrings refactor.
+
+- 2019-03-25 1.9.3 beta: now ISR models are child of the ImageModel class, whose purpose is to collect
+common functions across models. At the moment it only contains a predict function that takes numpy arrays
+as input and returns numpy arrays in a proper image format.

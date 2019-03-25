@@ -2,6 +2,11 @@ from ISR.utils.image_processing import process_array, process_output
 
 
 class ImageModel:
+    """ISR models parent class.
+
+    Contains functions that are common across the super-scaling models.
+    """
+
     def predict(self, input_image_array):
         """
         Processes the image array into a suitable format
