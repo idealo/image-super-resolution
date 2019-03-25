@@ -14,10 +14,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/* \
     apt-get upgrade
 
-COPY requirements.txt /tmp
-RUN pip install --upgrade pip
-RUN pip install -r /tmp/requirements.txt
-
 ENV TENSOR_HOME /home/isr
 WORKDIR $TENSOR_HOME
 
@@ -25,7 +21,10 @@ COPY ISR ./ISR
 COPY scripts ./scripts
 COPY weights ./weights
 COPY config.yml ./
+COPY setup.py ./
 
+RUN pip install --upgrade pip
+RUN pip install -e .
 
 ENV PYTHONPATH ./ISR/:$PYTHONPATH
 ENTRYPOINT ["sh", "./scripts/entrypoint.sh"]

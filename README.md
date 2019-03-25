@@ -35,7 +35,7 @@ ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 licens
 ## Sample Results
 
 The samples use an upscaling factor of two.
-The weights used to produced these images are available under `sample_weights` (see [Additional Information](#additional-information)).
+The weights used to produced these images are available under `sample_weights` (see [Additional Information](#additional-information)). They are stored on [git lfs](https://git-lfs.github.com/). If you want to download the weights you need to run `git lfs pull` after cloning the repository.  
 
 The original low resolution image (left), the super scaled output of the network (center) and the result of the baseline scaling obtained with GIMP bicubic scaling (right).
 

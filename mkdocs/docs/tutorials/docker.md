@@ -3,7 +3,12 @@
 
 1. Install [Docker](https://docs.docker.com/install/)
 
-2. Clone our repository: `git clone https://github.com/idealo/image-super-resolution` and cd into it
+2. Clone our repository, get the sample weights from [git lfs](https://git-lfs.github.com/) and cd into it: 
+```
+git clone https://github.com/idealo/image-super-resolution
+git lfs pull
+cd image-super-resolution
+```
 
 3. Build docker image for local usage `docker build -t isr . -f Dockerfile.cpu`
 
