@@ -1,5 +1,7 @@
 # ISR Suite: HOW-TO
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/idealo/image-super-resolution/blob/master/notebooks/ISR_Prediction_Tutorial.ipynb)
+
 ## Prediction
 
 ### Get the pre-trained weights and data

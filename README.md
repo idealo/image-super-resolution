@@ -1,4 +1,4 @@
-# Image Super-Resolution
+# Image Super-Resolution (ISR)
 
 <img src="figures/butterfly.png">
 
@@ -14,9 +14,11 @@ It includes the Keras implementations of:
 - A multi-output version of the Keras VGG19 network for deep features extraction used in the perceptual loss
 - A custom discriminator network based on the one described in [Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network](https://arxiv.org/abs/1609.04802) (SRGANS, Ledig et al. 2017)
 
-Docker scripts are available to carry training and testing. Also, we provide scripts to facilitate training on the cloud with AWS and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) with only a few commands.
+Read the full documentation at: https://idealo.github.io/image-super-resolution/
 
-We welcome any kind of contribution. If you wish to contribute, please see the [Contribute](#contribute) section.
+[Docker scripts](https://idealo.github.io/image-super-resolution/tutorials/docker/) and [Google Colab notebooks](https://github.com/idealo/image-super-resolution/tree/master/notebooks) are available to carry training and prediction. Also, we provide scripts to facilitate training on the cloud with AWS and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) with only a few commands.
+
+ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 license. We welcome any kind of contribution. If you wish to contribute, please see the [Contribute](#contribute) section.
 
 ## Contents
 - [Sample Results](#sample-results)
@@ -91,7 +93,7 @@ lr_img = np.expand_dims(lr_img, axis=0)
 
 Load model and run prediction
 ```python
-from ISR.models.rdn import RDN
+from ISR.models import RDN
 
 rdn = RDN(arch_params={'C':6, 'D':20, 'G':64, 'G0':64, 'x':2})
 rdn.model.load_weights('weights/rdn-C6-D20-G64-G064-x2_enhanced-e219.hdf5')
@@ -106,9 +108,9 @@ Image.fromarray(sr_img)
 
 Create the models
 ```python
-from ISR.models.rrdn import RRDN
-from ISR.models.discriminator import Discriminator
-from ISR.models.cut_vgg19 import Cut_VGG19
+from ISR.models import RRDN
+from ISR.models import Discriminator
+from ISR.models import Cut_VGG19
 
 lr_train_patch_size = 40
 layers_to_extract = [5, 9]
@@ -122,7 +124,7 @@ discr = Discriminator(patch_size=hr_train_patch_size, kernel_size=3)
 
 Create a Trainer object and give it the models
 ```python
-from ISR.trainer.trainer import Trainer
+from ISR.train import Trainer
 loss_weights = {
   'generator': 0.0,
   'feat_extr': 0.0833,

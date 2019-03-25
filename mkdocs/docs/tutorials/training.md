@@ -1,5 +1,6 @@
 # ISR Suite: HOW-TO
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/idealo/image-super-resolution/blob/master/notebooks/ISR_Traininig_Tutorial.ipynb)
 
 ## Training
 

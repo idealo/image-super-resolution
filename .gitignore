@@ -144,6 +144,6 @@ mkdocs/docs/index.md
 mkdocs/docs/figures/
 mkdocs/docs/models/
 mkdocs/docs/predict/
-mkdocs/docs/run.md
-mkdocs/docs/trainer/
+mkdocs/docs/assistant.md
 mkdocs/docs/utils/
+mkdocs/docs/train/
