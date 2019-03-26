@@ -151,11 +151,11 @@ class TrainerHelper:
         self.logger.info('Saving weights under: {}'.format(self.callback_paths['weights']))
         self.logger.info('Saving tensorboard logs under: {}'.format(self.callback_paths['logs']))
 
-    def _save_weights(self, epoch, generator, discriminator=None, best=False):
+    def _save_weights(self, epoch, generator, discriminator=None, metric=None, best=False):
         """ Saves the weights of the non-None models. """
 
         if best:
-            w_name = 'BEST-' + self.weights_name['generator'].format(epoch=epoch + 1)
+            w_name = 'BEST-' + metric + '-' + self.weights_name['generator'].format(epoch=epoch + 1)
         else:
             w_name = self.weights_name['generator'].format(epoch=epoch + 1)
         gen_path = os.path.join(self.callback_paths['weights'], w_name)
@@ -164,7 +164,12 @@ class TrainerHelper:
         )  # CANT SAVE MODEL DUE TO TF LAYER INSIDE LAMBDA (PIXELSHUFFLE)
         if discriminator:
             if best:
-                w_name = 'BEST-' + self.weights_name['discriminator'].format(epoch=epoch + 1)
+                w_name = (
+                    'BEST-'
+                    + metric
+                    + '-'
+                    + self.weights_name['discriminator'].format(epoch=epoch + 1)
+                )
             else:
                 w_name = self.weights_name['discriminator'].format(epoch=epoch + 1)
             discr_path = os.path.join(self.callback_paths['weights'], w_name)
@@ -202,9 +207,7 @@ class TrainerHelper:
                         # print('remove', os.path.join(self.callback_paths['weights'], w))
                         os.remove(os.path.join(self.callback_paths['weights'], w))
 
-    def on_epoch_end(
-        self, epoch, losses, generator, discriminator=None, metrics={'val_generator_loss': 'min'}
-    ):
+    def on_epoch_end(self, epoch, losses, generator, discriminator=None, metrics={}):
         """
         Manages the operations that are taken at the end of each epoch:
         metric checks, weight saves, logging.
@@ -226,7 +229,7 @@ class TrainerHelper:
                     )
                     self.logger.info('Saving weights')
                     self.best_metrics[metric] = losses[metric]
-                    self._save_weights(epoch, generator, discriminator, best=True)
+                    self._save_weights(epoch, generator, discriminator, metric=metric, best=True)
                     self.since_last_epoch = 0
                     return True
                 else:

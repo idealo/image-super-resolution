@@ -107,10 +107,30 @@ class UtilsClassTest(unittest.TestCase):
         self.assertEqual(utils.select_option(['0', '1'], ''), '1')
         self.assertNotEqual(utils.select_option(['0', '1'], ''), '0')
 
+    @patch('builtins.input', return_value='2 0')
+    def test_select_multiple_options(self, input):
+        self.assertEqual(utils.select_multiple_options(['0', '1', '3'], ''), ['3', '0'])
+        self.assertNotEqual(utils.select_multiple_options(['0', '1', '3'], ''), ['0', '3'])
+
     @patch('builtins.input', return_value='1')
-    def test_select_positive(self, input):
-        self.assertEqual(utils.select_positive(''), 1)
-        self.assertNotEqual(utils.select_positive(''), 0)
+    def test_select_positive_integer(self, input):
+        self.assertEqual(utils.select_positive_integer(''), 1)
+        self.assertNotEqual(utils.select_positive_integer(''), 0)
+
+    @patch('builtins.input', return_value='1.3')
+    def test_select_positive_float(self, input):
+        self.assertEqual(utils.select_positive_float(''), 1.3)
+        self.assertNotEqual(utils.select_positive_float(''), 0)
+
+    @patch('builtins.input', return_value='y')
+    def test_select_bool_true(self, input):
+        self.assertEqual(utils.select_bool(''), True)
+        self.assertNotEqual(utils.select_bool(''), False)
+
+    @patch('builtins.input', return_value='n')
+    def test_select_bool_false(self, input):
+        self.assertEqual(utils.select_bool(''), False)
+        self.assertNotEqual(utils.select_bool(''), True)
 
     @patch('builtins.input', return_value='0')
     def test_browse_weights(self, sel_pos):
@@ -135,3 +155,26 @@ class UtilsClassTest(unittest.TestCase):
 
         self.assertEqual(tr_data, 'test_train_set')
         self.assertEqual(pr_data, 'test_test_set')
+
+    def test_suggest_metrics(self):
+        metrics = utils.suggest_metrics(
+            discriminator=False, feature_extractor=False, loss_weights={}
+        )
+        self.assertTrue('val_loss' in metrics)
+        self.assertFalse('val_generator_loss' in metrics)
+        metrics = utils.suggest_metrics(
+            discriminator=True, feature_extractor=False, loss_weights={}
+        )
+        self.assertTrue('val_generator_loss' in metrics)
+        self.assertFalse('val_feat_extr_loss' in metrics)
+        self.assertFalse('val_loss' in metrics)
+        metrics = utils.suggest_metrics(discriminator=True, feature_extractor=True, loss_weights={})
+        self.assertTrue('val_feat_extr_loss' in metrics)
+        self.assertTrue('val_generator_loss' in metrics)
+        self.assertFalse('val_loss' in metrics)
+        metrics = utils.suggest_metrics(
+            discriminator=False, feature_extractor=True, loss_weights={}
+        )
+        self.assertTrue('val_feat_extr_loss' in metrics)
+        self.assertTrue('val_generator_loss' in metrics)
+        self.assertFalse('val_loss' in metrics)

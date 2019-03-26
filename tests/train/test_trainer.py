@@ -170,4 +170,4 @@ class TrainerClassTest(unittest.TestCase):
         mockd_trainer.helper.on_epoch_end = Mock(return_value=True)
 
         logging.disable(logging.CRITICAL)
-        mockd_trainer.train(epochs=1, steps_per_epoch=1, batch_size=1)
+        mockd_trainer.train(epochs=1, steps_per_epoch=1, batch_size=1, monitored_metrics={})

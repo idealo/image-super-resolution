@@ -52,6 +52,7 @@ def run(config_file, default=False, training=False, prediction=False):
             hr_train_dir=conf['training_sets'][dataset]['hr_train_dir'],
             lr_valid_dir=conf['training_sets'][dataset]['lr_valid_dir'],
             hr_valid_dir=conf['training_sets'][dataset]['hr_valid_dir'],
+            learning_rate=conf['session'][session_type]['learning_rate'],
             loss_weights=conf['loss_weights'],
             dataname=conf['training_sets'][dataset]['data_name'],
             logs_dir=conf['dirs']['logs'],
@@ -61,12 +62,16 @@ def run(config_file, default=False, training=False, prediction=False):
             n_validation=conf['session'][session_type]['n_validation_samples'],
             lr_decay_frequency=conf['session'][session_type]['lr_decay_frequency'],
             lr_decay_factor=conf['session'][session_type]['lr_decay_factor'],
-            T=0.01,
+            T=conf['session'][session_type]['T'],
+            fallback_save_every_n_epochs=conf['session'][session_type][
+                'fallback_save_every_n_epochs'
+            ],
         )
         trainer.train(
             epochs=conf['session'][session_type]['epochs'],
             steps_per_epoch=conf['session'][session_type]['steps_per_epoch'],
             batch_size=conf['session'][session_type]['batch_size'],
+            monitored_metrics=conf['session'][session_type]['monitored_metrics'],
         )
 
     else:

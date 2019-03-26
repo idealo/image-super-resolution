@@ -71,6 +71,7 @@ class Trainer:
         T=0.01,
         lr_decay_frequency=100,
         lr_decay_factor=0.5,
+        fallback_save_every_n_epochs=2,
     ):
         if discriminator:
             assert generator.patch_size * generator.scale == discriminator.patch_size
@@ -100,6 +101,7 @@ class Trainer:
             discriminator=self.discriminator,
             dataname=dataname,
             pretrained_weights_path=self.pretrained_weights_path,
+            fallback_save_every_n_epochs=fallback_save_every_n_epochs,
         )
 
         self.model = self._combine_networks()
@@ -175,10 +177,17 @@ class Trainer:
                 self.model.get_layer('discriminator').load_weights(dis_w)
                 self.discriminator.model.load_weights(dis_w)
 
-    def train(self, epochs, steps_per_epoch, batch_size):
+    def train(self, epochs, steps_per_epoch, batch_size, monitored_metrics):
         """
         Carries on the training for the given number of epochs.
         Sends the losses to Tensorboard.
+
+        Args:
+            epochs: how many epochs to train for.
+            steps_per_epoch: how many batches epoch.
+            batch_size: amount of images per batch.
+            monitored_metrics: dictionary, the keys are the metrics that should be monitored
+                the values are the mode that trigger weights saving ('mix' vs 'max').
         """
 
         starting_epoch = self.helper.initialize_training(
@@ -251,11 +260,12 @@ class Trainer:
             )
             losses = dict(zip(['val_' + m for m in self.model.metrics_names], validation_loss))
 
-            monitored_metrics = {}
-            if (not self.discriminator) and (not self.feature_extractor):
-                monitored_metrics.update({'val_loss': 'min'})
-            else:
-                monitored_metrics.update({'val_generator_loss': 'min'})
+            if epoch == starting_epoch:
+                for metric in monitored_metrics:
+                    if metric not in losses:
+                        msg = ' '.join([metric, 'is NOT among the model metrics, removing it.'])
+                        self.logger.error(msg)
+                        _ = monitored_metrics.pop(metric)
 
             self.helper.on_epoch_end(
                 epoch=epoch,

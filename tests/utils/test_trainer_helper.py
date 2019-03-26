@@ -1,36 +1,15 @@
+import logging
 import os
 import unittest
-import shutil
 import yaml
+from ISR.utils import utils
 from unittest.mock import patch
-from ISR.utils.train_helper import TrainerHelper
-from ISR.models.rrdn import RRDN
-from ISR.models.discriminator import Discriminator
-from ISR.models.cut_vgg19 import Cut_VGG19
 
 
 class UtilsClassTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.setup = yaml.load(open(os.path.join('tests', 'data', 'config.yml'), 'r'))
-        cls.RRDN = RRDN(arch_params=cls.setup['rrdn'], patch_size=cls.setup['patch_size'])
-        cls.f_ext = Cut_VGG19(patch_size=cls.setup['patch_size'], layers_to_extract=[1, 2])
-        cls.discr = Discriminator(patch_size=cls.setup['patch_size'])
-        cls.weights_path = {
-            'generator': os.path.join(cls.setup['weights_dir'], 'test_gen_weights.hdf5'),
-            'discriminator': os.path.join(cls.setup['weights_dir'], 'test_dis_weights.hdf5'),
-        }
-        cls.TH = TrainerHelper(
-            generator=cls.RRDN,
-            weights_dir=cls.setup['weights_dir'],
-            logs_dir=cls.setup['log_dir'],
-            lr_train_dir=cls.setup['lr_input'],
-            feature_extractor=cls.f_ext,
-            discriminator=cls.discr,
-            dataname='TEST',
-            pretrained_weights_path={},
-            fallback_save_every_n_epochs=2,
-        )
+        logging.disable(logging.CRITICAL)
 
     @classmethod
     def tearDownClass(cls):
@@ -40,110 +19,162 @@ class UtilsClassTest(unittest.TestCase):
         pass
 
     def tearDown(self):
-        if os.path.exists('./tests/temporary_test_data'):
-            shutil.rmtree('./tests/temporary_test_data')
-        if os.path.exists('./log_file'):
-            os.remove('./log_file')
         pass
 
-    def test_make_generator_name(self):
-        generator_name = self.TH.generator.name + '-C2-D3-G20-G020-T2-x2'
-        generated_name = self.TH._make_generator_name()
-        assert generator_name == generated_name, 'Generated name: {}, expected: {}'.format(
-            generated_name, generator_name
+    def test_config_from_weights_valid(self):
+        weights = os.path.join('a', 'path', 'to', 'rdn-C3-D1-G7-G05-x2')
+        arch_params = {'C': None, 'D': None, 'G': None, 'G0': None, 'x': None}
+        expected_params = {'C': 3, 'D': 1, 'G': 7, 'G0': 5, 'x': 2}
+        name = 'rdn'
+        generated_param = utils.get_config_from_weights(
+            w_path=weights, arch_params=arch_params, name=name
         )
+        for p in expected_params:
+            self.assertTrue(generated_param[p] == expected_params[p])
 
-    def test_basename_without_pretrained_weights(self):
-        self.TH.generator_description = self.TH._make_generator_name()
-        basename = self.TH.generator_description + '_TEST-vgg19-1-2-srgan-large'
-        made_basename = self.TH._make_basename()
-        assert basename == made_basename, 'Generated name: {}, expected: {}'.format(
-            made_basename, basename
-        )
+    def test_config_from_weights_invalid(self):
+        weights = os.path.join('a', 'path', 'to', 'rrdn-C3-D1-G7-G05-x2')
+        arch_params = {'C': None, 'D': None, 'G': None, 'G0': None, 'x': None, 'T': None}
+        name = 'rdn'
+        try:
+            generated_param = utils.get_config_from_weights(
+                w_path=weights, arch_params=arch_params, name=name
+            )
+        except:
+            self.assertTrue(True)
+        else:
+            self.assertFalse(True)
 
-    def test_basename_with_pretrained_weights(self):
-        basename = 'test_gen_weights_TEST-vgg19-1-2-srgan-large'
-        self.TH.pretrained_weights_path = self.weights_path
-        made_basename = self.TH._make_basename()
-        self.TH.pretrained_weights_path = {}
-        assert basename == made_basename, 'Generated name: {}, expected: {}'.format(
-            made_basename, basename
-        )
-
-    def test_get_basepath(self):
-        basepath = 'rrdn-C2-D3-G20-G020-T2-x2/TEST-vgg19-1-2-srgan-large'
-        self.TH.generator_description = self.TH._make_generator_name()
-        self.TH.basename = self.TH._make_basename()
-        made_basepath = self.TH._get_basepath()
-        assert basepath == made_basepath, 'Generated path: {}, expected: {}'.format(
-            made_basepath, basepath
-        )
-
-    def test_mock_dir_creation(self):
-        with patch('ISR.utils.train_helper.TrainerHelper._create_dirs', return_value=True):
-            self.assertTrue(self.TH._create_dirs())
-
-    def test_mock_callback_paths_creation(self):
-        with patch('ISR.utils.train_helper.TrainerHelper._make_callback_paths', return_value=True):
-            self.assertTrue(self.TH._make_callback_paths())
-
-    def test_weights_naming(self):
-        w_names = {
-            'generator': 'rrdn-C2-D3-G20-G020-T2-x2_TEST-vgg19-1-2-srgan-large-e{epoch:03d}.hdf5',
-            'discriminator': 'discr-rrdn-C2-D3-G20-G020-T2-x2_TEST-vgg19-1-2-srgan-large-e{epoch:03d}.hdf5',
+    def test_setup_default_training(self):
+        base_conf = {}
+        base_conf['default'] = {
+            'generator': 'rrdn',
+            'feat_ext': False,
+            'discriminator': False,
+            'training_set': 'div2k-x4',
+            'test_set': 'dummy',
         }
-        self.TH.generator_description = self.TH._make_generator_name()
-        self.TH.basename = self.TH._make_basename()
-        generated_names = self.TH._weights_name()
-        assert (
-            w_names['generator'] == generated_names['generator']
-        ), 'Generated names: {}, expected: {}'.format(
-            generated_names['generator'], w_names['generator']
-        )
-        assert (
-            w_names['discriminator'] == generated_names['discriminator']
-        ), 'Generated names: {}, expected: {}'.format(
-            generated_names['discriminator'], w_names['discriminator']
-        )
+        training = True
+        prediction = False
+        default = True
 
-    def test_mock_training_setting_printer(self):
-        with patch(
-            'ISR.utils.train_helper.TrainerHelper.print_training_setting', return_value=True
-        ):
-            self.assertTrue(self.TH.print_training_setting())
+        with patch('yaml.load', return_value=base_conf) as import_module:
+            session_type, generator, conf, dataset = utils.setup(
+                'tests/data/config.yml', default, training, prediction
+            )
+        self.assertTrue(session_type == 'training')
+        self.assertTrue(generator == 'rrdn')
+        self.assertTrue(conf == base_conf)
+        self.assertTrue(dataset == 'div2k-x4')
 
-    def test_weights_saving(self):
-        w_names = {
-            'generator': 'test_gen_weights_TEST-vgg19-1-2-srgan-large-e{epoch:03d}.hdf5',
-            'discriminator': 'test_discr_weights_TEST-vgg19-1-2-srgan-large-e{epoch:03d}.hdf5',
+    def test_setup_default_prediction(self):
+        base_conf = {}
+        base_conf['default'] = {
+            'generator': 'rdn',
+            'feat_ext': False,
+            'discriminator': False,
+            'training_set': 'div2k-x4',
+            'test_set': 'dummy',
         }
-        self.TH.generator_description = self.TH._make_generator_name()
-        self.TH.basename = self.TH._make_basename()
-        self.TH.basepath = self.TH._get_basepath()
-        self.TH.weights_name = self.TH._weights_name()
-        self.TH.callback_paths = self.TH._make_callback_paths()
-        self.TH._create_dirs()
-        self.TH._save_weights(1, self.TH.generator.model, self.TH.discriminator, best=False)
-
-        assert os.path.exists(
-            './tests/temporary_test_data/weights/rrdn-C2-D3-G20-G020-T2-x2/TEST-vgg19-1-2-srgan-large/discr-rrdn-C2-D3-G20-G020-T2-x2_TEST-vgg19-1-2-srgan-large-e002.hdf5'
-        )
-        assert os.path.exists(
-            './tests/temporary_test_data/weights/rrdn-C2-D3-G20-G020-T2-x2/TEST-vgg19-1-2-srgan-large/rrdn-C2-D3-G20-G020-T2-x2_TEST-vgg19-1-2-srgan-large-e002.hdf5'
-        )
-
-    def test_mock_epoch_end(self):
-        with patch('ISR.utils.train_helper.TrainerHelper.on_epoch_end', return_value=True):
-            self.assertTrue(self.TH.on_epoch_end())
-
-    def test_epoch_number_from_weights_names(self):
-        w_names = {
-            'generator': 'test_gen_weights_TEST-vgg19-1-2-srgan-large-e003.hdf5',
-            'discriminator': 'test_discr_weights_TEST-vgg19-1-2-srgan-large-e003.hdf5',
+        base_conf['generators'] = {'rdn': {'C': None, 'D': None, 'G': None, 'G0': None, 'x': None}}
+        base_conf['weights_paths'] = {
+            'generator': os.path.join('a', 'path', 'to', 'rdn-C3-D1-G7-G05-x2')
         }
-        e_n = self.TH.epoch_n_from_weights_name(w_names['generator'])
-        assert e_n == 3
+        training = False
+        prediction = True
+        default = True
 
-    def test_mock_initalize_training(self):
-        with patch('ISR.utils.train_helper.TrainerHelper.initialize_training', return_value=True):
-            self.assertTrue(self.TH.initialize_training())
+        with patch('yaml.load', return_value=base_conf):
+            session_type, generator, conf, dataset = utils.setup(
+                'tests/data/config.yml', default, training, prediction
+            )
+        self.assertTrue(session_type == 'prediction')
+        self.assertTrue(generator == 'rdn')
+        self.assertTrue(conf == base_conf)
+        self.assertTrue(dataset == 'dummy')
+
+    def test__get_parser(self):
+        parser = utils._get_parser()
+        cl_args = parser.parse_args(['--training'])
+        namespace = cl_args._get_kwargs()
+        self.assertTrue(('training', True) in namespace)
+        self.assertTrue(('prediction', False) in namespace)
+        self.assertTrue(('default', False) in namespace)
+        pass
+
+    @patch('builtins.input', return_value='1')
+    def test_select_option(self, input):
+        self.assertEqual(utils.select_option(['0', '1'], ''), '1')
+        self.assertNotEqual(utils.select_option(['0', '1'], ''), '0')
+
+    @patch('builtins.input', return_value='2 0')
+    def test_select_multiple_options(self, input):
+        self.assertEqual(utils.select_multiple_options(['0', '1', '3'], ''), ['3', '0'])
+        self.assertNotEqual(utils.select_multiple_options(['0', '1', '3'], ''), ['0', '3'])
+
+    @patch('builtins.input', return_value='1')
+    def test_select_positive_integer(self, input):
+        self.assertEqual(utils.select_positive_integer(''), 1)
+        self.assertNotEqual(utils.select_positive_integer(''), 0)
+
+    @patch('builtins.input', return_value='1.3')
+    def test_select_positive_float(self, input):
+        self.assertEqual(utils.select_positive_float(''), 1.3)
+        self.assertNotEqual(utils.select_positive_float(''), 0)
+
+    @patch('builtins.input', return_value='y')
+    def test_select_bool_true(self, input):
+        self.assertEqual(utils.select_bool(''), True)
+        self.assertNotEqual(utils.select_bool(''), False)
+
+    @patch('builtins.input', return_value='n')
+    def test_select_bool_false(self, input):
+        self.assertEqual(utils.select_bool(''), False)
+        self.assertNotEqual(utils.select_bool(''), True)
+
+    @patch('builtins.input', return_value='0')
+    def test_browse_weights(self, sel_pos):
+        def folder_weights_select(inp):
+            if inp == '':
+                return ['folder']
+            if inp == 'folder':
+                return ['1.hdf5']
+
+        with patch('os.listdir', side_effect=folder_weights_select):
+            weights = utils.browse_weights('')
+        self.assertEqual(weights, 'folder/1.hdf5')
+
+    @patch('builtins.input', return_value='0')
+    def test_select_dataset(self, sel_opt):
+        conf = yaml.load(open(os.path.join('tests', 'data', 'config.yml'), 'r'))
+        conf['test_sets'] = {'test_test_set': {}}
+        conf['training_sets'] = {'test_train_set': {}}
+
+        tr_data = utils.select_dataset('training', conf)
+        pr_data = utils.select_dataset('prediction', conf)
+
+        self.assertEqual(tr_data, 'test_train_set')
+        self.assertEqual(pr_data, 'test_test_set')
+
+    def test_suggest_metrics(self):
+        metrics = utils.suggest_metrics(
+            discriminator=False, feature_extractor=False, loss_weights={}
+        )
+        self.assertTrue('val_loss' in metrics)
+        self.assertFalse('val_generator_loss' in metrics)
+        metrics = utils.suggest_metrics(
+            discriminator=True, feature_extractor=False, loss_weights={}
+        )
+        self.assertTrue('val_generator_loss' in metrics)
+        self.assertFalse('val_feat_extr_loss' in metrics)
+        self.assertFalse('val_loss' in metrics)
+        metrics = utils.suggest_metrics(discriminator=True, feature_extractor=True, loss_weights={})
+        self.assertTrue('val_feat_extr_loss' in metrics)
+        self.assertTrue('val_generator_loss' in metrics)
+        self.assertFalse('val_loss' in metrics)
+        metrics = utils.suggest_metrics(
+            discriminator=False, feature_extractor=True, loss_weights={}
+        )
+        self.assertTrue('val_feat_extr_loss' in metrics)
+        self.assertTrue('val_generator_loss' in metrics)
+        self.assertFalse('val_loss' in metrics)

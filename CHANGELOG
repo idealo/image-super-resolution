@@ -11,3 +11,6 @@ Comprehensive docstrings refactor.
 - 2019-03-25 1.9.3 beta: now ISR models are child of the ImageModel class, whose purpose is to collect
 common functions across models. At the moment it only contains a predict function that takes numpy arrays
 as input and returns numpy arrays in a proper image format.
+
+- 2019-03-26 2.0.0 beta: brought a number of training hyperparameters to the surface of trainer and the CLI assistant.
+Removed most hard-coded variables and improved assistant. Weights saving now allows metric selection, with suggested metrics list in assistant.  

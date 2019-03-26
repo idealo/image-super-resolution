@@ -40,8 +40,13 @@ session:
     batch_size: 16
     epochs: 300
     n_validation_samples: 100
-    lr_decay_frequency: 100
+    lr_decay_frequency: 30
     lr_decay_factor: 0.5
+    learning_rate: 0.0004
+    fallback_save_every_n_epochs: 2
+    T: 0.1
+    monitored_metrics:
+      val_loss: 'min'
 test_sets:
   sample: "./data/input/sample"
 training_sets:
