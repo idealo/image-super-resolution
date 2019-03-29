@@ -98,7 +98,7 @@ Load model and run prediction
 from ISR.models import RDN
 
 rdn = RDN(arch_params={'C':6, 'D':20, 'G':64, 'G0':64, 'x':2})
-rdn.model.load_weights('weights/rdn-C6-D20-G64-G064-x2_enhanced-e219.hdf5')
+rdn.model.load_weights('weights/sample_weights/rdn-C6-D20-G64-G064-x2_enhanced-e219.hdf5')
 
 sr_img = rdn.model.predict(lr_img)[0]
 sr_img = sr_img.clip(0, 1) * 255
