@@ -98,7 +98,7 @@ Load model and run prediction
 from ISR.models import RDN
 
 rdn = RDN(arch_params={'C':6, 'D':20, 'G':64, 'G0':64, 'x':2})
-rdn.model.load_weights('weights/sample_weights/rdn-C6-D20-G64-G064-x2_enhanced-e219.hdf5')
+rdn.model.load_weights('weights/sample_weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5')
 
 sr_img = rdn.model.predict(lr_img)[0]
 sr_img = sr_img.clip(0, 1) * 255
@@ -195,10 +195,10 @@ The main parameters of the architecture structure are:
 source: [ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks](https://arxiv.org/abs/1809.00219)
 
 ### RDN Pre-trained weights
-The weights of the RDN network trained on the [DIV2K dataset](https://data.vision.ee.ethz.ch/cvl/DIV2K) are available in ```weights/sample_weights/rdn-C6-D20-G64-G064-x2_div2k-e086.hdf5```. <br>
+The weights of the RDN network trained on the [DIV2K dataset](https://data.vision.ee.ethz.ch/cvl/DIV2K) are available in ```weights/sample_weights/rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5```. <br>
 The model was trained using ```C=6, D=20, G=64, G0=64``` as parameters (see architecture for details) for 86 epochs of 1000 batches of 8 32x32 augmented patches taken from LR images.
 
-The artefact removing and detail enhancing weights obtained with a combination of different training sessions using different datasets and perceptual loss with VGG19 and GAN can be found at `weights/sample_weights/rdn-C6-D20-G64-G064-x2_enhanced-e219.hdf5`
+The artefact removing and detail enhancing weights obtained with a combination of different training sessions using different datasets and perceptual loss with VGG19 and GAN can be found at `weights/sample_weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5`
 
 ## Contribute
 We welcome all kinds of contributions, models trained on different datasets, new model architectures and/or hyperparameters combinations that improve the performance of the currently published model.

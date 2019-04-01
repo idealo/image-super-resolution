@@ -13,4 +13,7 @@ common functions across models. At the moment it only contains a predict functio
 as input and returns numpy arrays in a proper image format.
 
 - 2019-03-26 2.0.0 beta: brought a number of training hyperparameters to the surface of trainer and the CLI assistant.
-Removed most hard-coded variables and improved assistant. Weights saving now allows metric selection, with suggested metrics list in assistant.  
+Removed most hard-coded variables and improved assistant. Weights saving now allows metric selection, with suggested metrics list in assistant.
+
+- 2019-04-01 2.0.1 beta: Cleaner training session tracking: now weights are saved together with a yaml configuration file that contains hyperparameters and other relevant training details.
+  Partial migration to pathlib from os.

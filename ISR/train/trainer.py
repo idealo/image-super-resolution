@@ -1,3 +1,4 @@
+import yaml
 import numpy as np
 from time import time
 from tqdm import tqdm
@@ -72,6 +73,9 @@ class Trainer:
         lr_decay_frequency=100,
         lr_decay_factor=0.5,
         fallback_save_every_n_epochs=2,
+        beta_1=0.9,
+        beta_2=0.999,
+        epsilon=0.00001,
     ):
         if discriminator:
             assert generator.patch_size * generator.scale == discriminator.patch_size
@@ -84,13 +88,16 @@ class Trainer:
         self.lr_patch_size = generator.patch_size
         self.learning_rate = learning_rate
         self.loss_weights = loss_weights
-        self.best_metrics = {}
-        self.pretrained_weights_path = {
-            'generator': weights_generator,
-            'discriminator': weights_discriminator,
-        }
+        self.weights_generator = weights_generator
+        self.weights_discriminator = weights_discriminator
         self.lr_decay_factor = lr_decay_factor
         self.lr_decay_frequency = lr_decay_frequency
+        self.beta_1 = beta_1
+        self.beta_2 = beta_2
+        self.epsilon = epsilon
+        self.dataname = dataname
+        self.T = T
+        self.n_validation = n_validation
 
         self.helper = TrainerHelper(
             generator=self.generator,
@@ -100,7 +107,8 @@ class Trainer:
             feature_extractor=self.feature_extractor,
             discriminator=self.discriminator,
             dataname=dataname,
-            pretrained_weights_path=self.pretrained_weights_path,
+            weights_generator=self.weights_generator,
+            weights_discriminator=self.weights_discriminator,
             fallback_save_every_n_epochs=fallback_save_every_n_epochs,
         )
 
@@ -120,9 +128,11 @@ class Trainer:
             patch_size=self.lr_patch_size,
             scale=self.scale,
             n_validation_samples=n_validation,
-            T=0.01,
+            T=0.0,
         )
         self.logger = get_logger(__name__)
+
+        self.settings = self.get_training_config()
 
     def _combine_networks(self):
         """
@@ -149,7 +159,9 @@ class Trainer:
             loss_weights.extend([self.loss_weights['feat_extr'] / len(sr_feats)] * len(sr_feats))
         combined = Model(inputs=lr, outputs=outputs)
         # https://stackoverflow.com/questions/42327543/adam-optimizer-goes-haywire-after-200k-batches-training-loss-grows
-        optimizer = Adam(epsilon=0.0000001)
+        optimizer = Adam(
+            beta_1=self.beta_1, beta_2=self.beta_2, lr=self.learning_rate, epsilon=self.epsilon
+        )
         combined.compile(
             loss=losses, loss_weights=loss_weights, optimizer=optimizer, metrics={'generator': PSNR}
         )
@@ -168,14 +180,56 @@ class Trainer:
         If a discriminator is defined, does the same.
         """
 
-        gen_w = self.pretrained_weights_path['generator']
-        if gen_w:
-            self.model.get_layer('generator').load_weights(gen_w)
+        if self.weights_generator:
+            self.model.get_layer('generator').load_weights(self.weights_generator)
+
         if self.discriminator:
-            dis_w = self.pretrained_weights_path['discriminator']
-            if dis_w:
-                self.model.get_layer('discriminator').load_weights(dis_w)
-                self.discriminator.model.load_weights(dis_w)
+            if self.weights_discriminator:
+                self.model.get_layer('discriminator').load_weights(self.weights_discriminator)
+                self.discriminator.model.load_weights(self.weights_discriminator)
+
+    def _format_losses(self, prefix, losses, model_metrics):
+        """ Creates a dictionary for tensorboard tracking. """
+
+        return dict(zip([prefix + m for m in model_metrics], losses))
+
+    def get_training_config(self):
+        """ Summarizes training setting. """
+
+        settings = {}
+        settings['generator'] = {}
+        settings['generator']['name'] = self.generator.name
+        settings['generator']['parameters'] = self.generator.params
+
+        if self.discriminator:
+            settings['discriminator'] = {}
+            settings['discriminator']['name'] = self.discriminator.name
+        else:
+            settings['discriminator'] = None
+
+        if self.discriminator:
+            settings['feature_extractor'] = {}
+            settings['feature_extractor']['name'] = self.discriminator.name
+        else:
+            settings['feature_extractor'] = None
+
+        settings['training_parameters'] = {}
+        settings['training_parameters']['scale'] = self.scale
+        settings['training_parameters']['lr_patch_size'] = self.lr_patch_size
+        settings['training_parameters']['learning_rate'] = self.learning_rate
+        settings['training_parameters']['loss_weights'] = self.loss_weights
+        settings['training_parameters']['weights_discriminator'] = self.weights_discriminator
+        settings['training_parameters']['weights_generator'] = self.weights_generator
+        settings['training_parameters']['lr_decay_factor'] = self.lr_decay_factor
+        settings['training_parameters']['lr_decay_frequency'] = self.lr_decay_frequency
+        settings['training_parameters']['beta_1'] = self.beta_1
+        settings['training_parameters']['beta_2'] = self.beta_2
+        settings['training_parameters']['epsilon'] = self.epsilon
+        settings['training_parameters']['dataname'] = self.dataname
+        settings['training_parameters']['T'] = self.T
+        settings['training_parameters']['n_validation'] = self.n_validation
+
+        return settings
 
     def train(self, epochs, steps_per_epoch, batch_size, monitored_metrics):
         """
@@ -190,9 +244,12 @@ class Trainer:
                 the values are the mode that trigger weights saving ('mix' vs 'max').
         """
 
+        self.settings['training_parameters']['steps_per_epoch'] = steps_per_epoch
+        self.settings['training_parameters']['batch_size'] = batch_size
         starting_epoch = self.helper.initialize_training(
             self
         )  # load_weights, creates folders, creates basename
+
         self.tensorboard = TensorBoard(log_dir=self.helper.callback_paths['logs'])
         self.tensorboard.set_model(self.model)
 
@@ -216,28 +273,22 @@ class Trainer:
             epoch_start = time()
             for step in tqdm(range(steps_per_epoch)):
                 batch = self.train_dh.get_batch(batch_size)
-                sr = self.generator.model.predict(batch['lr'])
                 y_train = [batch['hr']]
-                losses = {}
+                training_losses = {}
 
                 ## Discriminator training
                 if self.discriminator:
+                    sr = self.generator.model.predict(batch['lr'])
                     d_loss_real = self.discriminator.model.train_on_batch(batch['hr'], valid)
                     d_loss_fake = self.discriminator.model.train_on_batch(sr, fake)
-                    d_loss_real = dict(
-                        zip(
-                            ['train_d_real_' + m for m in self.discriminator.model.metrics_names],
-                            d_loss_real,
-                        )
+                    d_loss_fake = self._format_losses(
+                        'train_d_fake_', d_loss_fake, self.discriminator.model.metrics_names
                     )
-                    d_loss_fake = dict(
-                        zip(
-                            ['train_d_fake_' + m for m in self.discriminator.model.metrics_names],
-                            d_loss_fake,
-                        )
+                    d_loss_real = self._format_losses(
+                        'train_d_real_', d_loss_real, self.discriminator.model.metrics_names
                     )
-                    losses.update(d_loss_real)
-                    losses.update(d_loss_fake)
+                    training_losses.update(d_loss_real)
+                    training_losses.update(d_loss_fake)
                     y_train.append(valid)
 
                 ## Generator training
@@ -245,34 +296,44 @@ class Trainer:
                     hr_feats = self.feature_extractor.model.predict(batch['hr'])
                     y_train.extend([*hr_feats])
 
-                trainig_loss = self.model.train_on_batch(batch['lr'], y_train)
-                losses.update(
-                    dict(zip(['train_' + m for m in self.model.metrics_names], trainig_loss))
-                )
-                self.tensorboard.on_epoch_end(epoch * steps_per_epoch + step, losses)
-                self.logger.debug('Losses at step {s}:\n {l}'.format(s=step, l=losses))
+                model_losses = self.model.train_on_batch(batch['lr'], y_train)
+                model_losses = self._format_losses('train_', model_losses, self.model.metrics_names)
+                training_losses.update(model_losses)
+
+                self.tensorboard.on_epoch_end(epoch * steps_per_epoch + step, training_losses)
+                self.logger.debug('Losses at step {s}:\n {l}'.format(s=step, l=training_losses))
 
             elapsed_time = time() - epoch_start
             self.logger.info('Epoch {} took {:10.1f}s'.format(epoch, elapsed_time))
 
-            validation_loss = self.model.evaluate(
+            validation_losses = self.model.evaluate(
                 validation_set['lr'], y_validation, batch_size=batch_size
             )
-            losses = dict(zip(['val_' + m for m in self.model.metrics_names], validation_loss))
+            validation_losses = self._format_losses(
+                'val_', validation_losses, self.model.metrics_names
+            )
 
             if epoch == starting_epoch:
+                remove_metrics = []
                 for metric in monitored_metrics:
-                    if metric not in losses:
+                    if (metric not in training_losses) and (metric not in validation_losses):
                         msg = ' '.join([metric, 'is NOT among the model metrics, removing it.'])
                         self.logger.error(msg)
-                        _ = monitored_metrics.pop(metric)
+                        remove_metrics.append(metric)
+                for metric in remove_metrics:
+                    _ = monitored_metrics.pop(metric)
+
+            # should average train metrics
+            end_losses = {}
+            end_losses.update(validation_losses)
+            end_losses.update(training_losses)
 
             self.helper.on_epoch_end(
                 epoch=epoch,
-                losses=losses,
+                losses=end_losses,
                 generator=self.model.get_layer('generator'),
                 discriminator=self.discriminator,
                 metrics=monitored_metrics,
             )
-            self.tensorboard.on_epoch_end(epoch, losses)
+            self.tensorboard.on_epoch_end(epoch, validation_losses)
         self.tensorboard.on_train_end(None)

@@ -1,5 +1,7 @@
 import logging
 import os
+import shutil
+from pathlib import Path
 import unittest
 import yaml
 import numpy as np
@@ -22,48 +24,53 @@ class TrainerClassTest(unittest.TestCase):
             'generator': os.path.join(cls.setup['weights_dir'], 'test_gen_weights.hdf5'),
             'discriminator': os.path.join(cls.setup['weights_dir'], 'test_dis_weights.hdf5'),
         }
+        cls.temp_data = Path('tests/temporary_test_data')
 
-        def fake_folders(kind):
-            if kind['matching'] == False:
-                if kind['res'] == 'hr':
-                    return ['data2.gif', 'data1.png', 'data0.jpeg']
-                elif kind['res'] == 'lr':
-                    return ['data1.png']
-                else:
-                    raise
-            if kind['matching'] == True:
-                if kind['res'] == 'hr':
-                    return ['data2.gif', 'data1.png', 'data0.jpeg']
-                elif kind['res'] == 'lr':
-                    return ['data1.png', 'data0.jpeg']
-                else:
-                    raise
+        cls.not_matching_hr = cls.temp_data / 'not_matching_hr'
+        cls.not_matching_hr.mkdir(parents=True)
+        for item in ['data2.gif', 'data1.png', 'data0.jpeg']:
+            (cls.not_matching_hr / item).touch()
 
-        with patch('os.listdir', side_effect=fake_folders):
-            with patch('ISR.utils.datahandler.DataHandler._check_dataset', return_value=True):
-                cls.trainer = Trainer(
-                    generator=cls.RRDN,
-                    discriminator=cls.discr,
-                    feature_extractor=cls.f_ext,
-                    lr_train_dir={'res': 'lr', 'matching': True},
-                    hr_train_dir={'res': 'hr', 'matching': True},
-                    lr_valid_dir={'res': 'lr', 'matching': True},
-                    hr_valid_dir={'res': 'hr', 'matching': True},
-                    learning_rate=0.0004,
-                    loss_weights={'MSE': 1.0, 'discriminator': 1.0, 'feat_extr': 1.0},
-                    logs_dir='./tests/temporary_test_data/logs',
-                    weights_dir='./tests/temporary_test_data/weights',
-                    dataname='TEST',
-                    weights_generator=None,
-                    weights_discriminator=None,
-                    n_validation=2,
-                    lr_decay_factor=0.5,
-                    lr_decay_frequency=5,
-                    T=0.01,
-                )
+        cls.not_matching_lr = cls.temp_data / 'not_matching_lr'
+        cls.not_matching_lr.mkdir(parents=True)
+        for item in ['data1.png']:
+            (cls.not_matching_lr / item).touch()
+
+        cls.matching_hr = cls.temp_data / 'matching_hr'
+        cls.matching_hr.mkdir(parents=True)
+        for item in ['data2.gif', 'data1.png', 'data0.jpeg']:
+            (cls.matching_hr / item).touch()
+
+        cls.matching_lr = cls.temp_data / 'matching_lr'
+        cls.matching_lr.mkdir(parents=True)
+        for item in ['data1.png', 'data0.jpeg']:
+            (cls.matching_lr / item).touch()
+
+        with patch('ISR.utils.datahandler.DataHandler._check_dataset', return_value=True):
+            cls.trainer = Trainer(
+                generator=cls.RRDN,
+                discriminator=cls.discr,
+                feature_extractor=cls.f_ext,
+                lr_train_dir=str(cls.matching_lr),
+                hr_train_dir=str(cls.matching_hr),
+                lr_valid_dir=str(cls.matching_lr),
+                hr_valid_dir=str(cls.matching_hr),
+                learning_rate=0.0004,
+                loss_weights={'MSE': 1.0, 'discriminator': 1.0, 'feat_extr': 1.0},
+                logs_dir='./tests/temporary_test_data/logs',
+                weights_dir='./tests/temporary_test_data/weights',
+                dataname='TEST',
+                weights_generator=None,
+                weights_discriminator=None,
+                n_validation=2,
+                lr_decay_factor=0.5,
+                lr_decay_frequency=5,
+                T=0.01,
+            )
 
     @classmethod
     def tearDownClass(cls):
+        shutil.rmtree(cls.temp_data)
         pass
 
     def setUp(self):

@@ -63,6 +63,9 @@ class RunFunctionTest(unittest.TestCase):
         conf['session']['training']['lr_decay_factor'] = None
         conf['session']['training']['lr_decay_frequency'] = None
         conf['session']['training']['learning_rate'] = None
+        conf['session']['training']['beta_1'] = None
+        conf['session']['training']['beta_2'] = None
+        conf['session']['training']['epsilon'] = None
         conf['session']['training']['T'] = None
         conf['session']['training']['fallback_save_every_n_epochs'] = None
         conf['session']['training']['monitored_metrics'] = None

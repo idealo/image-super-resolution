@@ -69,10 +69,8 @@ fi
 if ! [ $data = "false" ]; then
   docker-machine ssh $machine_name << EOF
   mkdir -p $aws_main_dir/data/
-  mkdir -p $aws_main_dir/data/
 EOF
   echo " >>> Copying local data folder to remote machine. This will take some time (output is suppressed)"
-  docker-machine scp -r -q $local_main_dir/data/$data $machine_name:$aws_main_dir/data
   docker-machine scp -r -q $local_main_dir/data/$data $machine_name:$aws_main_dir/data
 fi
 
@@ -87,9 +85,6 @@ fi
 if [ $install = "true" ]; then
   echo " >>> Connecting to the remote machine."
   docker-machine ssh $machine_name << EOF
-  echo ">>> Installing unzip and pip"
-  sudo apt -y install unzip
-  sudo apt -y install python3-pip
   echo " >>> Updating pip"
   python3 -m pip install --upgrade pip
   echo " >>> Installing tensorboard"
