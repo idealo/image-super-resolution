@@ -60,12 +60,14 @@ class Predictor:
             raise ValueError('Weights path not specified (check config file).')
 
     def _make_directory_structure(self):
-        """ Creates the folder structure from the weights' name. """
+        """ Creates the folder structure from the weights' name.
+
+        Assumes standardized weights naming.
+        """
 
         filename = os.path.basename(self.weights_path)
         weights_name, _ = os.path.splitext(filename)
-        subdirs = weights_name.split('_')
-        self.basepath = os.path.join(*subdirs)
+        self.basepath = weights_name.split('_')[0]
 
     def get_predictions(self, model, weights_path):
         """ Runs the prediction. """

@@ -64,7 +64,7 @@ class PredictorClassTest(unittest.TestCase):
     def test__make_directory_structure(self):
         self.pred.weights_path = 'a/path/arch-weights_session1_session2.hdf5'
         self.pred._make_directory_structure()
-        self.assertTrue(self.pred.basepath == 'arch-weights/session1/session2')
+        self.assertTrue(self.pred.basepath == 'arch-weights')
 
     def test__forward_pass_pixel_range_and_type(self):
         def valid_sr_output(*args):
