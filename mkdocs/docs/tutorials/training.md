@@ -90,5 +90,6 @@ trainer.train(
     epochs=1,
     steps_per_epoch=20,
     batch_size=4,
+    monitored_metrics = {'val_generator_loss': 'min'}
 )
 ```
