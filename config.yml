@@ -3,11 +3,11 @@ default:
   generator: rdn
   feat_ext: false
   discriminator: false
-  training_set: custom
+  training_set: div2k
   test_set: sample
 dirs:
-  logs: "./logs"
-  weights: "./weights"
+  logs: ./logs
+  weights: ./weights
 feat_ext:
   vgg19:
     layers_to_extract:
@@ -46,20 +46,26 @@ session:
     fallback_save_every_n_epochs: 2
     T: 0.1
     monitored_metrics:
-      val_loss: 'min'
-      val_PSNR: 'max'
+      val_loss: min
+      val_PSNR: max
     beta_1: 0.9
     beta_2: 0.999
     epsilon: 0.1
 test_sets:
-  sample: "./data/input/sample"
+  sample: ./data/input/sample
 training_sets:
   custom data:
-    training_input: "./data/custom/lr/train"
-    training_labels: "./data/custom/hr/train"
-    validation_input: "./data/custom/lr/validation"
-    validation_labels: "./data/custom/hr/validation"
+    lr_train_dir: ./data/custom/lr/train
+    hr_train_dir: ./data/custom/hr/train
+    lr_valid_dir: ./data/custom/lr/validation
+    hr_valid_dir: ./data/custom/hr/validation
     data_name: custom
+  div2k:
+    lr_train_dir: ./data/DIV2K/DIV2K_train_LR_bicubic/X2
+    hr_train_dir: ./data/DIV2K/DIV2K_train_HR
+    lr_valid_dir: ./data/DIV2K/DIV2K_valid_LR_bicubic/X2
+    hr_valid_dir: ./data/DIV2K/DIV2K_valid_HR
+    data_name: div2k
 weights_paths:
   discriminator:
   generator: weights/sample_weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5

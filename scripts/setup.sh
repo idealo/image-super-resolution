@@ -46,8 +46,8 @@ EOF
 
   echo " >>> Copying local source files to remote machine."
   docker-machine scp -r $local_main_dir/ISR $machine_name:$aws_main_dir
-  docker-machine scp -r $local_main_dir/requirements.txt $machine_name:$aws_main_dir
   docker-machine scp -r $local_main_dir/config.yml $machine_name:$aws_main_dir
+  docker-machine scp -r $local_main_dir/setup.py $machine_name:$aws_main_dir
   docker-machine scp $local_main_dir/Dockerfile.gpu $machine_name:$aws_main_dir
   docker-machine scp $local_main_dir/.dockerignore $machine_name:$aws_main_dir
   docker-machine scp $local_main_dir/scripts/entrypoint.sh $machine_name:$aws_main_dir/scripts/
@@ -57,11 +57,11 @@ if [ $weights = "true" ]; then
   docker-machine ssh $machine_name << EOF
   mkdir -p $aws_main_dir/weights/sample_weights
 EOF
-  docker-machine scp $local_main_dir/weights/sample_weights/rdn-C6-D20-G64-G064-x2_div2k-e086.hdf5 \
+  docker-machine scp $local_main_dir/weights/sample_weights/rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5 \
 $machine_name:$aws_main_dir/weights/sample_weights/
-  docker-machine scp $local_main_dir/weights/sample_weights/rdn-C6-D20-G64-G064-x2_enhanced-e219.hdf5 \
+  docker-machine scp $local_main_dir/weights/sample_weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5 \
 $machine_name:$aws_main_dir/weights/sample_weights/
-  docker-machine scp $local_main_dir/weights/sample_weights/rdn-C3-D10-G64-G064-x2_div2k-e134.hdf5 \
+  docker-machine scp $local_main_dir/weights/sample_weights/rdn-C3-D10-G64-G064-x2_PSNR_epoch134.hdf5 \
 $machine_name:$aws_main_dir/weights/sample_weights/
 fi
 
