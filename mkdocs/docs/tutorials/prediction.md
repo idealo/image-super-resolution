@@ -26,8 +26,7 @@ import numpy as np
 from PIL import Image
 
 img = Image.open('data/input/test_images/section8-image.png')
-lr_img = np.array(img)/255.
-lr_img = np.expand_dims(lr_img, axis=0)
+lr_img = np.array(img)
 ```
 
 ### Get predictions
@@ -63,9 +62,7 @@ rdn.model.load_weights('weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch2
 ##### Run prediction
 
 ```python
-sr_img = rdn.model.predict(lr_img)[0]
-sr_img = sr_img.clip(0, 1) * 255
-sr_img = np.uint8(sr_img)
+sr_img = rdn.predict(lr_img)
 Image.fromarray(sr_img)
 ```
 
@@ -87,8 +84,7 @@ So let's first  compress the image
 ```python
 img.save('data/input/test_images/compressed.jpeg','JPEG', dpi=[300, 300], quality=50)
 compressed_img = Image.open('data/input/test_images/compressed.jpeg')
-compressed_lr_img = np.array(compressed_img)/255.
-compressed_lr_img = np.expand_dims(compressed_lr_img, axis=0)
+compressed_lr_img = np.array(compressed_img)
 compressed_img.show()
 ```
 
@@ -103,9 +99,7 @@ compressed_img.resize(size=(compressed_img.size[0]*2, compressed_img.size[1]*2),
 ```python
 rdn = RDN(arch_params={'C': 6, 'D':20, 'G':64, 'G0':64, 'x':2})
 rdn.model.load_weights('weights/rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5')
-sr_img = rdn.model.predict(compressed_lr_img)[0]
-sr_img = sr_img.clip(0, 1) * 255
-sr_img = np.uint8(sr_img)
+sr_img = rdn.predict(compressed_lr_img)
 Image.fromarray(sr_img)
 ```
 
@@ -114,9 +108,7 @@ Image.fromarray(sr_img)
 ```python
 rdn = RDN(arch_params={'C': 3, 'D':10, 'G':64, 'G0':64, 'x':2})
 rdn.model.load_weights('weights/rdn-C3-D10-G64-G064-x2_PSNR_epoch134.hdf5')
-sr_img = rdn.model.predict(compressed_lr_img)[0]
-sr_img = sr_img.clip(0, 1) * 255
-sr_img = np.uint8(sr_img)
+sr_img = rdn.predict(compressed_lr_img)
 Image.fromarray(sr_img)
 ```
 
@@ -125,9 +117,7 @@ Image.fromarray(sr_img)
 ```python
 rdn = RDN(arch_params={'C': 6, 'D':20, 'G':64, 'G0':64, 'x':2})
 rdn.model.load_weights('weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5')
-sr_img = rdn.model.predict(compressed_lr_img)[0]
-sr_img = sr_img.clip(0, 1) * 255
-sr_img = np.uint8(sr_img)
+sr_img = rdn.predict(compressed_lr_img)
 Image.fromarray(sr_img)
 ```
 
