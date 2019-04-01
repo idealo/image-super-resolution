@@ -66,6 +66,9 @@ def run(config_file, default=False, training=False, prediction=False):
             fallback_save_every_n_epochs=conf['session'][session_type][
                 'fallback_save_every_n_epochs'
             ],
+            beta_1=conf['session'][session_type]['beta_1'],
+            beta_2=conf['session'][session_type]['beta_2'],
+            epsilon=conf['session'][session_type]['epsilon'],
         )
         trainer.train(
             epochs=conf['session'][session_type]['epochs'],
