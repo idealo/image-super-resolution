@@ -91,7 +91,11 @@ class TrainerHelper:
     def get_session_id(self, basename):
         """ Returns unique session identifier. """
 
-        time_stamp = datetime.now().isoformat(timespec='minutes')
+        ts = datetime.now()
+        time_stamp = '{y}-{m:02d}-{d:02d}_{h}:{mm}'.format(
+            y=ts.year, m=ts.month, d=ts.day, h=ts.hour, mm=ts.minute
+        )
+
         if basename:
             session_id = '{b}_{ts}'.format(b=basename, ts=time_stamp)
         else:
