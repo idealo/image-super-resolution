@@ -240,8 +240,8 @@ class Trainer:
             epochs: how many epochs to train for.
             steps_per_epoch: how many batches epoch.
             batch_size: amount of images per batch.
-            monitored_metrics: dictionary, the keys are the metrics that should be monitored
-                the values are the mode that trigger weights saving ('mix' vs 'max').
+            monitored_metrics: dictionary, the keys are the metrics that are monitored for the weights
+                saving logic. The values are the mode that trigger the weights saving ('mix' vs 'max').
         """
 
         self.settings['training_parameters']['steps_per_epoch'] = steps_per_epoch
