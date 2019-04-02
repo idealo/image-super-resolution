@@ -55,14 +55,16 @@ EOF
 
 if [ $weights = "true" ]; then
   docker-machine ssh $machine_name << EOF
-  mkdir -p $aws_main_dir/weights/sample_weights
+  mkdir -p $aws_main_dir/weights/sample_weights/rdn-C6-D20-G64-G064-x2/PSNR-driven/
+  mkdir -p $aws_main_dir/weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/
+  mkdir -p $aws_main_dir/weights/sample_weights/rdn-C3-D10-G64-G064-x2/PSNR-driven/
 EOF
   docker-machine scp $local_main_dir/weights/sample_weights/rdn-C6-D20-G64-G064-x2/PSNR-driven/rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5 \
-$machine_name:$aws_main_dir/weights/sample_weights/
+$machine_name:$aws_main_dir/weights/sample_weights/rdn-C6-D20-G64-G064-x2/PSNR-driven/
   docker-machine scp $local_main_dir/weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5 \
-$machine_name:$aws_main_dir/weights/sample_weights/
+$machine_name:$aws_main_dir/weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/
   docker-machine scp $local_main_dir/weights/sample_weights/rdn-C3-D10-G64-G064-x2/PSNR-driven/rdn-C3-D10-G64-G064-x2_PSNR_epoch134.hdf5 \
-$machine_name:$aws_main_dir/weights/sample_weights/
+$machine_name:$aws_main_dir/weights/sample_weights/rdn-C3-D10-G64-G064-x2/PSNR-driven/
 fi
 
 
