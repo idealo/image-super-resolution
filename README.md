@@ -45,25 +45,21 @@ The original low resolution image (left), the super scaled output of the network
 <br>
 <img src="figures/basket_comparison_SR_baseline.png">
 
-Below a comparison of dfferent methods on a noisy image: the baseline, bicubic scaling; the RDN network trained using a pixel-wise content loss; the same network re-trained on a compressed dataset using VGG19-content and adversarial components for the loss. The weights used here are available in this repo.
+Below a comparison of different methods on a noisy image: the baseline, bicubic scaling; the RDN network trained using a pixel-wise content loss (PSNR-driven); the same network re-trained on a compressed dataset using VGG19-content and adversarial components for the loss (VGG+GANs). The weights used here are available in this repo.
 
-<p align="center">
-<figure>
-  <img src="figures/ISR-reference.png"/>
-  <figcaption>Bicubic up-scaling (baseline).</figcaption>
-</figure>
+<img src="figures/temple_comparison.png"/>
 
+|![sandal-baseline](figures/ISR-reference.png)|
+|:--:|
+| Bicubic up-scaling (baseline). |
 
-<figure>
-  <img src="figures/ISR-vanilla-RDN.png"/>
-  <figcaption>RDN trained with pixel-wise content loss.</figcaption>
-</figure>
+|![sandal-baseline](figures/ISR-vanilla-RDN.png)|
+|:--:|
+| RDN trained with pixel-wise content loss (PSNR-driven). |
 
-<figure>
-  <img src="figures/ISR-gans-vgg.png"/>
-  <figcaption>RDN trained with a VGG content and adversarial loss components.</figcaption>
-</figure>
-</p>
+|![sandal-baseline](figures/ISR-gans-vgg.png)|
+|:--:|
+| RDN trained with a VGG content and adversarial loss components.. |
 
 ## Installation
 There are two ways to install the Image Super-Resolution package:
@@ -75,8 +71,8 @@ pip install ISR
 - Install ISR from the GitHub source:
 ```
 git clone https://github.com/idealo/image-super-resolution
-git lfs pull
 cd image-super-resolution
+git lfs pull
 python setup.py install
 ```
 
@@ -98,7 +94,7 @@ Load model and run prediction
 from ISR.models import RDN
 
 rdn = RDN(arch_params={'C':6, 'D':20, 'G':64, 'G0':64, 'x':2})
-rdn.model.load_weights('weights/sample_weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5')
+rdn.model.load_weights('weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5')
 
 sr_img = rdn.predict(lr_img)
 Image.fromarray(sr_img)
@@ -162,11 +158,16 @@ trainer.train(
 ```
 
 ## Additional Information
+You can read about how we trained these network weights in our Medium posts:
+- part 1: [A deep learning based magnifying glass](https://medium.com/idealo-tech-blog/a-deep-learning-based-magnifying-glass-dae1f565c359)
+- part 2: [Zoom in... enhance](https://medium.com/idealo-tech-blog/zoom-in-enhance-a-deep-learning-based-magnifying-glass-part-2-c021f98ebede
+)
+
 ### RDN Pre-trained weights
-The weights of the RDN network trained on the [DIV2K dataset](https://data.vision.ee.ethz.ch/cvl/DIV2K) are available in ```weights/sample_weights/rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5```. <br>
+The weights of the RDN network trained on the [DIV2K dataset](https://data.vision.ee.ethz.ch/cvl/DIV2K) are available in ```weights/sample_weights/rdn-C6-D20-G64-G064-x2/PSNR-driven/rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5```. <br>
 The model was trained using ```C=6, D=20, G=64, G0=64``` as parameters (see architecture for details) for 86 epochs of 1000 batches of 8 32x32 augmented patches taken from LR images.
 
-The artefact can cancelling weights obtained with a combination of different training sessions using different datasets and perceptual loss with VGG19 and GAN can be found at `weights/sample_weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5`
+The artefact can cancelling weights obtained with a combination of different training sessions using different datasets and perceptual loss with VGG19 and GAN can be found at `weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5`
 We recommend using these weights only when cancelling compression artefacts is a desirable effect.
 
 ### RDN Network architecture

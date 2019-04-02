@@ -1,5 +1,6 @@
 import os
 import argparse
+from datetime import datetime
 import numpy as np
 import yaml
 from ISR.utils.logger import get_logger
@@ -27,6 +28,14 @@ def parse_args():
         logger.error('Select only prediction OR training.')
         raise ValueError('Select only prediction OR training.')
     return args
+
+
+def get_timestamp():
+    ts = datetime.now()
+    time_stamp = '{y}-{m:02d}-{d:02d}_{h:02d}:{mm:02d}'.format(
+        y=ts.year, m=ts.month, d=ts.day, h=ts.hour, mm=ts.minute
+    )
+    return time_stamp
 
 
 def get_config_from_weights(w_path, arch_params, name):

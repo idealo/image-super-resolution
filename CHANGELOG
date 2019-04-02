@@ -17,3 +17,6 @@ Removed most hard-coded variables and improved assistant. Weights saving now all
 
 - 2019-04-01 2.0.1 beta: Cleaner training session tracking: now weights are saved together with a yaml configuration file that contains hyperparameters and other relevant training details.
   Partial migration to pathlib from os.
+
+- 2019-04-02 2.0.2 beta: Predictor uses the model parameters and the configuration file rather than inferring details from the name of the weights. Minor changes to input/output folder structure. Partial migration to pathlib.
+  Added configuration settings to pre-trained weights.

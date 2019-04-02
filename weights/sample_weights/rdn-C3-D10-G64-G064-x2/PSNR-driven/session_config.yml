@@ -1,0 +1,36 @@
+# ISR pre-trained weights
+# Read about how we obtained these weights on Medium:
+# part 1: https://medium.com/idealo-tech-blog/a-deep-learning-based-magnifying-glass-dae1f565c359
+# part 2: https://medium.com/idealo-tech-blog/zoom-in-enhance-a-deep-learning-based-magnifying-glass-part-2-c021f98ebede
+pretrained-psnr-driven:
+  discriminator: null
+  feature_extractor: null
+  generator:
+    name: rdn
+    parameters:
+      C: 3
+      D: 10
+      G: 64
+      G0: 64
+      x: 2
+  training_parameters:
+    T: 0.0
+    batch_size: 12
+    beta_1: 0.9
+    beta_2: 0.999
+    dataname: div2k
+    epsilon: 0.1
+    learning_rate: 0.0004
+    loss_weights:
+      MSE: 1
+      discriminator: 0.0
+      feat_extr: 0.0
+    lr_decay_factor: 0.5
+    lr_decay_frequency: 100
+    lr_patch_size: 32
+    n_validation: 40
+    scale: 2
+    starting_epoch: 0
+    steps_per_epoch: 1
+    weights_discriminator: null
+    weights_generator: null
