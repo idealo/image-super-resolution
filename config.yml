@@ -68,4 +68,4 @@ training_sets:
     data_name: div2k
 weights_paths:
   discriminator:
-  generator: weights/sample_weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5
+  generator: weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5

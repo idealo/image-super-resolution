@@ -1,8 +1,8 @@
 import yaml
 import numpy as np
-from datetime import datetime
 from pathlib import Path
 from ISR.utils.logger import get_logger
+from ISR.utils.utils import get_timestamp
 
 
 class TrainerHelper:
@@ -91,10 +91,7 @@ class TrainerHelper:
     def get_session_id(self, basename):
         """ Returns unique session identifier. """
 
-        ts = datetime.now()
-        time_stamp = '{y}-{m:02d}-{d:02d}_{h}:{mm}'.format(
-            y=ts.year, m=ts.month, d=ts.day, h=ts.hour, mm=ts.minute
-        )
+        time_stamp = get_timestamp()
 
         if basename:
             session_id = '{b}_{ts}'.format(b=basename, ts=time_stamp)
@@ -110,7 +107,7 @@ class TrainerHelper:
                 self.pretrained_generator_weights.parent / self.session_config_name
             )
             if session_config_path.exists():
-                return yaml.load(session_config_path.read_text())
+                return yaml.load(session_config_path.read_text(), Loader=yaml.FullLoader)
             else:
                 self.logger.warning('Could not find previous configuration')
                 return {}
