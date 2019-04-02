@@ -31,7 +31,8 @@ class PredictorClassTest(unittest.TestCase):
         def nullifier(*args):
             pass
 
-        cls.predictor = Predictor(input_dir=str(cls.valid_files), output_dir='out_dir')
+        cls.out_dir = cls.temp_data / 'out_dir'
+        cls.predictor = Predictor(input_dir=str(cls.valid_files), output_dir=str(cls.out_dir))
         cls.predictor.logger = Mock(return_value=True)
 
     @classmethod
@@ -123,16 +124,21 @@ class PredictorClassTest(unittest.TestCase):
 
     def test_output_folder_and_dataname(self):
         self.assertTrue(self.pred.data_name == 'valid_files')
-        self.assertTrue(self.pred.output_dir == Path('out_dir') / 'valid_files')
+        self.assertTrue(
+            self.pred.output_dir == Path('tests/temporary_test_data/out_dir/valid_files')
+        )
 
     def test_valid_extensions(self):
         self.assertTrue(
-            self.pred.img_ls == [self.valid_files / 'data0.jpeg', self.valid_files / 'data1.png']
+            np.array_equal(
+                np.sort(self.pred.img_ls),
+                np.sort([self.valid_files / 'data0.jpeg', self.valid_files / 'data1.png']),
+            )
         )
 
     def test_no_valid_images(self):
         try:
-            predictor = Predictor(input_dir=str(self.invalid_files), output_dir='sr')
+            predictor = Predictor(input_dir=str(self.invalid_files), output_dir=str(self.out_dir))
         except ValueError as e:
             self.assertTrue('image' in str(e))
         else:
