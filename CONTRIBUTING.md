@@ -21,7 +21,7 @@ You may look through the [GitHub issues](https://github.com/idealo/image-super-r
 ## Pull Requests (PR)
 1. Fork the repository and a create a new branch from the master branch.
 2. For bug fixes, add new tests and for new features please add changes to the documentation.
-3. Do a PR from your new branch to our `master` branch of the original Image Super-Resolution repo.
+3. Do a PR from your new branch to our `dev` branch of the original Image Super-Resolution repo.
 
 ## Documentation
 - Make sure any new function or class you introduce has proper docstrings.

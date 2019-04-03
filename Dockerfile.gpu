@@ -24,7 +24,7 @@ COPY config.yml ./
 COPY setup.py ./
 
 RUN pip install --upgrade pip
-RUN pip install -e .
+RUN pip install -e ".[gpu]" --ignore-installed
 
 ENV PYTHONPATH ./ISR/:$PYTHONPATH
 ENTRYPOINT ["sh", "./scripts/entrypoint.sh"]
