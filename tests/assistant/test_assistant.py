@@ -28,7 +28,7 @@ class RunFunctionTest(unittest.TestCase):
         logging.disable(logging.CRITICAL)
         conf = yaml.load(open(os.path.join('tests', 'data', 'config.yml'), 'r'))
         conf['default'] = {
-            'feat_ext': False,
+            'feature_extractor': False,
             'discriminator': False,
             'generator': 'rdn',
             'training_set': 'test',

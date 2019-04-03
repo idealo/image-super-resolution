@@ -1,14 +1,14 @@
 ---
 default:
   generator: rdn
-  feat_ext: false
+  feature_extractor: false
   discriminator: false
   training_set: div2k
   test_set: sample
 dirs:
   logs: ./logs
   weights: ./weights
-feat_ext:
+feature_extractor:
   vgg19:
     layers_to_extract:
     - 5
@@ -17,8 +17,8 @@ generators:
   rrdn:
     C: 4
     D: 3
-    G: 64
-    G0: 64
+    G: 32
+    G0: 32
     T: 4
     x: 4
   rdn:
@@ -28,29 +28,35 @@ generators:
     G0: 64
     x: 2
 loss_weights:
-  MSE: 1
-  feat_extr: 0.0833
+  generator: 1
+  feature_extractor: 0.0833
   discriminator: 0.01
+losses:
+  generator: 'mae'
+  feature_extractor: 'mse'
+  discriminator: 'binary_crossentropy'
 session:
   prediction:
     patch_size:
   training:
-    steps_per_epoch: 500
-    patch_size: 40
+    steps_per_epoch: 1000
+    patch_size: 32
     batch_size: 16
     epochs: 300
     n_validation_samples: 100
-    lr_decay_frequency: 30
+    lr_decay_frequency: 100
     lr_decay_factor: 0.5
     learning_rate: 0.0004
     fallback_save_every_n_epochs: 2
-    T: 0.1
+    T: 0.0
+    metrics:
+      generator: PSNR_Y
     monitored_metrics:
       val_loss: min
-      val_PSNR: max
+      val_PSNR_Y: max
     beta_1: 0.9
     beta_2: 0.999
-    epsilon: 0.1
+    epsilon: null
 test_sets:
   sample: ./data/input/sample
 training_sets:
@@ -68,4 +74,4 @@ training_sets:
     data_name: div2k
 weights_paths:
   discriminator:
-  generator: weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5
+  generator:

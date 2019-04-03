@@ -1,4 +1,5 @@
 import tensorflow as tf
+from keras.initializers import RandomUniform
 from keras.layers import UpSampling2D, concatenate, Input, Activation, Add, Conv2D, Lambda
 from keras.models import Model
 from ISR.models.imagemodel import ImageModel
@@ -27,6 +28,7 @@ class RRDN(ImageModel):
         kernel_size: integer, common kernel size for convolutions.
         upscaling: string, 'ups' or 'shuffle', determines which implementation
             of the upscaling layer to use.
+        init_val: extreme values for the RandomUniform initializer.
 
     Attributes:
         C: integer, number of conv layer inside each residual dense blocks (RDB).
@@ -42,8 +44,8 @@ class RRDN(ImageModel):
     """
 
     def __init__(
-        self, arch_params={}, patch_size=None, beta=0.2, c_dim=3, kernel_size=3
-    ):  # , learning_rate=1e-5):
+        self, arch_params={}, patch_size=None, beta=0.2, c_dim=3, kernel_size=3, init_val=0.05
+    ):
         self.params = arch_params
         self.beta = beta
         self.c_dim = c_dim
@@ -53,6 +55,7 @@ class RRDN(ImageModel):
         self.G0 = self.params['G0']
         self.T = self.params['T']
         self.scale = self.params['x']
+        self.initializer = RandomUniform(minval=-init_val, maxval=init_val, seed=None)
         self.kernel_size = kernel_size
         self.patch_size = patch_size
         self.model = self._build_rdn()
@@ -71,13 +74,23 @@ class RRDN(ImageModel):
         x = input_layer
         for c in range(1, self.C + 1):
             F_dc = Conv2D(
-                self.G, kernel_size=self.kernel_size, padding='same', name='F_%d_%d_%d' % (t, d, c)
+                self.G,
+                kernel_size=self.kernel_size,
+                padding='same',
+                kernel_initializer=self.initializer,
+                name='F_%d_%d_%d' % (t, d, c),
             )(x)
             F_dc = Activation('relu', name='F_%d_%d_%d_Relu' % (t, d, c))(F_dc)
             x = concatenate([x, F_dc], axis=3, name='RDB_Concat_%d_%d_%d' % (t, d, c))
 
         # DIFFERENCE: in RDN a kernel size of 1 instead of 3 is used here
-        x = Conv2D(self.G0, kernel_size=3, padding='same', name='LFF_%d_%d' % (t, d))(x)
+        x = Conv2D(
+            self.G0,
+            kernel_size=3,
+            padding='same',
+            kernel_initializer=self.initializer,
+            name='LFF_%d_%d' % (t, d),
+        )(x)
         return x
 
     def _RRDB(self, input_layer, t):
@@ -101,9 +114,13 @@ class RRDN(ImageModel):
     def _pixel_shuffle(self, input_layer):
         """ PixelShuffle implementation of the upscaling part. """
 
-        x = Conv2D(self.c_dim * self.scale ** 2, kernel_size=3, padding='same', name='PreShuffle')(
-            input_layer
-        )
+        x = Conv2D(
+            self.c_dim * self.scale ** 2,
+            kernel_size=3,
+            padding='same',
+            kernel_initializer=self.initializer,
+            name='PreShuffle',
+        )(input_layer)
         return Lambda(
             lambda x: tf.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
             name='PixelShuffle',
@@ -112,7 +129,11 @@ class RRDN(ImageModel):
     def _build_rdn(self):
         LR_input = Input(shape=(self.patch_size, self.patch_size, 3), name='LR_input')
         pre_blocks = Conv2D(
-            self.G0, kernel_size=self.kernel_size, padding='same', name='Pre_blocks_conv'
+            self.G0,
+            kernel_size=self.kernel_size,
+            padding='same',
+            kernel_initializer=self.initializer,
+            name='Pre_blocks_conv',
         )(LR_input)
         # DIFFERENCE: in RDN an extra convolution is present here
         for t in range(1, self.T + 1):
@@ -121,11 +142,23 @@ class RRDN(ImageModel):
             else:
                 x = self._RRDB(x, t)
         # DIFFERENCE: in RDN a conv with kernel size of 1 after a concat operation is used here
-        post_blocks = Conv2D(self.G0, kernel_size=3, padding='same', name='post_blocks_conv')(x)
+        post_blocks = Conv2D(
+            self.G0,
+            kernel_size=3,
+            padding='same',
+            kernel_initializer=self.initializer,
+            name='post_blocks_conv',
+        )(x)
         # Global Residual Learning
         GRL = Add(name='GRL')([post_blocks, pre_blocks])
         # Upscaling
         PS = self._pixel_shuffle(GRL)
         # Compose SR image
-        SR = Conv2D(self.c_dim, kernel_size=self.kernel_size, padding='same', name='SR')(PS)
+        SR = Conv2D(
+            self.c_dim,
+            kernel_size=self.kernel_size,
+            padding='same',
+            kernel_initializer=self.initializer,
+            name='SR',
+        )(PS)
         return Model(inputs=LR_input, outputs=SR)

@@ -56,7 +56,7 @@ class TrainerClassTest(unittest.TestCase):
                 lr_valid_dir=str(cls.matching_lr),
                 hr_valid_dir=str(cls.matching_hr),
                 learning_rate=0.0004,
-                loss_weights={'MSE': 1.0, 'discriminator': 1.0, 'feat_extr': 1.0},
+                loss_weights={'MSE': 1.0, 'discriminator': 1.0, 'feature_extractor': 1.0},
                 logs_dir='./tests/temporary_test_data/logs',
                 weights_dir='./tests/temporary_test_data/weights',
                 dataname='TEST',
@@ -111,7 +111,7 @@ class TrainerClassTest(unittest.TestCase):
     def test_that_discriminator_and_f_extr_are_not_trainable_in_combined_model(self):
         combined = self.trainer._combine_networks()
         self.assertTrue(combined.get_layer('discriminator').trainable == False)
-        self.assertTrue(combined.get_layer('feat_extr').trainable == False)
+        self.assertTrue(combined.get_layer('feature_extractor').trainable == False)
 
     def test_that_discriminator_is_trainable_outside_of_combined(self):
         combined = self.trainer._combine_networks()
