@@ -49,7 +49,7 @@ class UtilsClassTest(unittest.TestCase):
         base_conf = {}
         base_conf['default'] = {
             'generator': 'rrdn',
-            'feat_ext': False,
+            'feature_extractor': False,
             'discriminator': False,
             'training_set': 'div2k-x4',
             'test_set': 'dummy',
@@ -71,7 +71,7 @@ class UtilsClassTest(unittest.TestCase):
         base_conf = {}
         base_conf['default'] = {
             'generator': 'rdn',
-            'feat_ext': False,
+            'feature_extractor': False,
             'discriminator': False,
             'training_set': 'div2k-x4',
             'test_set': 'dummy',
@@ -166,15 +166,15 @@ class UtilsClassTest(unittest.TestCase):
             discriminator=True, feature_extractor=False, loss_weights={}
         )
         self.assertTrue('val_generator_loss' in metrics)
-        self.assertFalse('val_feat_extr_loss' in metrics)
+        self.assertFalse('val_feature_extractor_loss' in metrics)
         self.assertFalse('val_loss' in metrics)
         metrics = utils.suggest_metrics(discriminator=True, feature_extractor=True, loss_weights={})
-        self.assertTrue('val_feat_extr_loss' in metrics)
+        self.assertTrue('val_feature_extractor_loss' in metrics)
         self.assertTrue('val_generator_loss' in metrics)
         self.assertFalse('val_loss' in metrics)
         metrics = utils.suggest_metrics(
             discriminator=False, feature_extractor=True, loss_weights={}
         )
-        self.assertTrue('val_feat_extr_loss' in metrics)
+        self.assertTrue('val_feature_extractor_loss' in metrics)
         self.assertTrue('val_generator_loss' in metrics)
         self.assertFalse('val_loss' in metrics)

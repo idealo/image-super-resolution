@@ -24,7 +24,7 @@ unzip -q DIV2K_valid_HR.zip -d div2k
 Import the models from the ISR package and create
 
 - a RRDN super scaling network
-- a discrmiminator network for GANs training
+- a discriminator network for GANs training
 - a VGG19 feature extractor to train with a perceptual loss function
 
 Carefully select:
@@ -58,7 +58,7 @@ from ISR.train import Trainer
 
 loss_weights = {
   'generator': 0.0,
-  'feat_extr': 0.0833,
+  'feature_extractor': 0.0833,
   'discriminator': 0.01,
 }
 
