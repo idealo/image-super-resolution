@@ -85,30 +85,45 @@ class DataHandler:
         top left corners.
         """
 
-        n = 2 * batch_size
+        slices = {}
+        crops = {}
+        crops['lr'] = []
+        crops['hr'] = []
+        accepted_slices = {}
+        accepted_slices['lr'] = []
         top_left = {'x': {}, 'y': {}}
+        n = 50 * batch_size
         for i, axis in enumerate(['x', 'y']):
             top_left[axis]['lr'] = np.random.randint(
                 0, imgs['lr'].shape[i] - self.patch_size['lr'] + 1, batch_size + n
             )
             top_left[axis]['hr'] = top_left[axis]['lr'] * self.scale
-
-        crops = {}
         for res in ['lr', 'hr']:
-            slices = [
-                [slice(x, x + self.patch_size[res]), slice(y, y + self.patch_size[res])]
-                for x, y in zip(top_left['x'][res], top_left['y'][res])
-            ]
-            crops[res] = []
-            for s in slices:
-                candidate_crop = imgs[res][s[0], s[1], slice(None)]
-                if self._not_flat(candidate_crop) or n == 0:
-                    crops[res].append(candidate_crop)
-                else:
-                    n -= 1
-                if len(crops[res]) == batch_size:
-                    break
-            crops[res] = np.array(crops[res])
+            slices[res] = np.array(
+                [
+                    {'x': (x, x + self.patch_size[res]), 'y': (y, y + self.patch_size[res])}
+                    for x, y in zip(top_left['x'][res], top_left['y'][res])
+                ]
+            )
+
+        for slice_index, s in enumerate(slices['lr']):
+            candidate_crop = imgs['lr'][s['x'][0] : s['x'][1], s['y'][0] : s['y'][1], slice(None)]
+            if self._not_flat(candidate_crop) or n == 0:
+                crops['lr'].append(candidate_crop)
+                accepted_slices['lr'].append(slice_index)
+            else:
+                n -= 1
+            if len(crops['lr']) == batch_size:
+                break
+
+        accepted_slices['hr'] = slices['hr'][accepted_slices['lr']]
+
+        for s in accepted_slices['hr']:
+            candidate_crop = imgs['hr'][s['x'][0] : s['x'][1], s['y'][0] : s['y'][1], slice(None)]
+            crops['hr'].append(candidate_crop)
+
+        crops['lr'] = np.array(crops['lr'])
+        crops['hr'] = np.array(crops['hr'])
         return crops
 
     def _apply_transform(self, img, transform_selection):
