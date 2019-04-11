@@ -1,6 +1,5 @@
 import os
 import argparse
-import inspect
 from datetime import datetime
 import numpy as np
 import yaml
@@ -40,20 +39,15 @@ def get_timestamp():
 
 
 def check_parameter_keys(parameter, needed_keys, optional_keys=None, default_value=None):
-    callers_local_vars = inspect.currentframe().f_back.f_locals.items()
-    param_name = [var_name for var_name, var_val in callers_local_vars if var_val is parameter][0]
     if needed_keys:
         for key in needed_keys:
             if key not in parameter:
-                logger.error('{p} is missing key {k}'.format(p=param_name, k=key))
-                logger.error('{p_name}: {p_vals}'.format(p_name=param_name, p_vals=parameter))
+                logger.error('{p} is missing key {k}'.format(p=parameter, k=key))
                 raise
     if optional_keys:
         for key in optional_keys:
             if key not in parameter:
-                logger.info(
-                    'Setting {k} in {p} to {d}'.format(k=key, p=param_name, d=default_value)
-                )
+                logger.info('Setting {k} in {p} to {d}'.format(k=key, p=parameter, d=default_value))
                 parameter[key] = default_value
 
 
