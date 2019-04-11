@@ -21,6 +21,34 @@ class UtilsClassTest(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def test_check_parameter_keys(self):
+        par = {'a': 0}
+        utils.check_parameter_keys(parameter=par, needed_keys=['a'])
+        utils.check_parameter_keys(
+            parameter=par, needed_keys=None, optional_keys=['b'], default_value=-1
+        )
+        self.assertTrue(par['b'] == -1)
+        try:
+            utils.check_parameter_keys(parameter=par, needed_keys=['c'])
+        except:
+            self.assertTrue(True)
+        else:
+            self.assertTrue(False)
+
+        def check_parameter_keys(parameter, needed_keys, optional_keys=None, default_value=None):
+            if needed_keys:
+                for key in needed_keys:
+                    if key not in parameter:
+                        logger.error('{p} is missing key {k}'.format(p=parameter, k=key))
+                        raise
+            if optional_keys:
+                for key in optional_keys:
+                    if key not in parameter:
+                        logger.info(
+                            'Setting {k} in {p} to {d}'.format(k=key, p=parameter, d=default_value)
+                        )
+                        parameter[key] = default_value
+
     def test_config_from_weights_valid(self):
         weights = os.path.join('a', 'path', 'to', 'rdn-C3-D1-G7-G05-x2')
         arch_params = {'C': None, 'D': None, 'G': None, 'G0': None, 'x': None}
@@ -49,7 +77,7 @@ class UtilsClassTest(unittest.TestCase):
         base_conf = {}
         base_conf['default'] = {
             'generator': 'rrdn',
-            'feat_ext': False,
+            'feature_extractor': False,
             'discriminator': False,
             'training_set': 'div2k-x4',
             'test_set': 'dummy',
@@ -71,7 +99,7 @@ class UtilsClassTest(unittest.TestCase):
         base_conf = {}
         base_conf['default'] = {
             'generator': 'rdn',
-            'feat_ext': False,
+            'feature_extractor': False,
             'discriminator': False,
             'training_set': 'div2k-x4',
             'test_set': 'dummy',
@@ -166,15 +194,15 @@ class UtilsClassTest(unittest.TestCase):
             discriminator=True, feature_extractor=False, loss_weights={}
         )
         self.assertTrue('val_generator_loss' in metrics)
-        self.assertFalse('val_feat_extr_loss' in metrics)
+        self.assertFalse('val_feature_extractor_loss' in metrics)
         self.assertFalse('val_loss' in metrics)
         metrics = utils.suggest_metrics(discriminator=True, feature_extractor=True, loss_weights={})
-        self.assertTrue('val_feat_extr_loss' in metrics)
+        self.assertTrue('val_feature_extractor_loss' in metrics)
         self.assertTrue('val_generator_loss' in metrics)
         self.assertFalse('val_loss' in metrics)
         metrics = utils.suggest_metrics(
             discriminator=False, feature_extractor=True, loss_weights={}
         )
-        self.assertTrue('val_feat_extr_loss' in metrics)
+        self.assertTrue('val_feature_extractor_loss' in metrics)
         self.assertTrue('val_generator_loss' in metrics)
         self.assertFalse('val_loss' in metrics)

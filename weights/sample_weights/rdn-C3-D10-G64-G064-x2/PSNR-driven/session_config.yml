@@ -22,9 +22,9 @@ pretrained-psnr-driven:
     epsilon: 0.1
     learning_rate: 0.0004
     loss_weights:
-      MSE: 1
+      generator: 1
       discriminator: 0.0
-      feat_extr: 0.0
+      feature_extractor: 0.0
     lr_decay_factor: 0.5
     lr_decay_frequency: 100
     lr_patch_size: 32

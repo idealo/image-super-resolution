@@ -28,7 +28,7 @@ class RunFunctionTest(unittest.TestCase):
         logging.disable(logging.CRITICAL)
         conf = yaml.load(open(os.path.join('tests', 'data', 'config.yml'), 'r'))
         conf['default'] = {
-            'feat_ext': False,
+            'feature_extractor': False,
             'discriminator': False,
             'generator': 'rdn',
             'training_set': 'test',
@@ -53,22 +53,20 @@ class RunFunctionTest(unittest.TestCase):
         conf['training_sets']['test']['hr_valid_dir'] = None
         conf['loss_weights'] = None
         conf['training_sets']['test']['data_name'] = None
-        conf['dirs'] = {}
-        conf['dirs']['logs'] = None
-        conf['dirs']['weights'] = None
+        conf['log_dirs'] = {}
+        conf['log_dirs']['logs'] = None
+        conf['log_dirs']['weights'] = None
         conf['weights_paths'] = {}
         conf['weights_paths']['generator'] = 'a/path/rdn-C1-D6-G1-G02-x0-weights.hdf5'
         conf['weights_paths']['discriminator'] = 'a/path/rdn-weights.hdf5'
         conf['session']['training']['n_validation_samples'] = None
-        conf['session']['training']['lr_decay_factor'] = None
-        conf['session']['training']['lr_decay_frequency'] = None
-        conf['session']['training']['learning_rate'] = None
-        conf['session']['training']['beta_1'] = None
-        conf['session']['training']['beta_2'] = None
-        conf['session']['training']['epsilon'] = None
-        conf['session']['training']['T'] = None
+        conf['session']['training']['metrics'] = None
+        conf['session']['training']['learning_rate'] = {}
+        conf['session']['training']['adam_optimizer'] = None
+        conf['session']['training']['flatness'] = None
         conf['session']['training']['fallback_save_every_n_epochs'] = None
         conf['session']['training']['monitored_metrics'] = None
+        conf['losses'] = None
         cls.conf = conf
 
     @classmethod

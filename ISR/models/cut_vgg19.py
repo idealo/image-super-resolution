@@ -46,5 +46,5 @@ class Cut_VGG19:
         hr = Input(shape=self.input_shape)
         features = vgg(hr)
         self.model = Model(inputs=hr, outputs=features)
-        self.model.name = 'feat_extr'
+        self.model.name = 'feature_extractor'
         self.name = 'vgg19'  # used in weights naming
