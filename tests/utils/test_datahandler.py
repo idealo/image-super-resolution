@@ -49,7 +49,6 @@ class DataHandlerTest(unittest.TestCase):
                     patch_size=0,
                     scale=0,
                     n_validation_samples=None,
-                    T=None,
                 )
 
         expected_ls = {'hr': ['data0.jpeg', 'data1.png'], 'lr': ['data1.png']}
@@ -66,7 +65,6 @@ class DataHandlerTest(unittest.TestCase):
                         patch_size=0,
                         scale=0,
                         n_validation_samples=10,
-                        T=None,
                     )
 
         expected_ls = {'hr': ['data0.jpeg'], 'lr': ['data1.png']}
@@ -83,7 +81,6 @@ class DataHandlerTest(unittest.TestCase):
                     patch_size=0,
                     scale=0,
                     n_validation_samples=None,
-                    T=None,
                 )
         except:
             self.assertTrue(True)
@@ -98,7 +95,6 @@ class DataHandlerTest(unittest.TestCase):
                 patch_size=0,
                 scale=0,
                 n_validation_samples=None,
-                T=None,
             )
 
     def test__not_flat_with_flat_patch(self):
@@ -106,42 +102,27 @@ class DataHandlerTest(unittest.TestCase):
         with patch('ISR.utils.datahandler.DataHandler._make_img_list', return_value=True):
             with patch('ISR.utils.datahandler.DataHandler._check_dataset', return_value=True):
                 DH = DataHandler(
-                    lr_dir=None,
-                    hr_dir=None,
-                    patch_size=0,
-                    scale=0,
-                    n_validation_samples=None,
-                    T=0.01,
+                    lr_dir=None, hr_dir=None, patch_size=0, scale=0, n_validation_samples=None
                 )
-        self.assertFalse(DH._not_flat(lr_patch))
+        self.assertFalse(DH._not_flat(lr_patch, flatness=0.1))
 
     def test__not_flat_with_non_flat_patch(self):
         lr_patch = np.random.random((5, 5, 3))
         with patch('ISR.utils.datahandler.DataHandler._make_img_list', return_value=True):
             with patch('ISR.utils.datahandler.DataHandler._check_dataset', return_value=True):
                 DH = DataHandler(
-                    lr_dir=None,
-                    hr_dir=None,
-                    patch_size=0,
-                    scale=0,
-                    n_validation_samples=None,
-                    T=0.00001,
+                    lr_dir=None, hr_dir=None, patch_size=0, scale=0, n_validation_samples=None
                 )
-        self.assertTrue(DH._not_flat(lr_patch))
+        self.assertTrue(DH._not_flat(lr_patch, flatness=0.00001))
 
     def test__crop_imgs_crops_shapes(self):
         with patch('ISR.utils.datahandler.DataHandler._make_img_list', return_value=True):
             with patch('ISR.utils.datahandler.DataHandler._check_dataset', return_value=True):
                 DH = DataHandler(
-                    lr_dir=None,
-                    hr_dir=None,
-                    patch_size=3,
-                    scale=2,
-                    n_validation_samples=None,
-                    T=0.0,
+                    lr_dir=None, hr_dir=None, patch_size=3, scale=2, n_validation_samples=None
                 )
         imgs = {'hr': np.random.random((20, 20, 3)), 'lr': np.random.random((10, 10, 3))}
-        crops = DH._crop_imgs(imgs, batch_size=2, idx=0)
+        crops = DH._crop_imgs(imgs, batch_size=2, flatness=0)
         self.assertTrue(crops['hr'].shape == (2, 6, 6, 3))
         self.assertTrue(crops['lr'].shape == (2, 3, 3, 3))
 
@@ -155,12 +136,7 @@ class DataHandlerTest(unittest.TestCase):
         with patch('ISR.utils.datahandler.DataHandler._make_img_list', return_value=True):
             with patch('ISR.utils.datahandler.DataHandler._check_dataset', return_value=True):
                 DH = DataHandler(
-                    lr_dir=None,
-                    hr_dir=None,
-                    patch_size=3,
-                    scale=2,
-                    n_validation_samples=None,
-                    T=0.0,
+                    lr_dir=None, hr_dir=None, patch_size=3, scale=2, n_validation_samples=None
                 )
         transf = [[1, 0], [0, 1], [2, 0], [0, 2], [1, 1], [0, 0]]
         self.assertTrue(np.all(np.block([[C, A], [D, B]]) == DH._apply_transform(image, transf[0])))
@@ -174,12 +150,7 @@ class DataHandlerTest(unittest.TestCase):
         with patch('ISR.utils.datahandler.DataHandler._make_img_list', return_value=True):
             with patch('ISR.utils.datahandler.DataHandler._check_dataset', return_value=True):
                 DH = DataHandler(
-                    lr_dir=None,
-                    hr_dir=None,
-                    patch_size=3,
-                    scale=2,
-                    n_validation_samples=None,
-                    T=0.0,
+                    lr_dir=None, hr_dir=None, patch_size=3, scale=2, n_validation_samples=None
                 )
         I = np.ones((2, 2))
         A = I * 0
@@ -203,12 +174,11 @@ class DataHandlerTest(unittest.TestCase):
                     patch_size=patch_size,
                     scale=2,
                     n_validation_samples=None,
-                    T=0.0,
                 )
 
         with patch('imageio.imread', side_effect=self.image_getter):
             with patch('os.path.join', side_effect=self.path_giver):
-                batch = DH.get_batch(batch_size=5, idx=None)
+                batch = DH.get_batch(batch_size=5)
 
         self.assertTrue(type(batch) is dict)
         self.assertTrue(batch['hr'].shape == (5, patch_size * 2, patch_size * 2, 3))
@@ -235,7 +205,6 @@ class DataHandlerTest(unittest.TestCase):
                     patch_size=patch_size,
                     scale=2,
                     n_validation_samples=None,
-                    T=0.0,
                 )
 
         with patch('imageio.imread', side_effect=self.image_getter):
@@ -259,7 +228,6 @@ class DataHandlerTest(unittest.TestCase):
                         patch_size=patch_size,
                         scale=2,
                         n_validation_samples=10,
-                        T=0.0,
                     )
                 except:
                     self.assertTrue(True)
@@ -277,7 +245,6 @@ class DataHandlerTest(unittest.TestCase):
                     patch_size=patch_size,
                     scale=2,
                     n_validation_samples=2,
-                    T=0.0,
                 )
 
         with patch('imageio.imread', side_effect=self.image_getter):
@@ -303,7 +270,6 @@ class DataHandlerTest(unittest.TestCase):
                     patch_size=patch_size,
                     scale=2,
                     n_validation_samples=2,
-                    T=0.0,
                 )
 
         with patch('imageio.imread', side_effect=self.image_getter):

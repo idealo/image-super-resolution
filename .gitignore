@@ -134,6 +134,10 @@ pip-selfcheck.json
 # End of https://www.gitignore.io/api/python
 
 # Custom
+weights/*
+!weights/sample_weights
+data/*
+!data/input
 .DS_Store
 .idea
 log_file

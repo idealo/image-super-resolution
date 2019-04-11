@@ -23,9 +23,9 @@ pretrained-perceptual-driven:
     epsilon: 0.1
     learning_rate: 0.0004
     loss_weights:
-      MSE: 0.
+      generator: 0.
       discriminator: 0.0003
-      feat_extr: 0.8
+      feature_extractor: 0.8
     lr_decay_factor: 0.5
     lr_decay_frequency: 50
     lr_patch_size: 32

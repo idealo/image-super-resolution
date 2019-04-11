@@ -124,7 +124,7 @@ from ISR.train import Trainer
 
 loss_weights = {
   'generator': 0.0,
-  'feat_extr': 0.0833,
+  'feature_extractor': 0.0833,
   'discriminator': 0.01,
 }
 

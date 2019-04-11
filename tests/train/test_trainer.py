@@ -55,17 +55,19 @@ class TrainerClassTest(unittest.TestCase):
                 hr_train_dir=str(cls.matching_hr),
                 lr_valid_dir=str(cls.matching_lr),
                 hr_valid_dir=str(cls.matching_hr),
-                learning_rate=0.0004,
-                loss_weights={'MSE': 1.0, 'discriminator': 1.0, 'feat_extr': 1.0},
-                logs_dir='./tests/temporary_test_data/logs',
-                weights_dir='./tests/temporary_test_data/weights',
+                learning_rate={'initial_value': 0.0004, 'decay_factor': 0.5, 'decay_frequency': 5},
+                log_dirs={
+                    'logs': './tests/temporary_test_data/logs',
+                    'weights': './tests/temporary_test_data/weights',
+                },
                 dataname='TEST',
                 weights_generator=None,
                 weights_discriminator=None,
                 n_validation=2,
-                lr_decay_factor=0.5,
-                lr_decay_frequency=5,
-                T=0.01,
+                flatness={'min': 0.01, 'max': 0.3, 'increase': 0.01, 'increase_frequency': 5},
+                adam_optimizer={'beta1': 0.9, 'beta2': 0.999, 'epsilon': None},
+                losses={'generator': 'mae', 'discriminator': 'mse', 'feature_extractor': 'mse'},
+                loss_weights={'generator': 1.0, 'discriminator': 1.0, 'feature_extractor': 0.5},
             )
 
     @classmethod
@@ -84,12 +86,12 @@ class TrainerClassTest(unittest.TestCase):
         combined = mockd_trainer._combine_networks()
         self.assertTrue(len(combined.layers) is 4)
         self.assertTrue(len(combined.loss_weights) is 4)
-        self.assertTrue(np.all(np.array(combined.loss_weights) == [1.0, 1.0, 0.5, 0.5]))
+        self.assertTrue(np.all(np.array(combined.loss_weights) == [1.0, 1.0, 0.25, 0.25]))
         mockd_trainer.discriminator = None
         combined = mockd_trainer._combine_networks()
         self.assertTrue(len(combined.layers) is 3)
         self.assertTrue(len(combined.loss_weights) is 3)
-        self.assertTrue(np.all(np.array(combined.loss_weights) == [1.0, 0.5, 0.5]))
+        self.assertTrue(np.all(np.array(combined.loss_weights) == [1.0, 0.25, 0.25]))
         mockd_trainer.feature_extractor = None
         combined = mockd_trainer._combine_networks()
         self.assertTrue(len(combined.layers) is 2)
@@ -108,10 +110,34 @@ class TrainerClassTest(unittest.TestCase):
         expected_lr = 0.0004 * (0.5) ** 2
         self.assertTrue(lr == expected_lr)
 
+    def test__flatness_scheduler(self):
+        # test with arguments values
+        f = self.trainer._flatness_scheduler(epoch=10)
+        expected_flatness = 0.03
+        self.assertTrue(f == expected_flatness)
+
+        # test with specified values
+        self.trainer.flatness['increase'] = 0.1
+        self.trainer.flatness['increase_frequency'] = 2
+        self.trainer.flatness['min'] = 0.1
+        self.trainer.flatness['max'] = 1.0
+        f = self.trainer._flatness_scheduler(epoch=10)
+        expected_flatness = 0.6
+        self.assertTrue(f == expected_flatness)
+
+        # test max
+        self.trainer.flatness['increase'] = 1.0
+        self.trainer.flatness['increase_frequency'] = 1
+        self.trainer.flatness['min'] = 0.1
+        self.trainer.flatness['max'] = 1.0
+        f = self.trainer._flatness_scheduler(epoch=10)
+        expected_flatness = 1.0
+        self.assertTrue(f == expected_flatness)
+
     def test_that_discriminator_and_f_extr_are_not_trainable_in_combined_model(self):
         combined = self.trainer._combine_networks()
         self.assertTrue(combined.get_layer('discriminator').trainable == False)
-        self.assertTrue(combined.get_layer('feat_extr').trainable == False)
+        self.assertTrue(combined.get_layer('feature_extractor').trainable == False)
 
     def test_that_discriminator_is_trainable_outside_of_combined(self):
         combined = self.trainer._combine_networks()

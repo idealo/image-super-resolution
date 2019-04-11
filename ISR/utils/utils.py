@@ -38,6 +38,19 @@ def get_timestamp():
     return time_stamp
 
 
+def check_parameter_keys(parameter, needed_keys, optional_keys=None, default_value=None):
+    if needed_keys:
+        for key in needed_keys:
+            if key not in parameter:
+                logger.error('{p} is missing key {k}'.format(p=parameter, k=key))
+                raise
+    if optional_keys:
+        for key in optional_keys:
+            if key not in parameter:
+                logger.info('Setting {k} in {p} to {d}'.format(k=key, p=parameter, d=default_value))
+                parameter[key] = default_value
+
+
 def get_config_from_weights(w_path, arch_params, name):
     """
     Extracts architecture parameters from the file name of the weights.
@@ -211,8 +224,8 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
     if session_type == 'training':
         default_loss_weights = select_bool('Use default weights for loss components?')
         if not default_loss_weights:
-            conf['loss_weights']['MSE'] = select_positive_float(
-                'Input coefficient for pixel-wise MSE loss component '
+            conf['loss_weights']['generator'] = select_positive_float(
+                'Input coefficient for pixel-wise generator loss component '
             )
         use_discr = select_bool('Use an Adversarial Network?')
         if use_discr:
@@ -227,16 +240,16 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
                     'Input coefficient for Adversarial loss component '
                 )
 
-        use_feat_ext = select_bool('Use feature extractor?')
-        if use_feat_ext:
-            conf['default']['feat_ext'] = True
+        use_feature_extractor = select_bool('Use feature extractor?')
+        if use_feature_extractor:
+            conf['default']['feature_extractor'] = True
             if not default_loss_weights:
-                conf['loss_weights']['feat_extr'] = select_positive_float(
+                conf['loss_weights']['feature_extractor'] = select_positive_float(
                     'Input coefficient for conv features loss component '
                 )
         default_metrics = select_bool('Monitor default metrics?')
         if not default_metrics:
-            suggested_list = suggest_metrics(use_discr, use_feat_ext)
+            suggested_list = suggest_metrics(use_discr, use_feature_extractor)
             selected_metrics = select_multiple_options(
                 list(suggested_list.keys()), message='Select metrics to monitor.'
             )
@@ -264,8 +277,8 @@ def suggest_metrics(discriminator=False, feature_extractor=False, loss_weights={
         suggested_metrics['val_generator_PSNR'] = 'max'
         suggested_metrics['train_generator_PSNR'] = 'max'
     if feature_extractor:
-        suggested_metrics['val_feat_extr_loss'] = 'min'
-        suggested_metrics['train_feat_extr_loss'] = 'min'
+        suggested_metrics['val_feature_extractor_loss'] = 'min'
+        suggested_metrics['train_feature_extractor_loss'] = 'min'
     return suggested_metrics
 
 

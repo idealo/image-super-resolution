@@ -20,3 +20,9 @@ Removed most hard-coded variables and improved assistant. Weights saving now all
 
 - 2019-04-02 2.0.2 beta: Predictor uses the model parameters and the configuration file rather than inferring details from the name of the weights. Minor changes to input/output folder structure. Partial migration to pathlib.
   Added configuration settings to pre-trained weights.
+
+- 2019-04-03 2.0.3 beta: Parametric metrics and losses in trainer. Custom weights initialization range with RandomUniform initializer.
+  Added PSNR evaluation on Y channel (for literature comparison). Automatic session config generation from trainer input parameters.
+  Uniform naming for feature extractor and name change for generator network.
+
+- 2019-04-16 2.0.5 beta: Added flatness check scheduler. Refactored some trainer variables into dictionaries for a more compact configuration summary. 
