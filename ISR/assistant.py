@@ -56,20 +56,15 @@ def run(config_file, default=False, training=False, prediction=False):
             loss_weights=conf['loss_weights'],
             losses=conf['losses'],
             dataname=conf['training_sets'][dataset]['data_name'],
-            logs_dir=conf['dirs']['logs'],
-            weights_dir=conf['dirs']['weights'],
+            log_dirs=conf['log_dirs'],
             weights_generator=conf['weights_paths']['generator'],
             weights_discriminator=conf['weights_paths']['discriminator'],
             n_validation=conf['session'][session_type]['n_validation_samples'],
-            lr_decay_frequency=conf['session'][session_type]['lr_decay_frequency'],
-            lr_decay_factor=conf['session'][session_type]['lr_decay_factor'],
-            T=conf['session'][session_type]['T'],
+            flatness=conf['session'][session_type]['flatness'],
             fallback_save_every_n_epochs=conf['session'][session_type][
                 'fallback_save_every_n_epochs'
             ],
-            beta_1=conf['session'][session_type]['beta_1'],
-            beta_2=conf['session'][session_type]['beta_2'],
-            epsilon=conf['session'][session_type]['epsilon'],
+            adam_optimizer=conf['session'][session_type]['adam_optimizer'],
             metrics=conf['session'][session_type]['metrics'],
         )
         trainer.train(
