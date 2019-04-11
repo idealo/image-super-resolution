@@ -15,18 +15,15 @@ class DataHandler:
         scale: integer, upscaling factor.
         n_validation_samples: integer, size of the validation set. Only provided if the
             DataHandler is used to generate validation sets.
-        T: float in [0,1], is the patch "flatness" threshold.
-            Determines what level of detail the patches need to meet. 0 means any patch is accepted.
     """
 
-    def __init__(self, lr_dir, hr_dir, patch_size, scale, n_validation_samples=None, T=0.03):
+    def __init__(self, lr_dir, hr_dir, patch_size, scale, n_validation_samples=None):
         self.folders = {'hr': hr_dir, 'lr': lr_dir}  # image folders
         self.extensions = ('.png', '.jpeg', '.jpg')  # admissible extension
         self.img_list = {}  # list of file names
         self.n_validation_samples = n_validation_samples
         self.patch_size = patch_size
         self.scale = scale
-        self.T = T
         self.patch_size = {'lr': patch_size, 'hr': patch_size * self.scale}
         self.logger = get_logger(__name__)
         self._make_img_list()
@@ -63,18 +60,18 @@ class DataHandler:
         HR_name_root = [x.split('.')[0] for x in self.img_list['hr']]
         return np.all(HR_name_root == LR_name_root)
 
-    def _not_flat(self, patch):
+    def _not_flat(self, patch, flatness):
         """
         Determines whether the patch is complex, or not-flat enough.
-        Threshold set by self.T.
+        Threshold set by flatness.
         """
 
-        if max(np.std(patch, axis=0).mean(), np.std(patch, axis=1).mean()) < self.T:
+        if max(np.std(patch, axis=0).mean(), np.std(patch, axis=1).mean()) < flatness:
             return False
         else:
             return True
 
-    def _crop_imgs(self, imgs, batch_size, idx=0):
+    def _crop_imgs(self, imgs, batch_size, flatness):
         """
         Get random top left corners coordinates in LR space, multiply by scale to
         get HR coordinates.
@@ -108,7 +105,7 @@ class DataHandler:
 
         for slice_index, s in enumerate(slices['lr']):
             candidate_crop = imgs['lr'][s['x'][0] : s['x'][1], s['y'][0] : s['y'][1], slice(None)]
-            if self._not_flat(candidate_crop) or n == 0:
+            if self._not_flat(candidate_crop, flatness) or n == 0:
                 crops['lr'].append(candidate_crop)
                 accepted_slices['lr'].append(slice_index)
             else:
@@ -157,10 +154,15 @@ class DataHandler:
         )
         return t_batch
 
-    def get_batch(self, batch_size, idx=None):
+    def get_batch(self, batch_size, idx=None, flatness=0.0):
         """
         Returns a dictionary with keys ('lr', 'hr') containing training batches
         of Low Res and High Res image patches.
+
+        Args:
+            batch_size: integer.
+            flatness: float in [0,1], is the patch "flatness" threshold.
+                Determines what level of detail the patches need to meet. 0 means any patch is accepted.
         """
 
         if not idx:
@@ -170,7 +172,7 @@ class DataHandler:
         for res in ['lr', 'hr']:
             img_path = os.path.join(self.folders[res], self.img_list[res][idx])
             img[res] = imageio.imread(img_path) / 255.0
-        batch = self._crop_imgs(img, batch_size)
+        batch = self._crop_imgs(img, batch_size, flatness)
         transforms = np.random.randint(0, 3, (batch_size, 2))
         batch['lr'] = self._transform_batch(batch['lr'], transforms)
         batch['hr'] = self._transform_batch(batch['hr'], transforms)
@@ -183,7 +185,7 @@ class DataHandler:
         if self.n_validation_samples:
             batches = []
             for idx in range(self.n_validation_samples):
-                batches.append(self.get_batch(batch_size, idx))
+                batches.append(self.get_batch(batch_size, idx, flatness=0.0))
             return batches
         else:
             self.logger.error(

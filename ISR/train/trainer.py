@@ -12,6 +12,7 @@ from ISR.utils.train_helper import TrainerHelper
 from ISR.utils.metrics import PSNR
 from ISR.utils.metrics import PSNR_Y
 from ISR.utils.logger import get_logger
+from ISR.utils.utils import check_parameter_keys
 
 
 class Trainer:
@@ -43,7 +44,7 @@ class Trainer:
         weights_generator: path to the pre-trained generator's weights, for transfer learning.
         weights_discriminator: path to the pre-trained discriminator's weights, for transfer learning.
         n_validation:integer, number of validation samples used at training from the validation set.
-        T: 0 < float <1, determines the 'flatness' threshold level for the training patches.
+        flatness: dictionary. Determines determines the 'flatness' threshold level for the training patches.
             See the TrainerHelper class for more details.
         lr_decay_frequency: integer, every how many epochs the learning rate is reduced.
         lr_decay_factor: 0 < float <1, learning rate reduction multiplicative factor.
@@ -62,32 +63,23 @@ class Trainer:
         hr_train_dir,
         lr_valid_dir,
         hr_valid_dir,
-        learning_rate=0.0004,
         loss_weights={'generator': 1.0, 'discriminator': 0.003, 'feature_extractor': 1 / 12},
-        logs_dir='logs',
-        weights_dir='weights',
+        log_dirs={'logs': 'logs', 'weights': 'weights'},
+        fallback_save_every_n_epochs=2,
         dataname=None,
         weights_generator=None,
         weights_discriminator=None,
         n_validation=None,
-        T=0.01,
-        lr_decay_frequency=100,
-        lr_decay_factor=0.5,
-        fallback_save_every_n_epochs=2,
-        beta_1=0.9,
-        beta_2=0.999,
-        epsilon=0.00001,
+        flatness={'min': 0.0, 'increase_frequency': None, 'increase': 0.0, 'max': 0.0},
+        learning_rate={'initial_value': 0.0004, 'decay_frequency': 100, 'decay_factor': 0.5},
+        adam_optimizer={'beta1': 0.9, 'beta2': 0.999, 'epsilon': None},
         losses={
             'generator': 'mae',
             'discriminator': 'binary_crossentropy',
             'feature_extractor': 'mse',
         },
-        metrics={'generator': 'PSNR'},
+        metrics={'generator': 'PSNR_Y'},
     ):
-        if discriminator:
-            assert generator.patch_size * generator.scale == discriminator.patch_size
-        if feature_extractor:
-            assert generator.patch_size * generator.scale == feature_extractor.patch_size
         self.generator = generator
         self.discriminator = discriminator
         self.feature_extractor = feature_extractor
@@ -97,27 +89,31 @@ class Trainer:
         self.loss_weights = loss_weights
         self.weights_generator = weights_generator
         self.weights_discriminator = weights_discriminator
-        self.lr_decay_factor = lr_decay_factor
-        self.lr_decay_frequency = lr_decay_frequency
-        self.beta_1 = beta_1
-        self.beta_2 = beta_2
-        self.epsilon = epsilon
+        self.adam_optimizer = adam_optimizer
         self.dataname = dataname
-        self.T = T
+        self.flatness = flatness
         self.n_validation = n_validation
         self.losses = losses
-        self.settings = {}
-        self.settings['training_parameters'] = locals()
-        self.settings = self.update_training_config(self.settings)
+        self.log_dirs = log_dirs
         self.metrics = metrics
         if self.metrics['generator'] == 'PSNR_Y':
             self.metrics['generator'] = PSNR_Y
         elif self.metrics['generator'] == 'PSNR':
             self.metrics['generator'] = PSNR
+
+        self._parameters_sanity_check()
+        self.model = self._combine_networks()
+
+        self.settings = {}
+        self.settings['training_parameters'] = locals()
+        self.settings = self.update_training_config(self.settings)
+
+        self.logger = get_logger(__name__)
+
         self.helper = TrainerHelper(
             generator=self.generator,
-            weights_dir=weights_dir,
-            logs_dir=logs_dir,
+            weights_dir=log_dirs['weights'],
+            logs_dir=log_dirs['logs'],
             lr_train_dir=lr_train_dir,
             feature_extractor=self.feature_extractor,
             discriminator=self.discriminator,
@@ -127,15 +123,12 @@ class Trainer:
             fallback_save_every_n_epochs=fallback_save_every_n_epochs,
         )
 
-        self.model = self._combine_networks()
-
         self.train_dh = DataHandler(
             lr_dir=lr_train_dir,
             hr_dir=hr_train_dir,
             patch_size=self.lr_patch_size,
             scale=self.scale,
             n_validation_samples=None,
-            T=T,
         )
         self.valid_dh = DataHandler(
             lr_dir=lr_valid_dir,
@@ -143,9 +136,36 @@ class Trainer:
             patch_size=self.lr_patch_size,
             scale=self.scale,
             n_validation_samples=n_validation,
-            T=0.0,
         )
-        self.logger = get_logger(__name__)
+
+    def _parameters_sanity_check(self):
+        """ Parameteres sanity check. """
+
+        if self.discriminator:
+            assert self.lr_patch_size * self.scale == self.discriminator.patch_size
+            self.adam_optimizer
+        if self.feature_extractor:
+            assert self.lr_patch_size * self.scale == self.feature_extractor.patch_size
+
+        check_parameter_keys(
+            self.learning_rate,
+            needed_keys=['initial_value'],
+            optional_keys=['decay_factor', 'decay_frequency'],
+            default_value=None,
+        )
+        check_parameter_keys(
+            self.flatness,
+            needed_keys=[],
+            optional_keys=['min', 'increase_frequency', 'increase', 'max'],
+            default_value=0.0,
+        )
+        check_parameter_keys(
+            self.adam_optimizer,
+            needed_keys=['beta1', 'beta2'],
+            optional_keys=['epsilon'],
+            default_value=None,
+        )
+        check_parameter_keys(self.log_dirs, needed_keys=['logs', 'weights'])
 
     def _combine_networks(self):
         """
@@ -168,14 +188,17 @@ class Trainer:
             self.feature_extractor.model.trainable = False
             sr_feats = self.feature_extractor.model(sr)
             outputs.extend([*sr_feats])
-            losses.extend(self.losses['feature_extractor'] * len(sr_feats))
+            losses.extend([self.losses['feature_extractor']] * len(sr_feats))
             loss_weights.extend(
                 [self.loss_weights['feature_extractor'] / len(sr_feats)] * len(sr_feats)
             )
         combined = Model(inputs=lr, outputs=outputs)
         # https://stackoverflow.com/questions/42327543/adam-optimizer-goes-haywire-after-200k-batches-training-loss-grows
         optimizer = Adam(
-            beta_1=self.beta_1, beta_2=self.beta_2, lr=self.learning_rate, epsilon=self.epsilon
+            beta_1=self.adam_optimizer['beta1'],
+            beta_2=self.adam_optimizer['beta2'],
+            lr=self.learning_rate['initial_value'],
+            epsilon=self.adam_optimizer['epsilon'],
         )
         combined.compile(
             loss=losses, loss_weights=loss_weights, optimizer=optimizer, metrics=self.metrics
@@ -185,9 +208,20 @@ class Trainer:
     def _lr_scheduler(self, epoch):
         """ Scheduler for the learning rate updates. """
 
-        n_decays = epoch // self.lr_decay_frequency
-        # no lr below minimum control 10e-6
-        return max(1e-6, self.learning_rate * (self.lr_decay_factor ** n_decays))
+        n_decays = epoch // self.learning_rate['decay_frequency']
+        lr = self.learning_rate['initial_value'] * (self.learning_rate['decay_factor'] ** n_decays)
+        # no lr below minimum control 10e-7
+        return max(1e-7, lr)
+
+    def _flatness_scheduler(self, epoch):
+        if self.flatness['increase']:
+            n_increases = epoch // self.flatness['increase_frequency']
+        else:
+            return self.flatness['min']
+
+        f = self.flatness['min'] + n_increases * self.flatness['increase']
+
+        return min(self.flatness['max'], f)
 
     def _load_weights(self):
         """
@@ -274,11 +308,17 @@ class Trainer:
 
         for epoch in range(starting_epoch, epochs):
             self.logger.info('Epoch {e}/{tot_eps}'.format(e=epoch, tot_eps=epochs))
+
             K.set_value(self.model.optimizer.lr, self._lr_scheduler(epoch=epoch))
             self.logger.info('Current learning rate: {}'.format(K.eval(self.model.optimizer.lr)))
+
+            flatness = self._flatness_scheduler(epoch)
+            if flatness:
+                self.logger.info('Current flatness treshold: {}'.format(flatness))
+
             epoch_start = time()
             for step in tqdm(range(steps_per_epoch)):
-                batch = self.train_dh.get_batch(batch_size)
+                batch = self.train_dh.get_batch(batch_size, flatness=flatness)
                 y_train = [batch['hr']]
                 training_losses = {}
 
