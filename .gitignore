@@ -151,3 +151,7 @@ mkdocs/docs/predict/
 mkdocs/docs/assistant.md
 mkdocs/docs/utils/
 mkdocs/docs/train/
+.gitignore
+*private
+*rdsn.py
+*rrdsn.py
