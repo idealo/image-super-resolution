@@ -100,12 +100,12 @@ class Trainer:
             self.metrics['generator'] = PSNR_Y
         elif self.metrics['generator'] == 'PSNR':
             self.metrics['generator'] = PSNR
-
         self._parameters_sanity_check()
         self.model = self._combine_networks()
 
         self.settings = {}
         self.settings['training_parameters'] = locals()
+        self.settings['training_parameters']['lr_patch_size'] = self.lr_patch_size
         self.settings = self.update_training_config(self.settings)
 
         self.logger = get_logger(__name__)
@@ -178,6 +178,7 @@ class Trainer:
         outputs = [sr]
         losses = [self.losses['generator']]
         loss_weights = [self.loss_weights['generator']]
+
         if self.discriminator:
             self.discriminator.model.trainable = False
             validity = self.discriminator.model(sr)
@@ -265,7 +266,8 @@ class Trainer:
 
         if self.discriminator:
             settings['feature_extractor'] = {}
-            settings['feature_extractor']['name'] = self.discriminator.name
+            settings['feature_extractor']['name'] = self.feature_extractor.name
+            settings['feature_extractor']['layers'] = self.feature_extractor.layers_to_extract
         else:
             settings['feature_extractor'] = None
 
@@ -308,7 +310,6 @@ class Trainer:
 
         for epoch in range(starting_epoch, epochs):
             self.logger.info('Epoch {e}/{tot_eps}'.format(e=epoch, tot_eps=epochs))
-
             K.set_value(self.model.optimizer.lr, self._lr_scheduler(epoch=epoch))
             self.logger.info('Current learning rate: {}'.format(K.eval(self.model.optimizer.lr)))
 
