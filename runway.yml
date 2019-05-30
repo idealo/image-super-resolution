@@ -1,0 +1,6 @@
+python: 3.6
+entrypoint: python runway_model.py
+cuda: 9.2
+framework: tensorflow
+build_steps:
+    - pip install ISR
