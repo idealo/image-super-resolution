@@ -1,0 +1,153 @@
+2019-04-12_09:14:
+  discriminator: null
+  feature_extractor: null
+  generator:
+    name: rrdn
+    parameters:
+      C: 4
+      D: 3
+      G: 32
+      G0: 32
+      T: 10
+      x: 4
+    weights_generator: null
+  training_parameters:
+    adam_optimizer:
+      beta1: 0.9
+      beta2: 0.999
+      epsilon: null
+    batch_size: 8
+    dataname: div2k
+    fallback_save_every_n_epochs: 2
+    flatness:
+      increase: 0.01
+      increase_frequency: 3
+      max: 0.24
+      min: 0.0
+    hr_train_dir: ./data/DIV2K/DIV2K_train_HR
+    hr_valid_dir: ./data/DIV2K/DIV2K_valid_HR
+    learning_rate:
+      decay_factor: 0.5
+      decay_frequency: 50
+      initial_value: 0.0004
+    log_dirs:
+      logs: ./logs
+      weights: ./weights
+    loss_weights:
+      discriminator: 0.01
+      feature_extractor: 0.0833
+      generator: 1.0
+    losses:
+      discriminator: binary_crossentropy
+      feature_extractor: mse
+      generator: mae
+    lr_train_dir: ./data/DIV2K/DIV2K_train_LR_bicubic/X4
+    lr_valid_dir: ./data/DIV2K/DIV2K_valid_LR_bicubic/X4
+    metrics:
+      generator: &id001 !!python/name:ISR.utils.metrics.PSNR_Y ''
+    n_validation: 100
+    starting_epoch: 0
+    steps_per_epoch: 1000
+2019-04-12_13:29:
+  discriminator: null
+  feature_extractor: null
+  generator:
+    name: rrdn
+    parameters:
+      C: 4
+      D: 3
+      G: 32
+      G0: 32
+      T: 10
+      x: 4
+    weights_generator: weights/rrdn-C4-D3-G32-G032-T10-x4/2019-04-12_09:14/rrdn-C4-D3-G32-G032-T10-x4_best-val_loss_epoch049.hdf5
+  training_parameters:
+    adam_optimizer:
+      beta1: 0.9
+      beta2: 0.999
+      epsilon: null
+    batch_size: 8
+    dataname: div2k
+    fallback_save_every_n_epochs: 2
+    flatness:
+      increase: 0.01
+      increase_frequency: 3
+      max: 0.24
+      min: 0.0
+    hr_train_dir: ./data/DIV2K/DIV2K_train_HR
+    hr_valid_dir: ./data/DIV2K/DIV2K_valid_HR
+    learning_rate:
+      decay_factor: 0.5
+      decay_frequency: 50
+      initial_value: 0.0004
+    log_dirs:
+      logs: ./logs
+      weights: ./weights
+    loss_weights:
+      discriminator: 0.01
+      feature_extractor: 0.0833
+      generator: 1.0
+    losses:
+      discriminator: binary_crossentropy
+      feature_extractor: mse
+      generator: mae
+    lr_train_dir: ./data/DIV2K/DIV2K_train_LR_bicubic/X4
+    lr_valid_dir: ./data/DIV2K/DIV2K_valid_LR_bicubic/X4
+    metrics:
+      generator: *id001
+    n_validation: 100
+    starting_epoch: 49
+    steps_per_epoch: 1000
+2019-04-13_00:57:
+  discriminator:
+    name: srgan-large
+    weights_discriminator: null
+  feature_extractor:
+    name: srgan-large
+  generator:
+    name: rrdn
+    parameters:
+      C: 4
+      D: 3
+      G: 32
+      G0: 32
+      T: 10
+      x: 4
+    weights_generator: weights/rrdn-C4-D3-G32-G032-T10-x4/2019-04-12_13:29/rrdn-C4-D3-G32-G032-T10-x4_best-val_loss_epoch166.hdf5
+  training_parameters:
+    adam_optimizer:
+      beta1: 0.9
+      beta2: 0.999
+      epsilon: null
+    batch_size: 8
+    dataname: div2k
+    fallback_save_every_n_epochs: 2
+    flatness:
+      increase: 0.01
+      increase_frequency: 3
+      max: 0.24
+      min: 0.0
+    hr_train_dir: ./data/DIV2K/DIV2K_train_HR
+    hr_valid_dir: ./data/DIV2K/DIV2K_valid_HR
+    learning_rate:
+      decay_factor: 0.5
+      decay_frequency: 50
+      initial_value: 0.0004
+    log_dirs:
+      logs: ./logs
+      weights: ./weights
+    loss_weights:
+      discriminator: 0.01
+      feature_extractor: 0.0833
+      generator: 0.0
+    losses:
+      discriminator: binary_crossentropy
+      feature_extractor: mse
+      generator: mae
+    lr_train_dir: ./data/DIV2K/DIV2K_train_LR_bicubic/X4
+    lr_valid_dir: ./data/DIV2K/DIV2K_valid_LR_bicubic/X4
+    metrics:
+      generator: *id001
+    n_validation: 100
+    starting_epoch: 166
+    steps_per_epoch: 1000
