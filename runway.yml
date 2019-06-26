@@ -1,7 +1,5 @@
 python: 3.6
 entrypoint: python runway_model.py
-cuda: 9.2
-framework: tensorflow
+cuda: 10.0
 build_steps:
     - pip install ISR runway-python
-    - if_gpu: pip uninstall -y tensorflow && pip install https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-1.12.0-cp36-cp36m-linux_x86_64.whl
