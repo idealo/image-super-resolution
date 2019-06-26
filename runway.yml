@@ -3,3 +3,4 @@ entrypoint: python runway_model.py
 cuda: 10.0
 build_steps:
     - pip install ISR runway-python
+    - if_gpu: pip install tensorflow-gpu
