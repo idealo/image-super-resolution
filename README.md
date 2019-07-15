@@ -32,34 +32,41 @@ ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 licens
 - [Maintainers](#maintainers)
 - [License](#copyright)
 
-## Sample Results
+## Pre-trained networks
 
-The samples are upscaled with a factor of two.
-The weights used to produced these images are available under `sample_weights` (see [Additional Information](#additional-information)). They are stored on [git lfs](https://git-lfs.github.com/). If you want to download the weights you need to run `git lfs pull` after cloning the repository.  
+The weights used to produced these images are available under `sample_weights` (see [Additional Information](#additional-information)).
 
-The original low resolution image (left), the super scaled output of the network (center) and the result of the baseline scaling obtained with GIMP bicubic scaling (right).
+<b>IMPORTANT</b>: the weights are stored on [git lfs](https://git-lfs.github.com/). If you want to download the weights you need to run `git lfs pull` after cloning the repository.
 
+#### Basic model
+RRDN model, PSNR driven, weights [here](weights/sample_weights/rdn-C3-D10-G64-G064-x2/PSNR-driven/).
+
+|![butterfly-sample](figures/butterfly_comparison_SR_baseline.png)|
+|:--:|
+| Low resolution image (left), ISR output (center), bicubic scaling (right). |
+#### GANS model
+RRDN model, trained with Adversarial and VGG features losses, weights [here](weights/sample_weights/rrdn-C4-D3-G32-G032-T10-x4/Perceptual/).
 <br>
-<img src="figures/butterfly_comparison_SR_baseline.png">
+-> [more detailed comparison](http://www.framecompare.com/screenshotcomparison/PGZPNNNX)
 
+|![baboon-comparison](figures/baboon-compare.png)|
+|:--:|
+| RRDN GANS model (left), bicubic upscaling (right). |
+
+#### Artefact Cancelling GANS model
+RDN model, trained with Adversarial and VGG features losses, weights [here](weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/).
 <br>
-<img src="figures/basket_comparison_SR_baseline.png">
+-> [more detailed comparison](http://www.framecompare.com/screenshotcomparison/2ECCNNNU)
 
-Below a comparison of different methods on a noisy image: the baseline, bicubic scaling; the RDN network trained using a pixel-wise content loss (PSNR-driven); the same network re-trained on a compressed dataset using VGG19-content and adversarial components for the loss (VGG+GANs). The weights used here are available in this repo.
-
-<img src="figures/temple_comparison.png"/>
-
-|![sandal-baseline](figures/ISR-reference.png)|
+|![sandal-comparison](figures/sandal-compare.png)|
 |:--:|
-| Bicubic up-scaling (baseline). |
+| RDN GANS artefact cancelling model (left), RDN standard PSNR driven model (right). |
 
-|![sandal-baseline](figures/ISR-vanilla-RDN.png)|
-|:--:|
-| RDN trained with pixel-wise content loss (PSNR-driven). |
 
-|![sandal-baseline](figures/ISR-gans-vgg.png)|
+|![temple-comparison](figures/temple_comparison.png)|
 |:--:|
-| RDN trained with a VGG content and adversarial loss components.. |
+| Standard vs GANS model. |
+
 
 ## Installation
 There are two ways to install the Image Super-Resolution package:
@@ -99,6 +106,13 @@ rdn.model.load_weights('weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCa
 sr_img = rdn.predict(lr_img)
 Image.fromarray(sr_img)
 ```
+
+#### Large image inference
+To predict on large images and avoid memory allocation errors, use the `by_patch_of_size` option for the predict method, for instance
+```
+sr_img = model.predict(image, by_patch_of_size=50)
+```
+Check the documentation of the `ImageModel` class for further details.
 
 ### Training
 
