@@ -25,4 +25,6 @@ Removed most hard-coded variables and improved assistant. Weights saving now all
   Added PSNR evaluation on Y channel (for literature comparison). Automatic session config generation from trainer input parameters.
   Uniform naming for feature extractor and name change for generator network.
 
-- 2019-04-16 2.0.5 beta: Added flatness check scheduler. Refactored some trainer variables into dictionaries for a more compact configuration summary. 
+- 2019-04-16 2.0.5 beta: Added flatness check scheduler. Refactored some trainer variables into dictionaries for a more compact configuration summary.
+
+-2019-05-30 2.1 beta: Added large image inference. Minor fixes and added new non-artifact-removing GANS model.

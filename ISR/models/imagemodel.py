@@ -20,6 +20,12 @@ class ImageModel:
 
         Args:
             input_image_array: input image array.
+            by_patch_of_size: for large image inference. Splits the image into
+                patches of the given size.
+            padding_size: for large image inference. Padding between the patches.
+                Increase the value if there is seamlines.
+            batch_size: for large image inferce. Number of patches processed at a time.
+                Keep low and increase by_patch_of_size instead.
         Returns:
             sr_img: image output.
         """
