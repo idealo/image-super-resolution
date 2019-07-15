@@ -23,7 +23,7 @@ Read the full documentation at: [https://idealo.github.io/image-super-resolution
 ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 license. We welcome any kind of contribution. If you wish to contribute, please see the [Contribute](#contribute) section.
 
 ## Contents
-- [Sample Results](#sample-results)
+- [Pre-trained networks](#pre-trained-networks)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Additional Information](#additional-information)
@@ -43,7 +43,7 @@ RRDN model, PSNR driven, weights [here](weights/sample_weights/rdn-C3-D10-G64-G0
 
 |![butterfly-sample](figures/butterfly_comparison_SR_baseline.png)|
 |:--:|
-| Low resolution image (left), ISR output (center), bicubic scaling (right). |
+| Low resolution image (left), ISR output (center), bicubic scaling (right). Click to zoom. |
 #### GANS model
 RRDN model, trained with Adversarial and VGG features losses, weights [here](weights/sample_weights/rrdn-C4-D3-G32-G032-T10-x4/Perceptual/).
 <br>
@@ -55,17 +55,16 @@ RRDN model, trained with Adversarial and VGG features losses, weights [here](wei
 
 #### Artefact Cancelling GANS model
 RDN model, trained with Adversarial and VGG features losses, weights [here](weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/).
-<br>
--> [more detailed comparison](http://www.framecompare.com/screenshotcomparison/2ECCNNNU)
+
+|![temple-comparison](figures/temple_comparison.png)|
+|:--:|
+| Standard vs GANS model. Click to zoom. |
+
 
 |![sandal-comparison](figures/sandal-compare.png)|
 |:--:|
 | RDN GANS artefact cancelling model (left), RDN standard PSNR driven model (right). |
-
-
-|![temple-comparison](figures/temple_comparison.png)|
-|:--:|
-| Standard vs GANS model. |
+-> [more detailed comparison](http://www.framecompare.com/screenshotcomparison/2ECCNNNU)
 
 
 ## Installation
