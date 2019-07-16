@@ -135,12 +135,22 @@ discr = Discriminator(patch_size=hr_train_patch_size, kernel_size=3)
 Create a Trainer object using the desired settings and give it the models (`f_ext` and `discr` are optional)
 ```python
 from ISR.train import Trainer
-
 loss_weights = {
   'generator': 0.0,
   'feature_extractor': 0.0833,
-  'discriminator': 0.01,
+  'discriminator': 0.01
 }
+losses = {
+  'generator': 'mae',
+  'feature_extractor': 'mse',
+  'discriminator': 'binary_crossentropy'
+}
+
+log_dirs = {'logs': './logs', 'weights': './weights'}
+
+learning_rate = {'initial_value': 0.0004, 'decay_factor': 0.5, 'decay_frequency': 30}
+
+flatness = {'min': 0.0, 'max': 0.15, 'increase': 0.01, 'increase_frequency': 5}
 
 trainer = Trainer(
     generator=rrdn,
@@ -151,14 +161,13 @@ trainer = Trainer(
     lr_valid_dir='low_res/validation/images',
     hr_valid_dir='high_res/validation/images',
     loss_weights=loss_weights,
+    learning_rate=learning_rate,
+    flatness=flatness,
     dataname='image_dataset',
-    logs_dir='./logs',
-    weights_dir='./weights',
+    log_dirs=log_dirs,
     weights_generator=None,
     weights_discriminator=None,
     n_validation=40,
-    lr_decay_frequency=30,
-    lr_decay_factor=0.5,
 )
 ```
 
@@ -168,6 +177,7 @@ trainer.train(
     epochs=80,
     steps_per_epoch=500,
     batch_size=16,
+    monitored_metrics={'val_PSNR_Y': 'max'}
 )
 ```
 
@@ -223,7 +233,7 @@ See the [Contribution](CONTRIBUTING.md) guide for more details.
 #### Bump version
 To bump up the version, use
 ```
-bumpversion --current-version 2.0.0 --new-version 2.1.0 patch setup.py
+bumpversion {part} setup.py
 ```
 
 ## Citation
