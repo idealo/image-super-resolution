@@ -220,6 +220,12 @@ Will publish the performances of new models in this repository.
 
 See the [Contribution](CONTRIBUTING.md) guide for more details.
 
+#### Bump version
+To bump up the version, use
+```
+bumpversion --current-version 2.0.0 --new-version 2.1.0 patch setup.py
+```
+
 ## Citation
 Please cite our work in your publications if it helps your research.
 
