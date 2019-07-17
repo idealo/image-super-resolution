@@ -12,7 +12,7 @@ def setup(opts):
 
 @runway.command('upscale', inputs={'image': runway.image}, outputs={'upscaled': runway.image})
 def upscale(rdn, inputs):
-    return rdn.predict(np.array(inputs['image']))
+    return rdn.predict(np.array(inputs['image']), by_patch_of_size=50)
 
 
 if __name__ == '__main__':
