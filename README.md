@@ -23,7 +23,7 @@ Read the full documentation at: [https://idealo.github.io/image-super-resolution
 ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 license. We welcome any kind of contribution. If you wish to contribute, please see the [Contribute](#contribute) section.
 
 ## Contents
-- [Sample Results](#sample-results)
+- [Pre-trained networks](#pre-trained-networks)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Additional Information](#additional-information)
@@ -32,34 +32,41 @@ ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 licens
 - [Maintainers](#maintainers)
 - [License](#copyright)
 
-## Sample Results
+## Pre-trained networks
 
-The samples are upscaled with a factor of two.
-The weights used to produced these images are available under `sample_weights` (see [Additional Information](#additional-information)). They are stored on [git lfs](https://git-lfs.github.com/). If you want to download the weights you need to run `git lfs pull` after cloning the repository.  
+The weights used to produced these images are available under `sample_weights` (see [Additional Information](#additional-information)).
 
-The original low resolution image (left), the super scaled output of the network (center) and the result of the baseline scaling obtained with GIMP bicubic scaling (right).
+<b>IMPORTANT</b>: the weights are stored on [git lfs](https://git-lfs.github.com/). To download them either:
+- download the raw file (e.g. [here](https://github.com/idealo/image-super-resolution/blob/master/weights/sample_weights/rrdn-C4-D3-G32-G032-T10-x4/Perceptual/rrdn-C4-D3-G32-G032-T10-x4_epoch299.hdf5) -> `Download`);
+- clone the repository and run `git lfs pull`.
 
-<br>
-<img src="figures/butterfly_comparison_SR_baseline.png">
+#### Basic model
+RRDN model, PSNR driven, weights [here](weights/sample_weights/rdn-C3-D10-G64-G064-x2/PSNR-driven/).
 
-<br>
-<img src="figures/basket_comparison_SR_baseline.png">
-
-Below a comparison of different methods on a noisy image: the baseline, bicubic scaling; the RDN network trained using a pixel-wise content loss (PSNR-driven); the same network re-trained on a compressed dataset using VGG19-content and adversarial components for the loss (VGG+GANs). The weights used here are available in this repo.
-
-<img src="figures/temple_comparison.png"/>
-
-|![sandal-baseline](figures/ISR-reference.png)|
+|![butterfly-sample](figures/butterfly_comparison_SR_baseline.png)|
 |:--:|
-| Bicubic up-scaling (baseline). |
+| Low resolution image (left), ISR output (center), bicubic scaling (right). Click to zoom. |
+#### GANS model
+RRDN model, trained with Adversarial and VGG features losses, weights [here](weights/sample_weights/rrdn-C4-D3-G32-G032-T10-x4/Perceptual/).
 
-|![sandal-baseline](figures/ISR-vanilla-RDN.png)|
+|![baboon-comparison](figures/baboon-compare.png)|
 |:--:|
-| RDN trained with pixel-wise content loss (PSNR-driven). |
+| RRDN GANS model (left), bicubic upscaling (right). |
+-> [more detailed comparison](http://www.framecompare.com/screenshotcomparison/PGZPNNNX)
 
-|![sandal-baseline](figures/ISR-gans-vgg.png)|
+#### Artefact Cancelling GANS model
+RDN model, trained with Adversarial and VGG features losses, weights [here](weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/).
+
+|![temple-comparison](figures/temple_comparison.png)|
 |:--:|
-| RDN trained with a VGG content and adversarial loss components.. |
+| Standard vs GANS model. Click to zoom. |
+
+
+|![sandal-comparison](figures/sandal-compare.png)|
+|:--:|
+| RDN GANS artefact cancelling model (left), RDN standard PSNR driven model (right). |
+-> [more detailed comparison](http://www.framecompare.com/screenshotcomparison/2ECCNNNU)
+
 
 ## Installation
 There are two ways to install the Image Super-Resolution package:
@@ -100,6 +107,13 @@ sr_img = rdn.predict(lr_img)
 Image.fromarray(sr_img)
 ```
 
+#### Large image inference
+To predict on large images and avoid memory allocation errors, use the `by_patch_of_size` option for the predict method, for instance
+```
+sr_img = model.predict(image, by_patch_of_size=50)
+```
+Check the documentation of the `ImageModel` class for further details.
+
 ### Training
 
 Create the models
@@ -121,12 +135,22 @@ discr = Discriminator(patch_size=hr_train_patch_size, kernel_size=3)
 Create a Trainer object using the desired settings and give it the models (`f_ext` and `discr` are optional)
 ```python
 from ISR.train import Trainer
-
 loss_weights = {
   'generator': 0.0,
   'feature_extractor': 0.0833,
-  'discriminator': 0.01,
+  'discriminator': 0.01
 }
+losses = {
+  'generator': 'mae',
+  'feature_extractor': 'mse',
+  'discriminator': 'binary_crossentropy'
+}
+
+log_dirs = {'logs': './logs', 'weights': './weights'}
+
+learning_rate = {'initial_value': 0.0004, 'decay_factor': 0.5, 'decay_frequency': 30}
+
+flatness = {'min': 0.0, 'max': 0.15, 'increase': 0.01, 'increase_frequency': 5}
 
 trainer = Trainer(
     generator=rrdn,
@@ -137,14 +161,13 @@ trainer = Trainer(
     lr_valid_dir='low_res/validation/images',
     hr_valid_dir='high_res/validation/images',
     loss_weights=loss_weights,
+    learning_rate=learning_rate,
+    flatness=flatness,
     dataname='image_dataset',
-    logs_dir='./logs',
-    weights_dir='./weights',
+    log_dirs=log_dirs,
     weights_generator=None,
     weights_discriminator=None,
     n_validation=40,
-    lr_decay_frequency=30,
-    lr_decay_factor=0.5,
 )
 ```
 
@@ -154,6 +177,7 @@ trainer.train(
     epochs=80,
     steps_per_epoch=500,
     batch_size=16,
+    monitored_metrics={'val_PSNR_Y': 'max'}
 )
 ```
 
@@ -205,6 +229,12 @@ We welcome all kinds of contributions, models trained on different datasets, new
 Will publish the performances of new models in this repository.
 
 See the [Contribution](CONTRIBUTING.md) guide for more details.
+
+#### Bump version
+To bump up the version, use
+```
+bumpversion {part} setup.py
+```
 
 ## Citation
 Please cite our work in your publications if it helps your research.
