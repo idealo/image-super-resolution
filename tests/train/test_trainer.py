@@ -84,18 +84,18 @@ class TrainerClassTest(unittest.TestCase):
     def test__combine_networks_sanity(self):
         mockd_trainer = copy(self.trainer)
         combined = mockd_trainer._combine_networks()
-        self.assertTrue(len(combined.layers) is 4)
-        self.assertTrue(len(combined.loss_weights) is 4)
+        self.assertTrue(len(combined.layers) == 4)
+        self.assertTrue(len(combined.loss_weights) == 4)
         self.assertTrue(np.all(np.array(combined.loss_weights) == [1.0, 1.0, 0.25, 0.25]))
         mockd_trainer.discriminator = None
         combined = mockd_trainer._combine_networks()
-        self.assertTrue(len(combined.layers) is 3)
-        self.assertTrue(len(combined.loss_weights) is 3)
+        self.assertTrue(len(combined.layers) == 3)
+        self.assertTrue(len(combined.loss_weights) == 3)
         self.assertTrue(np.all(np.array(combined.loss_weights) == [1.0, 0.25, 0.25]))
         mockd_trainer.feature_extractor = None
         combined = mockd_trainer._combine_networks()
-        self.assertTrue(len(combined.layers) is 2)
-        self.assertTrue(len(combined.loss_weights) is 1)
+        self.assertTrue(len(combined.layers) == 2)
+        self.assertTrue(len(combined.loss_weights) == 1)
         self.assertTrue(np.all(np.array(combined.loss_weights) == [1.0]))
         try:
             mockd_trainer.generator = None
