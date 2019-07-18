@@ -5,10 +5,13 @@ import yaml
 from ISR.utils import utils
 from unittest.mock import patch
 
+logger = utils.get_logger(__name__)
+
 
 class UtilsClassTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+
         logging.disable(logging.CRITICAL)
 
     @classmethod

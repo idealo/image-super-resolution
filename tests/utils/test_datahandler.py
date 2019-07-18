@@ -251,7 +251,7 @@ class DataHandlerTest(unittest.TestCase):
             with patch('os.path.join', side_effect=self.path_giver):
                 batch = DH.get_validation_batches(batch_size=12)
 
-        self.assertTrue(len(batch) is 2)
+        self.assertTrue(len(batch) == 2)
         self.assertTrue(type(batch) is list)
         self.assertTrue(type(batch[0]) is dict)
         self.assertTrue(batch[0]['hr'].shape == (12, patch_size * 2, patch_size * 2, 3))
@@ -277,6 +277,6 @@ class DataHandlerTest(unittest.TestCase):
                 batch = DH.get_validation_set(batch_size=12)
 
         self.assertTrue(type(batch) is dict)
-        self.assertTrue(len(batch) is 2)
+        self.assertTrue(len(batch) == 2)
         self.assertTrue(batch['hr'].shape == (24, patch_size * 2, patch_size * 2, 3))
         self.assertTrue(batch['lr'].shape == (24, patch_size, patch_size, 3))
