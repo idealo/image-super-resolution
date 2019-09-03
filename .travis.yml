@@ -1,3 +1,5 @@
+git:
+  lfs_skip_smudge: true
 language: python
 python:
 - 3.6
