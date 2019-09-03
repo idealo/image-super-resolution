@@ -19,3 +19,15 @@ for instance using wget
 wget --recursive --no-parent http://pretrained-models.auth-18b62333a540498882ff446ab602528b.storage.gra5.cloud.ovh.net/image/super-resolution/
 
 ```
+
+
+or alternatively with a compressed format
+
+```
+wget http://pretrained-models.auth-18b62333a540498882ff446ab602528b.storage.gra5.cloud.ovh.net/image/super-resolution/weights.rar
+```
+then
+
+```
+rar x weights.rar
+```
