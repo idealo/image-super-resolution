@@ -36,9 +36,7 @@ ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 licens
 
 The weights used to produced these images are available under `sample_weights` (see [Additional Information](#additional-information)).
 
-<b>IMPORTANT</b>: the weights are stored on [git lfs](https://git-lfs.github.com/). To download them either:
-- download the raw file (e.g. [here](https://github.com/idealo/image-super-resolution/blob/master/weights/sample_weights/rrdn-C4-D3-G32-G032-T10-x4/Perceptual/rrdn-C4-D3-G32-G032-T10-x4_epoch299.hdf5) -> `Download`);
-- clone the repository and run `git lfs pull`.
+<b>IMPORTANT</b>: the weights are stored on [git lfs](https://git-lfs.github.com/). To download them clone the repository and run `git lfs pull`; if getting quota issues, go here https://github.com/idealo/image-super-resolution/issues/59#issuecomment-526940275.
 
 #### Basic model
 RRDN model, PSNR driven, weights [here](weights/sample_weights/rdn-C3-D10-G64-G064-x2/PSNR-driven/).
