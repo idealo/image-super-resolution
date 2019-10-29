@@ -56,7 +56,7 @@ class DataHandler:
         # LR_name.png = HR_name+x+scale.png
         # or
         # LR_name.png = HR_name.png
-        LR_name_root = [x.split('.')[0].split('x')[0] for x in self.img_list['lr']]
+        LR_name_root = [x.split('.')[0].rsplit('x', 1)[0] for x in self.img_list['lr']]
         HR_name_root = [x.split('.')[0] for x in self.img_list['hr']]
         return np.all(HR_name_root == LR_name_root)
 
