@@ -1,7 +1,13 @@
-import tensorflow as tf
-from keras.initializers import RandomUniform
-from keras.layers import UpSampling2D, concatenate, Input, Activation, Add, Conv2D, Lambda
-from keras.models import Model
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
+#config.gpu_options.per_process_gpu_memory_fraction = 0.1
+from tensorflow.compat.v1.keras.initializers import RandomUniform
+from tensorflow.compat.v1.keras.layers import UpSampling2D, concatenate, Input, Activation, Add, Conv2D, Lambda
+from tensorflow.compat.v1.keras.models import Model
+from tensorflow.compat.v1.keras.models import Sequential
 from ISR.models.imagemodel import ImageModel
 
 
@@ -59,8 +65,9 @@ class RRDN(ImageModel):
         self.kernel_size = kernel_size
         self.patch_size = patch_size
         self.model = self._build_rdn()
-        self.model.name = 'generator'
+        #self.model.name = 'generator'
         self.name = 'rrdn'
+        #self.model.add(self._build_rdn())
 
     def _dense_block(self, input_layer, d, t):
         """

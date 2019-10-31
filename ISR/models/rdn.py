@@ -1,7 +1,13 @@
-import tensorflow as tf
-from keras.initializers import RandomUniform
-from keras.layers import concatenate, Input, Activation, Add, Conv2D, Lambda, UpSampling2D
-from keras.models import Model
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+config.gpu_options.per_process_gpu_memory_fraction = 0.002
+sess = tf.Session(config=config)
+
+from tensorflow.compat.v1.keras.initializers import RandomUniform
+from tensorflow.compat.v1.keras.layers import concatenate, Input, Activation, Add, Conv2D, Lambda, UpSampling2D
+from tensorflow.compat.v1.keras.models import Model
 from ISR.models.imagemodel import ImageModel
 
 
@@ -64,7 +70,7 @@ class RDN(ImageModel):
             minval=-init_extreme_val, maxval=init_extreme_val, seed=None
         )
         self.model = self._build_rdn()
-        self.model.name = 'generator'
+        #self.model.name = 'generator2'
         self.name = 'rdn'
 
     def _upsampling_block(self, input_layer):
