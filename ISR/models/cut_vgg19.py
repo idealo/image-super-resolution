@@ -1,10 +1,6 @@
-from tensorflow.compat.v1.keras.models import Model
-from tensorflow.compat.v1.keras.applications.vgg19 import VGG19
-from tensorflow.compat.v1.keras.layers import Input
-
-#from keras.models import Model
-#from keras.applications.vgg19 import VGG19
-#from keras.layers import Input
+from tensorflow.keras.models import Model
+from tensorflow.keras.applications.vgg19 import VGG19
+from tensorflow.keras.layers import Input
 from ISR.utils.logger import get_logger
 
 

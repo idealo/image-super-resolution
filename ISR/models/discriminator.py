@@ -1,12 +1,7 @@
-from tensorflow.compat.v1.keras.layers import concatenate, Flatten, Input, Activation, Dense, Conv2D, BatchNormalization
-from tensorflow.compat.v1.keras.layers import LeakyReLU
-from tensorflow.compat.v1.keras.models import Model
-from tensorflow.compat.v1.keras.optimizers import Adam
-#from keras.layers import concatenate, Flatten, Input, Activation, Dense, Conv2D, BatchNormalization
-#from keras.layers.advanced_activations import LeakyReLU
-#from keras.models import Model
-#from keras.optimizers import Adam
-
+from tensorflow.keras.layers import concatenate, Flatten, Input, Activation, Dense, Conv2D, BatchNormalization
+from tensorflow.keras.layers import LeakyReLU
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
 
 class Discriminator:
     """

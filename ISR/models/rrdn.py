@@ -1,14 +1,8 @@
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-config.gpu_options.per_process_gpu_memory_fraction=0.1
-sess = tf.Session(config=config)
-#config.gpu_options.per_process_gpu_memory_fraction = 0.1
-from tensorflow.compat.v1.keras.initializers import RandomUniform
-from tensorflow.compat.v1.keras.layers import UpSampling2D, concatenate, Input, Activation, Add, Conv2D, Lambda
-from tensorflow.compat.v1.keras.models import Model
-from tensorflow.compat.v1.keras.models import Sequential
+import tensorflow as tf
+from tensorflow.keras.initializers import RandomUniform
+from tensorflow.keras.layers import UpSampling2D, concatenate, Input, Activation, Add, Conv2D, Lambda
+from tensorflow.keras.models import Model
+from tensorflow.keras.models import Sequential
 from ISR.models.imagemodel import ImageModel
 
 
@@ -68,7 +62,6 @@ class RRDN(ImageModel):
         self.model = self._build_rdn()
         #self.model.name = 'generator'
         self.name = 'rrdn'
-        #self.model.add(self._build_rdn())
 
     def _dense_block(self, input_layer, d, t):
         """
@@ -130,7 +123,7 @@ class RRDN(ImageModel):
             name='PreShuffle',
         )(input_layer)
         return Lambda(
-            lambda x: tf.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
+            lambda x: tf.compat.v1.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
             name='PixelShuffle',
         )(x)
 

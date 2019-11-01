@@ -1,10 +1,4 @@
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-config.gpu_options.per_process_gpu_memory_fraction = 0.1
-sess = tf.Session(config=config)
-
+import tensorflow as tf
 from tensorflow.compat.v1.keras.initializers import RandomUniform
 from tensorflow.compat.v1.keras.layers import concatenate, Input, Activation, Add, Conv2D, Lambda, UpSampling2D
 from tensorflow.compat.v1.keras.models import Model
@@ -96,7 +90,7 @@ class RDN(ImageModel):
             kernel_initializer=self.initializer,
         )(input_layer)
         return Lambda(
-            lambda x: tf.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
+            lambda x: tf.compat.v1.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
             name='PixelShuffle',
         )(x)
 
