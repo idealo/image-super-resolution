@@ -155,3 +155,8 @@ mkdocs/docs/train/
 *private
 *rdsn.py
 *rrdsn.py
+/scripts/
+/tests/
+/weights/
+/data/
+/figures/
