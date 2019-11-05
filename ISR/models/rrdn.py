@@ -123,7 +123,7 @@ class RRDN(ImageModel):
             name='PreShuffle',
         )(input_layer)
         return Lambda(
-            lambda x: tf.compat.v1.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
+            lambda x: tf.nn.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
             name='PixelShuffle',
         )(x)
 
