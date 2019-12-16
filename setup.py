@@ -16,7 +16,7 @@ setup(
     description='Image Super Resolution',
     long_description=long_description,
     license='Apache 2.0',
-    install_requires=['imageio', 'Keras==2.2.4', 'numpy==1.16.2', 'tensorflow==1.13.1', 'tqdm'],
+    install_requires=['imageio', 'Keras==2.2.4', 'numpy==1.16.2', 'tensorflow==1.15.0', 'tqdm'],
     extras_require={
         'tests': ['pytest==4.3.0', 'pytest-cov==2.6.1'],
         'docs': ['mkdocs==1.0.4', 'mkdocs-material==4.0.2'],
