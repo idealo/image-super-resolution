@@ -10,7 +10,7 @@ ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 licens
 
 setup(
     name='ISR',
-    version='2.1.0',
+    version='2.1.1',
     author='Francesco Cardinale',
     author_email='testadicardi@gmail.com',
     description='Image Super Resolution',
