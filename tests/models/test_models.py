@@ -6,7 +6,7 @@ from ISR.models.rrdn import RRDN
 from ISR.models.rdn import RDN
 from ISR.models.discriminator import Discriminator
 from ISR.models.cut_vgg19 import Cut_VGG19
-from keras.optimizers import Adam
+from tensorflow.keras.optimizers import Adam
 
 
 class ModelsClassTest(unittest.TestCase):
