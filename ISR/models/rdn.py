@@ -90,7 +90,7 @@ class RDN(ImageModel):
             kernel_initializer=self.initializer,
         )(input_layer)
         return Lambda(
-            lambda x: tf.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
+            lambda x: tf.nn.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
             name='PixelShuffle',
         )(x)
 
