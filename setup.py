@@ -10,17 +10,17 @@ ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 licens
 
 setup(
     name='ISR',
-    version='2.1.0',
+    version='2.1.1',
     author='Francesco Cardinale',
     author_email='testadicardi@gmail.com',
     description='Image Super Resolution',
     long_description=long_description,
     license='Apache 2.0',
-    install_requires=['imageio', 'Keras==2.2.4', 'numpy==1.16.2', 'tensorflow==1.13.1', 'tqdm'],
+    install_requires=['imageio', 'numpy', 'tensorflow==2.0.0', 'tqdm', 'pyaml'],
     extras_require={
         'tests': ['pytest==4.3.0', 'pytest-cov==2.6.1'],
         'docs': ['mkdocs==1.0.4', 'mkdocs-material==4.0.2'],
-        'gpu': ['tensorflow-gpu==1.13.1'],
+        'gpu': ['tensorflow-gpu==2.0.0'],
         'dev': ['bumpversion==0.5.3'],
     },
     classifiers=[

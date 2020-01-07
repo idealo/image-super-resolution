@@ -181,7 +181,7 @@ class TrainerHelper:
                 (self.weights_name['generator'].name).format(metric='', epoch=epoch + 1)
             )
         # CANT SAVE MODEL DUE TO TF LAYER INSIDE LAMBDA (PIXELSHUFFLE)
-        generator.save_weights(gen_path)
+        generator.save_weights(gen_path.as_posix())
         if discriminator:
             if best:
                 discr_path = self.weights_name['discriminator'].with_name(
@@ -193,7 +193,7 @@ class TrainerHelper:
                 discr_path = self.weights_name['discriminator'].with_name(
                     (self.weights_name['discriminator'].name).format(metric='', epoch=epoch + 1)
                 )
-            discriminator.model.save_weights(discr_path)
+            discriminator.model.save_weights(discr_path.as_posix())
         try:
             self._remove_old_weights(self.max_n_other_weights, max_best=self.max_n_best_weights)
         except Exception as e:

@@ -1,6 +1,5 @@
-from keras.models import Model
-from keras.applications.vgg19 import VGG19
-from keras.layers import Input
+from tensorflow.keras.models import Model
+from tensorflow.keras.applications.vgg19 import VGG19
 from ISR.utils.logger import get_logger
 
 
@@ -36,15 +35,9 @@ class Cut_VGG19:
         layers selected by self.layers_to_extract.
         """
 
-        vgg = VGG19(weights='imagenet', include_top=False)
+        vgg = VGG19(weights='imagenet', include_top=False, input_shape=self.input_shape)
         vgg.trainable = False
-        collect = []
-        for i in self.layers_to_extract:
-            collect.append(vgg.layers[i].output)
-
-        vgg.outputs = collect
-        hr = Input(shape=self.input_shape)
-        features = vgg(hr)
-        self.model = Model(inputs=hr, outputs=features)
-        self.model.name = 'feature_extractor'
+        outputs = [vgg.layers[i].output for i in self.layers_to_extract]
+        self.model = Model([vgg.input], outputs)
+        self.model._name = 'feature_extractor'
         self.name = 'vgg19'  # used in weights naming

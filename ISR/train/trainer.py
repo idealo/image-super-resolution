@@ -1,12 +1,11 @@
-import yaml
 import numpy as np
 from time import time
 from tqdm import tqdm
-from keras.models import Model
-from keras.layers import Input
-from keras.optimizers import Adam
-from keras.callbacks import TensorBoard
-from keras import backend as K
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras import backend as K
 from ISR.utils.datahandler import DataHandler
 from ISR.utils.train_helper import TrainerHelper
 from ISR.utils.metrics import PSNR
@@ -292,7 +291,7 @@ class Trainer:
             self
         )  # load_weights, creates folders, creates basename
 
-        self.tensorboard = TensorBoard(log_dir=self.helper.callback_paths['logs'])
+        self.tensorboard = TensorBoard(log_dir=str(self.helper.callback_paths['logs']))
         self.tensorboard.set_model(self.model)
 
         # validation data

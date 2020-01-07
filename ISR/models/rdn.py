@@ -1,7 +1,7 @@
 import tensorflow as tf
-from keras.initializers import RandomUniform
-from keras.layers import concatenate, Input, Activation, Add, Conv2D, Lambda, UpSampling2D
-from keras.models import Model
+from tensorflow.keras.initializers import RandomUniform
+from tensorflow.keras.layers import concatenate, Input, Activation, Add, Conv2D, Lambda, UpSampling2D
+from tensorflow.keras.models import Model
 from ISR.models.imagemodel import ImageModel
 
 
@@ -37,7 +37,7 @@ class RDN(ImageModel):
         x: integer, the scaling factor.
         model: Keras model of the RDN.
         name: name used to identify what upscaling network is used during training.
-        model.name: identifies this network as the generator network
+        model._name: identifies this network as the generator network
             in the compound model built by the trainer class.
     """
 
@@ -64,7 +64,7 @@ class RDN(ImageModel):
             minval=-init_extreme_val, maxval=init_extreme_val, seed=None
         )
         self.model = self._build_rdn()
-        self.model.name = 'generator'
+        self.model._name = 'generator'
         self.name = 'rdn'
 
     def _upsampling_block(self, input_layer):
@@ -90,7 +90,7 @@ class RDN(ImageModel):
             kernel_initializer=self.initializer,
         )(input_layer)
         return Lambda(
-            lambda x: tf.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
+            lambda x: tf.nn.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
             name='PixelShuffle',
         )(x)
 

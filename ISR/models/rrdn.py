@@ -1,7 +1,7 @@
 import tensorflow as tf
-from keras.initializers import RandomUniform
-from keras.layers import UpSampling2D, concatenate, Input, Activation, Add, Conv2D, Lambda
-from keras.models import Model
+from tensorflow.keras.initializers import RandomUniform
+from tensorflow.keras.layers import UpSampling2D, concatenate, Input, Activation, Add, Conv2D, Lambda
+from tensorflow.keras.models import Model
 from ISR.models.imagemodel import ImageModel
 
 
@@ -39,7 +39,7 @@ class RRDN(ImageModel):
         x: integer, the scaling factor.
         model: Keras model of the RRDN.
         name: name used to identify what upscaling network is used during training.
-        model.name: identifies this network as the generator network
+        model._name: identifies this network as the generator network
             in the compound model built by the trainer class.
     """
 
@@ -59,7 +59,7 @@ class RRDN(ImageModel):
         self.kernel_size = kernel_size
         self.patch_size = patch_size
         self.model = self._build_rdn()
-        self.model.name = 'generator'
+        self.model._name = 'generator'
         self.name = 'rrdn'
 
     def _dense_block(self, input_layer, d, t):
@@ -122,7 +122,7 @@ class RRDN(ImageModel):
             name='PreShuffle',
         )(input_layer)
         return Lambda(
-            lambda x: tf.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
+            lambda x: tf.nn.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
             name='PixelShuffle',
         )(x)
 

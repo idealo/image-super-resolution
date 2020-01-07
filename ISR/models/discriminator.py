@@ -1,7 +1,7 @@
-from keras.layers import concatenate, Flatten, Input, Activation, Dense, Conv2D, BatchNormalization
-from keras.layers.advanced_activations import LeakyReLU
-from keras.models import Model
-from keras.optimizers import Adam
+import tensorflow as tf
+from tensorflow.keras.layers import concatenate, Flatten, Input, Activation, Dense, Conv2D, BatchNormalization, LeakyReLU
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
 
 
 class Discriminator:
@@ -16,7 +16,7 @@ class Discriminator:
     Attributes:
         model: Keras model.
         name: name used to identify what discriminator is used during GANs training.
-        model.name: identifies this network as the discriminator network
+        model._name: identifies this network as the discriminator network
             in the compound model built by the trainer class.
         block_param: dictionary, determines the number of filters and the strides for each
             conv block.
@@ -33,7 +33,7 @@ class Discriminator:
         self.model = self._build_disciminator()
         optimizer = Adam(0.0002, 0.5)
         self.model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
-        self.model.name = 'discriminator'
+        self.model._name = 'discriminator'
         self.name = 'srgan-large'
 
     def _conv_block(self, input, filters, strides, batch_norm=True, count=None):
