@@ -292,7 +292,7 @@ class Trainer:
             self
         )  # load_weights, creates folders, creates basename
 
-        self.tensorboard = TensorBoard(log_dir=self.helper.callback_paths['logs'])
+        self.tensorboard = TensorBoard(log_dir=str(self.helper.callback_paths['logs']))
         self.tensorboard.set_model(self.model)
 
         # validation data
