@@ -5,13 +5,45 @@ from tensorflow.keras.models import Model
 from ISR.models.imagemodel import ImageModel
 
 
+WEIGHTS_URLS = {
+    'psnr-large': {
+        'arch_params' : {'C': 6, 'D': 20, 'G': 64, 'G0': 64, 'x': 2},
+        'url': 'https://docs.google.com/uc?export=download&id=1ro0Rk4xAqo-OEDGgLIYz-F0BHvmUUT2E',
+        'name': 'rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5'
+    },
+    'psnr-small': {
+        'arch_params': {'C': 3, 'D': 10, 'G': 64, 'G0': 64, 'x': 2},
+        'url': 'https://docs.google.com/uc?export=download&id=1Sn9FFKXNWOPXdNzy-zmyVYB4eNRnXTKD',
+        'name': 'rdn-C3-D10-G64-G064-x2_PSNR_epoch134.hdf5',
+    },
+    'noise-cancel': {
+        'arch_params': {'C': 6, 'D': 20, 'G': 64, 'G0': 64, 'x': 2},
+        'url': 'https://docs.google.com/uc?export=download&id=1_1GGoHF5oq3W_iVVxx1SRDIa_mjwoe26',
+        'name': 'rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5',
+    }
+}
+
+
 def make_model(arch_params, patch_size):
     """ Returns the model.
 
     Used to select the model.
     """
-
+    
     return RDN(arch_params, patch_size)
+
+
+def get_network(weights):
+    if weights in WEIGHTS_URLS.keys():
+        arch_params = WEIGHTS_URLS[weights]['arch_params']
+        url = WEIGHTS_URLS[weights]['url']
+        name = WEIGHTS_URLS[weights]['name']
+    else:
+        raise ValueError('Available RDN network weights: {}'.format(list(WEIGHTS_URLS.keys())))
+    c_dim = 3
+    kernel_size = 3
+    upscaling = 'ups'
+    return arch_params, c_dim, kernel_size, upscaling, url, name
 
 
 class RDN(ImageModel):
@@ -40,16 +72,20 @@ class RDN(ImageModel):
         model._name: identifies this network as the generator network
             in the compound model built by the trainer class.
     """
-
+    
     def __init__(
-        self,
-        arch_params={},
-        patch_size=None,
-        c_dim=3,
-        kernel_size=3,
-        upscaling='ups',
-        init_extreme_val=0.05,
+            self,
+            arch_params={},
+            weights='',
+            patch_size=None,
+            c_dim=3,
+            kernel_size=3,
+            upscaling='ups',
+            init_extreme_val=0.05,
     ):
+        if weights:
+            arch_params, c_dim, kernel_size, upscaling, url, fname = get_network(weights)
+        
         self.params = arch_params
         self.C = self.params['C']
         self.D = self.params['D']
@@ -66,10 +102,13 @@ class RDN(ImageModel):
         self.model = self._build_rdn()
         self.model._name = 'generator'
         self.name = 'rdn'
+        if weights:
+            weights_path = tf.keras.utils.get_file(fname=fname, origin=url)
+            self.model.load_weights(weights_path)
 
     def _upsampling_block(self, input_layer):
         """ Upsampling block for old weights. """
-
+        
         x = Conv2D(
             self.c_dim * self.scale ** 2,
             kernel_size=3,
@@ -78,10 +117,10 @@ class RDN(ImageModel):
             kernel_initializer=self.initializer,
         )(input_layer)
         return UpSampling2D(size=self.scale, name='UPsample')(x)
-
+    
     def _pixel_shuffle(self, input_layer):
         """ PixelShuffle implementation of the upscaling layer. """
-
+        
         x = Conv2D(
             self.c_dim * self.scale ** 2,
             kernel_size=3,
@@ -93,10 +132,10 @@ class RDN(ImageModel):
             lambda x: tf.nn.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
             name='PixelShuffle',
         )(x)
-
+    
     def _UPN(self, input_layer):
         """ Upscaling layers. With old weights use _upsampling_block instead of _pixel_shuffle. """
-
+        
         x = Conv2D(
             64,
             kernel_size=5,
@@ -116,7 +155,7 @@ class RDN(ImageModel):
             return self._upsampling_block(x)
         else:
             raise ValueError('Invalid choice of upscaling layer.')
-
+    
     def _RDBs(self, input_layer):
         """RDBs blocks.
 
@@ -149,11 +188,11 @@ class RDN(ImageModel):
             # Local Residual Learning F_{i,LF} + F_{i-1}
             rdb_in = Add(name='LRL_%d' % (d))([x, rdb_in])
             rdb_concat.append(rdb_in)
-
+        
         assert len(rdb_concat) == self.D
-
+        
         return concatenate(rdb_concat, axis=3, name='LRLs_Concat')
-
+    
     def _build_rdn(self):
         LR_input = Input(shape=(self.patch_size, self.patch_size, 3), name='LR')
         F_m1 = Conv2D(
@@ -199,5 +238,5 @@ class RDN(ImageModel):
             kernel_initializer=self.initializer,
             name='SR',
         )(FU)
-
+        
         return Model(inputs=LR_input, outputs=SR)

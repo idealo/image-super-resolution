@@ -94,13 +94,11 @@ img = Image.open('data/input/test_images/sample_image.jpg')
 lr_img = np.array(img)
 ```
 
-Load model and run prediction
+Load a pre-trained model and run prediction (check the prediction tutorial under notebooks for more details)
 ```python
 from ISR.models import RDN
 
-rdn = RDN(arch_params={'C':6, 'D':20, 'G':64, 'G0':64, 'x':2})
-rdn.model.load_weights('weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5')
-
+rdn = RDN(weights='psnr-small')
 sr_img = rdn.predict(lr_img)
 Image.fromarray(sr_img)
 ```

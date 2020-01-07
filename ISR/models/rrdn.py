@@ -5,6 +5,15 @@ from tensorflow.keras.models import Model
 from ISR.models.imagemodel import ImageModel
 
 
+WEIGHTS_URLS = {
+    'gans': {
+        'arch_params': {'C': 4, 'D':3, 'G':32, 'G0':32, 'x':4, 'T': 10},
+        'url': 'https://docs.google.com/uc?export=download&id=1o3l_I60xHkdiWZG7UM0nZBblEontHs2W',
+        'name': 'rrdn-C4-D3-G32-G032-T10-x4_epoch299.hdf5',
+    },
+}
+
+
 def make_model(arch_params, patch_size):
     """ Returns the model.
 
@@ -12,6 +21,18 @@ def make_model(arch_params, patch_size):
     """
 
     return RRDN(arch_params, patch_size)
+
+
+def get_network(weights):
+    if weights in WEIGHTS_URLS.keys():
+        arch_params = WEIGHTS_URLS[weights]['arch_params']
+        url = WEIGHTS_URLS[weights]['url']
+        name = WEIGHTS_URLS[weights]['name']
+    else:
+        raise ValueError('Available RRDN network weights: {}'.format(list(WEIGHTS_URLS.keys())))
+    c_dim = 3
+    kernel_size = 3
+    return arch_params, c_dim, kernel_size, url, name
 
 
 class RRDN(ImageModel):
@@ -44,8 +65,11 @@ class RRDN(ImageModel):
     """
 
     def __init__(
-        self, arch_params={}, patch_size=None, beta=0.2, c_dim=3, kernel_size=3, init_val=0.05
+        self, arch_params={}, weights='', patch_size=None, beta=0.2, c_dim=3, kernel_size=3, init_val=0.05
     ):
+        if weights:
+            arch_params, c_dim, kernel_size, url, fname = get_network(weights)
+            
         self.params = arch_params
         self.beta = beta
         self.c_dim = c_dim
@@ -61,6 +85,9 @@ class RRDN(ImageModel):
         self.model = self._build_rdn()
         self.model._name = 'generator'
         self.name = 'rrdn'
+        if weights:
+            weights_path = tf.keras.utils.get_file(fname=fname, origin=url)
+            self.model.load_weights(weights_path)
 
     def _dense_block(self, input_layer, d, t):
         """
