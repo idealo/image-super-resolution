@@ -2,12 +2,12 @@ import tensorflow as tf
 from tensorflow.keras.initializers import RandomUniform
 from tensorflow.keras.layers import concatenate, Input, Activation, Add, Conv2D, Lambda, UpSampling2D
 from tensorflow.keras.models import Model
-from ISR.models.imagemodel import ImageModel
 
+from ISR.models.imagemodel import ImageModel
 
 WEIGHTS_URLS = {
     'psnr-large': {
-        'arch_params' : {'C': 6, 'D': 20, 'G': 64, 'G0': 64, 'x': 2},
+        'arch_params': {'C': 6, 'D': 20, 'G': 64, 'G0': 64, 'x': 2},
         'url': 'https://docs.google.com/uc?export=download&id=1ro0Rk4xAqo-OEDGgLIYz-F0BHvmUUT2E',
         'name': 'rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5'
     },
@@ -105,7 +105,7 @@ class RDN(ImageModel):
         if weights:
             weights_path = tf.keras.utils.get_file(fname=fname, origin=url)
             self.model.load_weights(weights_path)
-
+    
     def _upsampling_block(self, input_layer):
         """ Upsampling block for old weights. """
         

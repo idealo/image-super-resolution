@@ -1,13 +1,13 @@
 import tensorflow as tf
 from tensorflow.keras.initializers import RandomUniform
-from tensorflow.keras.layers import UpSampling2D, concatenate, Input, Activation, Add, Conv2D, Lambda
+from tensorflow.keras.layers import concatenate, Input, Activation, Add, Conv2D, Lambda
 from tensorflow.keras.models import Model
-from ISR.models.imagemodel import ImageModel
 
+from ISR.models.imagemodel import ImageModel
 
 WEIGHTS_URLS = {
     'gans': {
-        'arch_params': {'C': 4, 'D':3, 'G':32, 'G0':32, 'x':4, 'T': 10},
+        'arch_params': {'C': 4, 'D': 3, 'G': 32, 'G0': 32, 'x': 4, 'T': 10},
         'url': 'https://docs.google.com/uc?export=download&id=1o3l_I60xHkdiWZG7UM0nZBblEontHs2W',
         'name': 'rrdn-C4-D3-G32-G032-T10-x4_epoch299.hdf5',
     },
@@ -19,7 +19,7 @@ def make_model(arch_params, patch_size):
 
     Used to select the model.
     """
-
+    
     return RRDN(arch_params, patch_size)
 
 
@@ -63,13 +63,13 @@ class RRDN(ImageModel):
         model._name: identifies this network as the generator network
             in the compound model built by the trainer class.
     """
-
+    
     def __init__(
-        self, arch_params={}, patch_size=None, beta=0.2, c_dim=3, kernel_size=3, init_val=0.05, weights=''
+            self, arch_params={}, patch_size=None, beta=0.2, c_dim=3, kernel_size=3, init_val=0.05, weights=''
     ):
         if weights:
             arch_params, c_dim, kernel_size, url, fname = get_network(weights)
-            
+        
         self.params = arch_params
         self.beta = beta
         self.c_dim = c_dim
@@ -88,7 +88,7 @@ class RRDN(ImageModel):
         if weights:
             weights_path = tf.keras.utils.get_file(fname=fname, origin=url)
             self.model.load_weights(weights_path)
-
+    
     def _dense_block(self, input_layer, d, t):
         """
         Implementation of the (Residual) Dense Block as in the paper
@@ -97,7 +97,7 @@ class RRDN(ImageModel):
         Residuals are incorporated in the RRDB.
         d is an integer only used for naming. (d-th block)
         """
-
+        
         x = input_layer
         for c in range(1, self.C + 1):
             F_dc = Conv2D(
@@ -109,7 +109,7 @@ class RRDN(ImageModel):
             )(x)
             F_dc = Activation('relu', name='F_%d_%d_%d_Relu' % (t, d, c))(F_dc)
             x = concatenate([x, F_dc], axis=3, name='RDB_Concat_%d_%d_%d' % (t, d, c))
-
+        
         # DIFFERENCE: in RDN a kernel size of 1 instead of 3 is used here
         x = Conv2D(
             self.G0,
@@ -119,17 +119,17 @@ class RRDN(ImageModel):
             name='LFF_%d_%d' % (t, d),
         )(x)
         return x
-
+    
     def _RRDB(self, input_layer, t):
         """Residual in Residual Dense Block.
 
         t is integer, for naming of RRDB.
         beta is scalar.
         """
-
+        
         # SUGGESTION: MAKE BETA LEARNABLE
         x = input_layer
-
+        
         for d in range(1, self.D + 1):
             LFF = self._dense_block(x, d, t)
             LFF_beta = Lambda(lambda x: x * self.beta)(LFF)
@@ -137,10 +137,10 @@ class RRDN(ImageModel):
         x = Lambda(lambda x: x * self.beta)(x)
         x = Add(name='RRDB_%d_out' % (t))([input_layer, x])
         return x
-
+    
     def _pixel_shuffle(self, input_layer):
         """ PixelShuffle implementation of the upscaling part. """
-
+        
         x = Conv2D(
             self.c_dim * self.scale ** 2,
             kernel_size=3,
@@ -152,7 +152,7 @@ class RRDN(ImageModel):
             lambda x: tf.nn.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
             name='PixelShuffle',
         )(x)
-
+    
     def _build_rdn(self):
         LR_input = Input(shape=(self.patch_size, self.patch_size, 3), name='LR_input')
         pre_blocks = Conv2D(

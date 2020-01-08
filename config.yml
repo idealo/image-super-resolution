@@ -11,8 +11,8 @@ log_dirs:
 feature_extractor:
   vgg19:
     layers_to_extract:
-    - 5
-    - 9
+      - 5
+      - 9
 generators:
   rrdn:
     C: 4

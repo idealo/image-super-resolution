@@ -1,12 +1,14 @@
-import yaml
 import os
 import unittest
+
+import yaml
 import numpy as np
+from tensorflow.keras.optimizers import Adam
+
 from ISR.models.rrdn import RRDN
 from ISR.models.rdn import RDN
 from ISR.models.discriminator import Discriminator
 from ISR.models.cut_vgg19 import Cut_VGG19
-from tensorflow.keras.optimizers import Adam
 
 
 class ModelsClassTest(unittest.TestCase):
@@ -18,7 +20,7 @@ class ModelsClassTest(unittest.TestCase):
             'discriminator': os.path.join(cls.setup['weights_dir'], 'test_dis_weights.hdf5'),
         }
         cls.hr_shape = (cls.setup['patch_size'] * 2,) * 2 + (3,)
-
+        
         cls.RRDN = RRDN(arch_params=cls.setup['rrdn'], patch_size=cls.setup['patch_size'])
         cls.RRDN.model.compile(optimizer=Adam(), loss=['mse'])
         cls.RDN = RDN(arch_params=cls.setup['rdn'], patch_size=cls.setup['patch_size'])
@@ -27,68 +29,68 @@ class ModelsClassTest(unittest.TestCase):
         cls.f_ext.model.compile(optimizer=Adam(), loss=['mse', 'mse'])
         cls.discr = Discriminator(patch_size=cls.setup['patch_size'] * 2)
         cls.discr.model.compile(optimizer=Adam(), loss=['mse'])
-
+    
     @classmethod
     def tearDownClass(cls):
         pass
-
+    
     def setUp(self):
         pass
-
+    
     def tearDown(self):
         pass
-
+    
     def test_SR_output_shapes(self):
         self.assertTrue(self.RRDN.model.output_shape[1:4] == self.hr_shape)
         self.assertTrue(self.RDN.model.output_shape[1:4] == self.hr_shape)
-
+    
     def test_that_the_trainable_layers_change(self):
-
+        
         x = np.random.random((1, self.setup['patch_size'], self.setup['patch_size'], 3))
         y = np.random.random((1, self.setup['patch_size'] * 2, self.setup['patch_size'] * 2, 3))
-
+        
         before_step = []
         for layer in self.RRDN.model.layers:
             if len(layer.trainable_weights) > 0:
                 before_step.append(layer.get_weights()[0])
-
+        
         self.RRDN.model.train_on_batch(x, y)
-
+        
         i = 0
         for layer in self.RRDN.model.layers:
             if len(layer.trainable_weights) > 0:
                 self.assertFalse(np.all(before_step[i] == layer.get_weights()[0]))
                 i += 1
-
+        
         before_step = []
         for layer in self.RDN.model.layers:
             if len(layer.trainable_weights) > 0:
                 before_step.append(layer.get_weights()[0])
-
+        
         self.RDN.model.train_on_batch(x, y)
-
+        
         i = 0
         for layer in self.RDN.model.layers:
             if len(layer.trainable_weights) > 0:
                 self.assertFalse(np.all(before_step[i] == layer.get_weights()[0]))
                 i += 1
-
+        
         discr_out_shape = list(self.discr.model.outputs[0].shape)[1:4]
         valid = np.ones([1] + discr_out_shape)
-
+        
         before_step = []
         for layer in self.discr.model.layers:
             if len(layer.trainable_weights) > 0:
                 before_step.append(layer.get_weights()[0])
-
+        
         self.discr.model.train_on_batch(y, valid)
-
+        
         i = 0
         for layer in self.discr.model.layers:
             if len(layer.trainable_weights) > 0:
                 self.assertFalse(np.all(before_step[i] == layer.get_weights()[0]))
                 i += 1
-
+    
     def test_that_feature_extractor_is_not_trainable(self):
         y = np.random.random((1, self.setup['patch_size'] * 2, self.setup['patch_size'] * 2, 3))
         f_ext_out_shape = list(self.f_ext.model.outputs[0].shape[1:4])

@@ -1,6 +1,8 @@
 import os
+
 import imageio
 import numpy as np
+
 from ISR.utils.logger import get_logger
 
 
@@ -16,7 +18,7 @@ class DataHandler:
         n_validation_samples: integer, size of the validation set. Only provided if the
             DataHandler is used to generate validation sets.
     """
-
+    
     def __init__(self, lr_dir, hr_dir, patch_size, scale, n_validation_samples=None):
         self.folders = {'hr': hr_dir, 'lr': lr_dir}  # image folders
         self.extensions = ('.png', '.jpeg', '.jpg')  # admissible extension
@@ -28,29 +30,29 @@ class DataHandler:
         self.logger = get_logger(__name__)
         self._make_img_list()
         self._check_dataset()
-
+    
     def _make_img_list(self):
         """ Creates a dictionary of lists of the acceptable images contained in lr_dir and hr_dir. """
-
+        
         for res in ['hr', 'lr']:
             file_names = os.listdir(self.folders[res])
             file_names = [file for file in file_names if file.endswith(self.extensions)]
             self.img_list[res] = np.sort(file_names)
-
+        
         if self.n_validation_samples:
             samples = np.random.choice(
                 range(len(self.img_list['hr'])), self.n_validation_samples, replace=False
             )
             for res in ['hr', 'lr']:
                 self.img_list[res] = self.img_list[res][samples]
-
+    
     def _check_dataset(self):
         """ Sanity check for dataset. """
-
+        
         # the order of these asserts is important for testing
         assert len(self.img_list['hr']) == self.img_list['hr'].shape[0], 'UnevenDatasets'
         assert self._matching_datasets(), 'Input/LabelsMismatch'
-
+    
     def _matching_datasets(self):
         """ Rough file name matching between lr and hr directories. """
         # LR_name.png = HR_name+x+scale.png
@@ -59,18 +61,18 @@ class DataHandler:
         LR_name_root = [x.split('.')[0].rsplit('x', 1)[0] for x in self.img_list['lr']]
         HR_name_root = [x.split('.')[0] for x in self.img_list['hr']]
         return np.all(HR_name_root == LR_name_root)
-
+    
     def _not_flat(self, patch, flatness):
         """
         Determines whether the patch is complex, or not-flat enough.
         Threshold set by flatness.
         """
-
+        
         if max(np.std(patch, axis=0).mean(), np.std(patch, axis=1).mean()) < flatness:
             return False
         else:
             return True
-
+    
     def _crop_imgs(self, imgs, batch_size, flatness):
         """
         Get random top left corners coordinates in LR space, multiply by scale to
@@ -81,7 +83,7 @@ class DataHandler:
         Square crops of size patch_size are taken from the selected
         top left corners.
         """
-
+        
         slices = {}
         crops = {}
         crops['lr'] = []
@@ -102,9 +104,9 @@ class DataHandler:
                     for x, y in zip(top_left['x'][res], top_left['y'][res])
                 ]
             )
-
+        
         for slice_index, s in enumerate(slices['lr']):
-            candidate_crop = imgs['lr'][s['x'][0] : s['x'][1], s['y'][0] : s['y'][1], slice(None)]
+            candidate_crop = imgs['lr'][s['x'][0]: s['x'][1], s['y'][0]: s['y'][1], slice(None)]
             if self._not_flat(candidate_crop, flatness) or n == 0:
                 crops['lr'].append(candidate_crop)
                 accepted_slices['lr'].append(slice_index)
@@ -112,48 +114,48 @@ class DataHandler:
                 n -= 1
             if len(crops['lr']) == batch_size:
                 break
-
+        
         accepted_slices['hr'] = slices['hr'][accepted_slices['lr']]
-
+        
         for s in accepted_slices['hr']:
-            candidate_crop = imgs['hr'][s['x'][0] : s['x'][1], s['y'][0] : s['y'][1], slice(None)]
+            candidate_crop = imgs['hr'][s['x'][0]: s['x'][1], s['y'][0]: s['y'][1], slice(None)]
             crops['hr'].append(candidate_crop)
-
+        
         crops['lr'] = np.array(crops['lr'])
         crops['hr'] = np.array(crops['hr'])
         return crops
-
+    
     def _apply_transform(self, img, transform_selection):
         """ Rotates and flips input image according to transform_selection. """
-
+        
         rotate = {
             0: lambda x: x,
             1: lambda x: np.rot90(x, k=1, axes=(1, 0)),  # rotate right
             2: lambda x: np.rot90(x, k=1, axes=(0, 1)),  # rotate left
         }
-
+        
         flip = {
             0: lambda x: x,
             1: lambda x: np.flip(x, 0),  # flip along horizontal axis
             2: lambda x: np.flip(x, 1),  # flip along vertical axis
         }
-
+        
         rot_direction = transform_selection[0]
         flip_axis = transform_selection[1]
-
+        
         img = rotate[rot_direction](img)
         img = flip[flip_axis](img)
-
+        
         return img
-
+    
     def _transform_batch(self, batch, transforms):
         """ Transforms each individual image of the batch independently. """
-
+        
         t_batch = np.array(
             [self._apply_transform(img, transforms[i]) for i, img in enumerate(batch)]
         )
         return t_batch
-
+    
     def get_batch(self, batch_size, idx=None, flatness=0.0):
         """
         Returns a dictionary with keys ('lr', 'hr') containing training batches
@@ -164,7 +166,7 @@ class DataHandler:
             flatness: float in [0,1], is the patch "flatness" threshold.
                 Determines what level of detail the patches need to meet. 0 means any patch is accepted.
         """
-
+        
         if not idx:
             # randomly select one image. idx is given at validation time.
             idx = np.random.choice(range(len(self.img_list['hr'])))
@@ -176,12 +178,12 @@ class DataHandler:
         transforms = np.random.randint(0, 3, (batch_size, 2))
         batch['lr'] = self._transform_batch(batch['lr'], transforms)
         batch['hr'] = self._transform_batch(batch['hr'], transforms)
-
+        
         return batch
-
+    
     def get_validation_batches(self, batch_size):
         """ Returns a batch for each image in the validation set. """
-
+        
         if self.n_validation_samples:
             batches = []
             for idx in range(self.n_validation_samples):
@@ -194,13 +196,13 @@ class DataHandler:
             raise ValueError(
                 'No validation set size specified. (not operating in a validation set?)'
             )
-
+    
     def get_validation_set(self, batch_size):
         """
         Returns a batch for each image in the validation set.
         Flattens and splits them to feed it to Keras's model.evaluate.
         """
-
+        
         if self.n_validation_samples:
             batches = self.get_validation_batches(batch_size)
             valid_set = {'lr': [], 'hr': []}

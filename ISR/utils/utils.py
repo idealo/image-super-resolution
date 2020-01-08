@@ -1,10 +1,11 @@
 import os
 import argparse
 from datetime import datetime
+
 import numpy as np
 import yaml
-from ISR.utils.logger import get_logger
 
+from ISR.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -21,7 +22,7 @@ def _get_parser():
 
 def parse_args():
     """ Parse CLI arguments. """
-
+    
     parser = _get_parser()
     args = vars(parser.parse_args())
     if args['prediction'] and args['training']:
@@ -56,7 +57,7 @@ def get_config_from_weights(w_path, arch_params, name):
     Extracts architecture parameters from the file name of the weights.
     Only works with standardized weights name.
     """
-
+    
     w_path = os.path.basename(w_path)
     parts = w_path.split(name)[1]
     parts = parts.split('_')[0]
@@ -71,7 +72,7 @@ def get_config_from_weights(w_path, arch_params, name):
 
 def select_option(options, message='', val=None):
     """ CLI selection given options. """
-
+    
     while val not in options:
         val = input(message)
         if val not in options:
@@ -81,7 +82,7 @@ def select_option(options, message='', val=None):
 
 def select_multiple_options(options, message='', val=None):
     """ CLI multiple selection given options. """
-
+    
     n_options = len(options)
     valid_selections = False
     selected_options = []
@@ -97,13 +98,13 @@ def select_multiple_options(options, message='', val=None):
                 valid_selections = False
             else:
                 selected_options.append(options[int(v)])
-
+    
     return selected_options
 
 
 def select_bool(message=''):
     """ CLI bool selection. """
-
+    
     options = ['y', 'n']
     message = message + ' (' + '/'.join(options) + ') '
     val = None
@@ -119,7 +120,7 @@ def select_bool(message=''):
 
 def select_positive_float(message=''):
     """ CLI non-negative float selection. """
-
+    
     value = -1
     while value < 0:
         value = float(input(message))
@@ -130,7 +131,7 @@ def select_positive_float(message=''):
 
 def select_positive_integer(message='', value=-1):
     """ CLI non-negative integer selection. """
-
+    
     while value < 0:
         value = int(input(message))
         if value < 0:
@@ -140,7 +141,7 @@ def select_positive_integer(message='', value=-1):
 
 def browse_weights(weights_dir, model='generator'):
     """ Weights selection from cl. """
-
+    
     exit = False
     while exit is False:
         weights = np.sort(os.listdir(weights_dir))[::-1]
@@ -148,7 +149,7 @@ def browse_weights(weights_dir, model='generator'):
         for k in print_sel.keys():
             logger_message = '{item_n}: {item} \n'.format(item_n=k, item=print_sel[k])
             logger.info(logger_message)
-
+        
         sel = select_positive_integer('>>> Select folder or weights for {}\n'.format(model))
         if weights[sel].endswith('hdf5'):
             weights_path = os.path.join(weights_dir, weights[sel])
@@ -164,9 +165,9 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
     Takes as input the configuration file path (minus the '.py' extension)
     and arguments parse from CLI.
     """
-
+    
     conf = yaml.load(open(config_file, 'r'), Loader=yaml.FullLoader)
-
+    
     if training:
         session_type = 'training'
     elif prediction:
@@ -178,7 +179,7 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
         all_default = 'y'
     else:
         all_default = select_bool('Default options for everything?')
-
+    
     if all_default:
         generator = conf['default']['generator']
         if session_type == 'prediction':
@@ -188,16 +189,16 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
             )
         elif session_type == 'training':
             dataset = conf['default']['training_set']
-
+        
         return session_type, generator, conf, dataset
-
+    
     logger.info('Select SR (generator) network')
     generators = {}
     for i, gen in enumerate(conf['generators']):
         generators[str(i)] = gen
         logger.info('{}: {}'.format(i, gen))
     generator = generators[select_option(generators)]
-
+    
     load_weights = input('Load pretrained weights for {}? ([y]/n/d) '.format(generator))
     if load_weights == 'n':
         default = select_bool('Load default parameters for {}?'.format(generator))
@@ -220,7 +221,7 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
         )
     logger.info('{} parameters:'.format(generator))
     logger.info(conf['generators'][generator])
-
+    
     if session_type == 'training':
         default_loss_weights = select_bool('Use default weights for loss components?')
         if not default_loss_weights:
@@ -239,7 +240,7 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
                 conf['loss_weights']['discriminator'] = select_positive_float(
                     'Input coefficient for Adversarial loss component '
                 )
-
+        
         use_feature_extractor = select_bool('Use feature extractor?')
         if use_feature_extractor:
             conf['default']['feature_extractor'] = True
@@ -253,14 +254,14 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
             selected_metrics = select_multiple_options(
                 list(suggested_list.keys()), message='Select metrics to monitor.'
             )
-
+            
             conf['session']['training']['monitored_metrics'] = {}
             for metric in selected_metrics:
                 conf['session']['training']['monitored_metrics'][metric] = suggested_list[metric]
             print(conf['session']['training']['monitored_metrics'])
-
+    
     dataset = select_dataset(session_type, conf)
-
+    
     return session_type, generator, conf, dataset
 
 
@@ -284,7 +285,7 @@ def suggest_metrics(discriminator=False, feature_extractor=False, loss_weights={
 
 def select_dataset(session_type, conf):
     """ CLI snippet for selection the dataset for training. """
-
+    
     if session_type == 'training':
         logger.info('Select training set')
         datasets = {}
@@ -292,7 +293,7 @@ def select_dataset(session_type, conf):
             datasets[str(i)] = data
             logger.info('{}: {}'.format(i, data))
         dataset = datasets[select_option(datasets)]
-
+        
         return dataset
     else:
         logger.info('Select test set')
@@ -301,5 +302,5 @@ def select_dataset(session_type, conf):
             datasets[str(i)] = data
             logger.info('{}: {}'.format(i, data))
         dataset = datasets[select_option(datasets)]
-
+        
         return dataset
