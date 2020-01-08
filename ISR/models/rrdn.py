@@ -50,6 +50,8 @@ class RRDN(ImageModel):
         upscaling: string, 'ups' or 'shuffle', determines which implementation
             of the upscaling layer to use.
         init_val: extreme values for the RandomUniform initializer.
+        weights: string, if not empty, download and load pre-trained weights.
+            Overrides other parameters.
 
     Attributes:
         C: integer, number of conv layer inside each residual dense blocks (RDB).
