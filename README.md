@@ -3,6 +3,7 @@
 <img src="figures/butterfly.png">
 
 [![Build Status](https://travis-ci.org/idealo/image-super-resolution.svg?branch=master)](https://travis-ci.org/idealo/image-super-resolution)
+[![Docs](https://img.shields.io/badge/docs-online-brightgreen)](https://idealo.github.io/image-super-resolution/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://github.com/idealo/image-super-resolution/blob/master/LICENSE)
 
 The goal of this project is to upscale and improve the quality of low resolution images.
@@ -42,7 +43,9 @@ Currently 4 models are available:
  
 Example usage:
 
-  ``` model = RRDN(weights='gans')```
+```
+model = RRDN(weights='gans')
+```
   
 The network parameters will be automatically chosen.
 (see [Additional Information](#additional-information)).
@@ -86,7 +89,6 @@ pip install ISR
 ```
 git clone https://github.com/idealo/image-super-resolution
 cd image-super-resolution
-git lfs pull
 python setup.py install
 ```
 
@@ -244,7 +246,7 @@ bumpversion {part} setup.py
 ## Citation
 Please cite our work in your publications if it helps your research.
 
-```
+```BibTeX
 @misc{cardinale2018isr,
   title={ISR},
   author={Francesco Cardinale et al.},
