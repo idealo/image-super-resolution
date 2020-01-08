@@ -74,7 +74,7 @@ def parse_func_string(comment):
     ]
     for x in comment_parts:
         comments[x] = None
-
+    
     parts = re.split(r'\n', comment)
     ind = 1
     while ind < len(parts):
@@ -82,12 +82,12 @@ def parse_func_string(comment):
             break
         else:
             ind += 1
-
+    
     comments['short_description'] = '\n'.join(
         ['\n'.join(re.split('\n\s+', x.strip())) for x in parts[0:ind]]
     ).strip(':\n\t ')
     ind = skip_space_line(parts, ind)
-
+    
     start = ind
     while ind < len(parts):
         if parts[ind].strip().startswith(paras):
@@ -98,7 +98,7 @@ def parse_func_string(comment):
         ['\n'.join(re.split('\n\s+', x.strip())) for x in parts[start:ind]]
     ).strip(':\n\t ')
     comments['long_description'] = long_description
-
+    
     ind = skip_space_line(paras, ind)
     while ind < len(parts):
         if parts[ind].strip().startswith(paras):
@@ -124,7 +124,7 @@ def parse_func_string(comment):
             ind = skip_space_line(parts, ind)
         else:
             ind += 1
-
+    
     remove_next_line(comments)
     return comments
 
@@ -139,26 +139,26 @@ def to_md(comment_dict):
     if 'short_description' in comment_dict:
         doc += comment_dict['short_description']
         doc += '\n\n'
-
+    
     if 'long_description' in comment_dict:
         doc += md_parse_line_break(comment_dict['long_description'])
         doc += '\n'
-
+    
     if 'Args' in comment_dict and comment_dict['Args'] is not None:
         doc += '##### Args\n'
         for arg, des in comment_dict['Args'].items():
             doc += '* **' + arg + '**: ' + des + '\n\n'
-
+    
     if 'Attributes' in comment_dict and comment_dict['Attributes'] is not None:
         doc += '##### Attributes\n'
         for arg, des in comment_dict['Attributes'].items():
             doc += '* **' + arg + '**: ' + des + '\n\n'
-
+    
     if 'Methods' in comment_dict and comment_dict['Methods'] is not None:
         doc += '##### Methods\n'
         for arg, des in comment_dict['Methods'].items():
             doc += '* **' + arg + '**: ' + des + '\n\n'
-
+    
     if 'Returns' in comment_dict and comment_dict['Returns'] is not None:
         doc += '##### Returns\n'
         if isinstance(comment_dict['Returns'], str):
@@ -175,7 +175,7 @@ def parse_func_args(function):
     kwargs = []
     if function.args.kwarg:
         kwargs = ['**' + function.args.kwarg.arg]
-
+    
     return '(' + ', '.join(args + kwargs) + ')'
 
 
@@ -200,7 +200,7 @@ def get_func_comments(function_definitions):
                 '\n',
             ]
         )
-
+    
     return doc
 
 
@@ -208,23 +208,23 @@ def get_comments_str(file_name):
     with open(file_name) as fd:
         file_contents = fd.read()
     module = ast.parse(file_contents)
-
+    
     function_definitions = [node for node in module.body if
                             isinstance(node, ast.FunctionDef) and (node.name[0] != '_' or node.name[:2] == '__')]
-
+    
     doc = get_func_comments(function_definitions)
-
+    
     class_definitions = [node for node in module.body if isinstance(node, ast.ClassDef)]
     for class_def in class_definitions:
         temp_str = to_md(parse_func_string(ast.get_docstring(class_def)))
-
+        
         # excludes private methods (start with '_')
         method_definitions = [
             node
             for node in class_def.body
             if isinstance(node, ast.FunctionDef) and (node.name[0] != '_' or node.name[:2] == '__')
         ]
-
+        
         temp_str += get_func_comments(method_definitions)
         doc += '## class ' + class_def.name + '\n' + temp_str
     return doc
@@ -239,7 +239,7 @@ def extract_comments(directory):
                 directory_out = os.path.join('docs', parent.replace(directory, ''))
                 if not os.path.exists(directory_out):
                     os.makedirs(directory_out)
-
+                
                 output_file = open(os.path.join(directory_out, file_name[:-3] + '.md'), 'w')
                 output_file.write(doc)
                 output_file.close()

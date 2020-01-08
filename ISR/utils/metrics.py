@@ -16,11 +16,11 @@ def PSNR(y_true, y_pred, MAXp=1):
 
 def RGB_to_Y(image):
     """ Image has values from 0 to 1. """
-
+    
     R = image[:, :, :, 0]
     G = image[:, :, :, 1]
     B = image[:, :, :, 2]
-
+    
     Y = 16 + (65.738 * R) + 129.057 * G + 25.064 * B
     return Y / 255.0
 

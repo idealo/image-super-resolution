@@ -1,11 +1,12 @@
+from time import time
+
 import imageio
 import yaml
 import numpy as np
 from pathlib import Path
-from time import time
+
 from ISR.utils.logger import get_logger
 from ISR.utils.utils import get_timestamp
-from ISR.utils.image_processing import process_array, process_output
 
 
 class Predictor:
@@ -30,9 +31,9 @@ class Predictor:
             runs the predictions on the images contained in the input directory and
             stores the results in the output directory.
     """
-
+    
     def __init__(self, input_dir, output_dir='./data/output', verbose=True):
-
+        
         self.input_dir = Path(input_dir)
         self.data_name = self.input_dir.name
         self.output_dir = Path(output_dir) / self.data_name
@@ -48,7 +49,7 @@ class Predictor:
         if not self.output_dir.exists():
             self.logger.info('Creating output directory:\n{}'.format(self.output_dir))
             self.output_dir.mkdir(parents=True)
-
+    
     def _load_weights(self):
         """ Invokes the model's load weights function if any weights are provided. """
         if self.weights_path is not None:
@@ -58,7 +59,7 @@ class Predictor:
         else:
             self.logger.error('Error: Weights path not specified (check config file).')
             raise ValueError('Weights path not specified (check config file).')
-
+        
         session_config_path = self.weights_path.parent / 'session_config.yml'
         if session_config_path.exists():
             conf = yaml.load(session_config_path.read_text(), Loader=yaml.FullLoader)
@@ -67,18 +68,18 @@ class Predictor:
             conf = {}
         conf.update({'pre-trained-weights': self.weights_path.name})
         return conf
-
+    
     def _make_basename(self):
         """ Combines generators's name and its architecture's parameters. """
-
+        
         params = [self.model.name]
         for param in np.sort(list(self.model.params.keys())):
             params.append('{g}{p}'.format(g=param, p=self.model.params[param]))
         return '-'.join(params)
-
+    
     def get_predictions(self, model, weights_path):
         """ Runs the prediction. """
-
+        
         self.model = model
         self.weights_path = Path(weights_path)
         weights_conf = self._load_weights()
@@ -100,7 +101,7 @@ class Predictor:
             self.logger.info('Elapsed time: {}s'.format(end - start))
             self.logger.info('Result in: {}'.format(output_path))
             imageio.imwrite(output_path, sr_img)
-
+    
     def _forward_pass(self, file_path):
         lr_img = imageio.imread(file_path)
         if lr_img.shape[2] == 3:

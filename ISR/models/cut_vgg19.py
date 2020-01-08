@@ -1,5 +1,6 @@
 from tensorflow.keras.models import Model
 from tensorflow.keras.applications.vgg19 import VGG19
+
 from ISR.utils.logger import get_logger
 
 
@@ -16,25 +17,25 @@ class Cut_VGG19:
     Attributes:
         loss_model: multi-output vgg architecture with <layers_to_extract> as output layers.
     """
-
+    
     def __init__(self, patch_size, layers_to_extract):
         self.patch_size = patch_size
         self.input_shape = (patch_size,) * 2 + (3,)
         self.layers_to_extract = layers_to_extract
         self.logger = get_logger(__name__)
-
+        
         if len(self.layers_to_extract) > 0:
             self._cut_vgg()
         else:
             self.logger.error('Invalid VGG instantiation: extracted layer must be > 0')
             raise ValueError('Invalid VGG instantiation: extracted layer must be > 0')
-
+    
     def _cut_vgg(self):
         """
         Loads pre-trained VGG, declares as output the intermediate
         layers selected by self.layers_to_extract.
         """
-
+        
         vgg = VGG19(weights='imagenet', include_top=False, input_shape=self.input_shape)
         vgg.trainable = False
         outputs = [vgg.layers[i].output for i in self.layers_to_extract]

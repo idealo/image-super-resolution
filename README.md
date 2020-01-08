@@ -3,6 +3,7 @@
 <img src="figures/butterfly.png">
 
 [![Build Status](https://travis-ci.org/idealo/image-super-resolution.svg?branch=master)](https://travis-ci.org/idealo/image-super-resolution)
+[![Docs](https://img.shields.io/badge/docs-online-brightgreen)](https://idealo.github.io/image-super-resolution/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://github.com/idealo/image-super-resolution/blob/master/LICENSE)
 
 The goal of this project is to upscale and improve the quality of low resolution images.
@@ -34,18 +35,29 @@ ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 licens
 
 ## Pre-trained networks
 
-The weights used to produced these images are available under `sample_weights` (see [Additional Information](#additional-information)).
+The weights used to produced these images are available directly when creating the model object. 
 
-<b>IMPORTANT</b>: the weights are stored on [git lfs](https://git-lfs.github.com/). To download them clone the repository and run `git lfs pull`; if getting quota issues, go here https://github.com/idealo/image-super-resolution/issues/59#issuecomment-526940275.
+Currently 4 models are available:
+  - RDN: psnr-large, psnr-small, noise-cancel
+  - RRDN: gans
+ 
+Example usage:
+
+```
+model = RRDN(weights='gans')
+```
+  
+The network parameters will be automatically chosen.
+(see [Additional Information](#additional-information)).
 
 #### Basic model
-RRDN model, PSNR driven, weights [here](weights/sample_weights/rdn-C3-D10-G64-G064-x2/PSNR-driven/).
+RDN model, PSNR driven, choose the option ```weights='psnr-large'``` or ```weights='psnr-small'``` when creating a RDN model.
 
 |![butterfly-sample](figures/butterfly_comparison_SR_baseline.png)|
 |:--:|
 | Low resolution image (left), ISR output (center), bicubic scaling (right). Click to zoom. |
 #### GANS model
-RRDN model, trained with Adversarial and VGG features losses, weights [here](weights/sample_weights/rrdn-C4-D3-G32-G032-T10-x4/Perceptual/).
+RRDN model, trained with Adversarial and VGG features losses, choose the option ```weights='gans'``` when creating a RRDN model.
 
 |![baboon-comparison](figures/baboon-compare.png)|
 |:--:|
@@ -53,7 +65,7 @@ RRDN model, trained with Adversarial and VGG features losses, weights [here](wei
 -> [more detailed comparison](http://www.framecompare.com/screenshotcomparison/PGZPNNNX)
 
 #### Artefact Cancelling GANS model
-RDN model, trained with Adversarial and VGG features losses, weights [here](weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/).
+RDN model, trained with Adversarial and VGG features losses, choose the option ```weights='noise-cancel'``` when creating a RDN model.
 
 |![temple-comparison](figures/temple_comparison.png)|
 |:--:|
@@ -77,7 +89,6 @@ pip install ISR
 ```
 git clone https://github.com/idealo/image-super-resolution
 cd image-super-resolution
-git lfs pull
 python setup.py install
 ```
 
@@ -94,13 +105,11 @@ img = Image.open('data/input/test_images/sample_image.jpg')
 lr_img = np.array(img)
 ```
 
-Load model and run prediction
+Load a pre-trained model and run prediction (check the prediction tutorial under notebooks for more details)
 ```python
 from ISR.models import RDN
 
-rdn = RDN(arch_params={'C':6, 'D':20, 'G':64, 'G0':64, 'x':2})
-rdn.model.load_weights('weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5')
-
+rdn = RDN(weights='psnr-small')
 sr_img = rdn.predict(lr_img)
 Image.fromarray(sr_img)
 ```
@@ -237,7 +246,7 @@ bumpversion {part} setup.py
 ## Citation
 Please cite our work in your publications if it helps your research.
 
-```
+```BibTeX
 @misc{cardinale2018isr,
   title={ISR},
   author={Francesco Cardinale et al.},
