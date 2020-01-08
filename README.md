@@ -34,18 +34,27 @@ ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 licens
 
 ## Pre-trained networks
 
-The weights used to produced these images are available under `sample_weights` (see [Additional Information](#additional-information)).
+The weights used to produced these images are available directly when creating the model object. 
 
-<b>IMPORTANT</b>: the weights are stored on [git lfs](https://git-lfs.github.com/). To download them clone the repository and run `git lfs pull`; if getting quota issues, go here https://github.com/idealo/image-super-resolution/issues/59#issuecomment-526940275.
+Currently 4 models are available:
+  - RDN: psnr-large, psnr-small, noise-cancel
+  - RRDN: gans
+ 
+Example usage:
+
+  ``` model = RRDN(weights='gans')```
+  
+The network parameters will be automatically chosen.
+(see [Additional Information](#additional-information)).
 
 #### Basic model
-RRDN model, PSNR driven, weights [here](weights/sample_weights/rdn-C3-D10-G64-G064-x2/PSNR-driven/).
+RDN model, PSNR driven, choose the option ```weights='psnr-large'``` or ```weights='psnr-small'``` when creating a RDN model.
 
 |![butterfly-sample](figures/butterfly_comparison_SR_baseline.png)|
 |:--:|
 | Low resolution image (left), ISR output (center), bicubic scaling (right). Click to zoom. |
 #### GANS model
-RRDN model, trained with Adversarial and VGG features losses, weights [here](weights/sample_weights/rrdn-C4-D3-G32-G032-T10-x4/Perceptual/).
+RRDN model, trained with Adversarial and VGG features losses, choose the option ```weights='gans'``` when creating a RRDN model.
 
 |![baboon-comparison](figures/baboon-compare.png)|
 |:--:|
@@ -53,7 +62,7 @@ RRDN model, trained with Adversarial and VGG features losses, weights [here](wei
 -> [more detailed comparison](http://www.framecompare.com/screenshotcomparison/PGZPNNNX)
 
 #### Artefact Cancelling GANS model
-RDN model, trained with Adversarial and VGG features losses, weights [here](weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/).
+RDN model, trained with Adversarial and VGG features losses, choose the option ```weights='noise-cancel'``` when creating a RDN model.
 
 |![temple-comparison](figures/temple_comparison.png)|
 |:--:|
