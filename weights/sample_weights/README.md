@@ -1,10 +1,11 @@
-The weights are stored with git's Large File Storage (https://git-lfs.github.com/).
+Pre-trained networks are available directly when creating the model object.
 
-In order to use these weights, first clone the repository and then run `git lfs pull`
+Currently 4 models are available:
+  - RDN: psnr-large, psnr-small, noise-cancel
+  - RRDN: gans
+ 
+Example usage:
 
-```
-git clone https://github.com/idealo/image-super-resolution
-cd image-super-resolution
-git lfs pull
-```
-<b>IMPORTANT</b>: if you're getting quota lfs issues, go here https://github.com/idealo/image-super-resolution/issues/59#issuecomment-526940275.
+  ``` model = RRDN(weights='gans')```
+  
+The network parameters will be automatically chosen.
