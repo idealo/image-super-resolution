@@ -65,7 +65,7 @@ class RRDN(ImageModel):
     """
 
     def __init__(
-        self, arch_params={}, weights='', patch_size=None, beta=0.2, c_dim=3, kernel_size=3, init_val=0.05
+        self, arch_params={}, patch_size=None, beta=0.2, c_dim=3, kernel_size=3, init_val=0.05, weights=''
     ):
         if weights:
             arch_params, c_dim, kernel_size, url, fname = get_network(weights)

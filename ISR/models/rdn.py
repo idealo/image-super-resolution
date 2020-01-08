@@ -76,12 +76,12 @@ class RDN(ImageModel):
     def __init__(
             self,
             arch_params={},
-            weights='',
             patch_size=None,
             c_dim=3,
             kernel_size=3,
             upscaling='ups',
             init_extreme_val=0.05,
+            weights=''
     ):
         if weights:
             arch_params, c_dim, kernel_size, upscaling, url, fname = get_network(weights)
