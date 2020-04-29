@@ -257,7 +257,6 @@ Please cite our work in your publications if it helps your research.
 
 ## Maintainers
 * Francesco Cardinale, github: [cfrancesco](https://github.com/cfrancesco)
-* Zubin John, github: [valiantone](https://github.com/valiantone)
 * Dat Tran, github: [datitran](https://github.com/datitran)
 
 ## Copyright
