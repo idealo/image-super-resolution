@@ -131,17 +131,19 @@ class RRDN(ImageModel):
         
         # SUGGESTION: MAKE BETA LEARNABLE
         x = input_layer
+        beta = self.beta
         
         for d in range(1, self.D + 1):
             LFF = self._dense_block(x, d, t)
-            LFF_beta = Lambda(lambda x: x * self.beta)(LFF)
+            LFF_beta = Lambda(lambda x: x * beta)(LFF)
             x = Add(name='LRL_%d_%d' % (t, d))([x, LFF_beta])
-        x = Lambda(lambda x: x * self.beta)(x)
+        x = Lambda(lambda x: x * beta)(x)
         x = Add(name='RRDB_%d_out' % (t))([input_layer, x])
         return x
     
     def _pixel_shuffle(self, input_layer):
         """ PixelShuffle implementation of the upscaling part. """
+        scale = self.scale
         
         x = Conv2D(
             self.c_dim * self.scale ** 2,
@@ -151,7 +153,7 @@ class RRDN(ImageModel):
             name='PreShuffle',
         )(input_layer)
         return Lambda(
-            lambda x: tf.nn.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
+            lambda x: tf.nn.depth_to_space(x, block_size=scale, data_format='NHWC'),
             name='PixelShuffle',
         )(x)
     
