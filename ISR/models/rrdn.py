@@ -145,7 +145,6 @@ class RRDN(ImageModel):
     def _pixel_shuffle(self, input_layer):
         """ PixelShuffle implementation of the upscaling part. """
         scale = self.scale 
-        # print('_pixel_shuffle method')
 
         x = Conv2D(
             self.c_dim * self.scale ** 2,
@@ -183,7 +182,6 @@ class RRDN(ImageModel):
         # Global Residual Learning
         GRL = Add(name='GRL')([post_blocks, pre_blocks])
         # Upscaling
-        # print('single pixel shuffle')
         PS = self._pixel_shuffle(GRL)
         # Compose SR image
         SR = Conv2D(
