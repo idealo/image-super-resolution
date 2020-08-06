@@ -131,7 +131,6 @@ class RRDN(ImageModel):
         
         # SUGGESTION: MAKE BETA LEARNABLE
         x = input_layer
-
         for d in range(1, self.D + 1):
             LFF = self._dense_block(x, d, t)
             LFF_beta = MultiplyBeta(self.beta)(LFF)
@@ -139,8 +138,6 @@ class RRDN(ImageModel):
         x = MultiplyBeta(self.beta)(x)
         x = Add(name='RRDB_%d_out' % (t))([input_layer, x])
         return x
-
-
     
     def _pixel_shuffle(self, input_layer):
         """ PixelShuffle implementation of the upscaling part. """
