@@ -144,8 +144,6 @@ class RRDN(ImageModel):
     
     def _pixel_shuffle(self, input_layer):
         """ PixelShuffle implementation of the upscaling part. """
-        scale = self.scale 
-
         x = Conv2D(
             self.c_dim * self.scale ** 2,
             kernel_size=3,
@@ -154,7 +152,7 @@ class RRDN(ImageModel):
             name='PreShuffle',
         )(input_layer)
 
-        return PixelShuffle(scale)(x)
+        return PixelShuffle(self.scale)(x)
     
     def _build_rdn(self):
         LR_input = Input(shape=(self.patch_size, self.patch_size, 3), name='LR_input')
