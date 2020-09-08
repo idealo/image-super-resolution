@@ -131,18 +131,16 @@ class RRDN(ImageModel):
         
         # SUGGESTION: MAKE BETA LEARNABLE
         x = input_layer
-        
         for d in range(1, self.D + 1):
             LFF = self._dense_block(x, d, t)
-            LFF_beta = Lambda(lambda x: x * self.beta)(LFF)
+            LFF_beta = MultiplyBeta(self.beta)(LFF)
             x = Add(name='LRL_%d_%d' % (t, d))([x, LFF_beta])
-        x = Lambda(lambda x: x * self.beta)(x)
+        x = MultiplyBeta(self.beta)(x)
         x = Add(name='RRDB_%d_out' % (t))([input_layer, x])
         return x
     
     def _pixel_shuffle(self, input_layer):
         """ PixelShuffle implementation of the upscaling part. """
-        
         x = Conv2D(
             self.c_dim * self.scale ** 2,
             kernel_size=3,
@@ -150,10 +148,8 @@ class RRDN(ImageModel):
             kernel_initializer=self.initializer,
             name='PreShuffle',
         )(input_layer)
-        return Lambda(
-            lambda x: tf.nn.depth_to_space(x, block_size=self.scale, data_format='NHWC'),
-            name='PixelShuffle',
-        )(x)
+
+        return PixelShuffle(self.scale)(x)
     
     def _build_rdn(self):
         LR_input = Input(shape=(self.patch_size, self.patch_size, 3), name='LR_input')
@@ -191,3 +187,33 @@ class RRDN(ImageModel):
             name='SR',
         )(PS)
         return Model(inputs=LR_input, outputs=SR)
+
+class PixelShuffle(tf.keras.layers.Layer):
+    def __init__(self, scale, *args, **kwargs):
+        super(PixelShuffle, self).__init__(*args, **kwargs)
+        self.scale = scale
+
+    def call(self, x):
+        return tf.nn.depth_to_space(x, block_size=self.scale, data_format='NHWC')
+
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            'scale': self.scale,
+        })
+        return config
+
+class MultiplyBeta(tf.keras.layers.Layer):
+    def __init__(self, beta, *args, **kwargs):
+        super(MultiplyBeta, self).__init__(*args, **kwargs)
+        self.beta = beta
+
+    def call(self, x, **kwargs):
+        return x * self.beta
+
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            'beta': self.beta,
+        })
+        return config
