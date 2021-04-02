@@ -31,7 +31,7 @@ The `-d` flag in the run command will tell the program to load the weights speci
 ### Predict locally
 From the main folder run
 ```
-docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/weights/:/home/isr/weights -v $(pwd)/isr/config.yml:/home/isr/config.yml -it isr -p -d -c config.yml
+docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/weights/:/home/isr/weights -v $(pwd)/config.yml:/home/isr/config.yml -it isr -p -d -c config.yml
 ```
 ### Predict on AWS with nvidia-docker
 From the remote machine run (using our [DockerHub image](https://hub.docker.com/r/idealo/image-super-resolution-gpu/))
