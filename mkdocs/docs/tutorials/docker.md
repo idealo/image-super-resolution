@@ -29,7 +29,9 @@ Check the configuration file `config.yml` for more information on parameters and
 The `-d` flag in the run command will tell the program to load the weights specified in `config.yml`. It is possible though to iteratively select any option from the command line.
 
 ### Predict locally
-From the main folder run
+1. Download the pre-trained weights and data as described [here](./prediction.md#get-the-pre-trained-weights-and-data).
+
+2. From the main folder run
 ```
 docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/weights/:/home/isr/weights -v $(pwd)/config.yml:/home/isr/config.yml -it isr -p -d -c config.yml
 ```
