@@ -29,9 +29,24 @@ Check the configuration file `config.yml` for more information on parameters and
 The `-d` flag in the run command will tell the program to load the weights specified in `config.yml`. It is possible though to iteratively select any option from the command line.
 
 ### Predict locally
-1. Download the pre-trained weights and data as described [here](./prediction.md#get-the-pre-trained-weights-and-data).
+Download the pre-trained weights as described [here](./prediction.md#get-the-pre-trained-weights-and-data).
 
-2. From the main folder run
+Update your `config.yml` according to the model you want to use. For example `rrdn`
+
+```.yml
+# config.yml
+
+default:
+  generator: rrdn # Use rrdn
+
+...
+
+weights_paths: # Point to the rrdn weights file
+  discriminator:
+  generator: ./weights/rrdn-C4-D3-G32-G032-T10-x4_epoch299.hdf5
+```
+
+From the main folder run
 ```
 docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/weights/:/home/isr/weights -v $(pwd)/config.yml:/home/isr/config.yml -it isr -p -d -c config.yml
 ```
