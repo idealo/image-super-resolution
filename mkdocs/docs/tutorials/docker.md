@@ -3,10 +3,9 @@
 
 1. Install [Docker](https://docs.docker.com/install/)
 
-2. Clone our repository, get the sample weights from [git lfs](https://git-lfs.github.com/) and cd into it:
+2. Clone our repository and cd into it:
 ```
 git clone https://github.com/idealo/image-super-resolution
-git lfs pull
 cd image-super-resolution
 ```
 
@@ -30,9 +29,26 @@ Check the configuration file `config.yml` for more information on parameters and
 The `-d` flag in the run command will tell the program to load the weights specified in `config.yml`. It is possible though to iteratively select any option from the command line.
 
 ### Predict locally
+Download the pre-trained weights as described [here](./prediction.md#get-the-pre-trained-weights-and-data).
+
+Update your `config.yml` according to the model you want to use. For example `rrdn`
+
+```.yml
+# config.yml
+
+default:
+  generator: rrdn # Use rrdn
+
+...
+
+weights_paths: # Point to the rrdn weights file
+  discriminator:
+  generator: ./weights/rrdn-C4-D3-G32-G032-T10-x4_epoch299.hdf5
+```
+
 From the main folder run
 ```
-docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/weights/:/home/isr/weights -v $(pwd)/isr/config.yml:/home/isr/config.yml -it isr -p -d -c config.yml
+docker run -v $(pwd)/data/:/home/isr/data -v $(pwd)/weights/:/home/isr/weights -v $(pwd)/config.yml:/home/isr/config.yml -it isr -p -d -c config.yml
 ```
 ### Predict on AWS with nvidia-docker
 From the remote machine run (using our [DockerHub image](https://hub.docker.com/r/idealo/image-super-resolution-gpu/))
