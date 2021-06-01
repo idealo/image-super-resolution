@@ -33,6 +33,36 @@ ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 licens
 - [Maintainers](#maintainers)
 - [License](#copyright)
 
+## Troubleshooting
+### Training not delivering good/patchy results
+When training your own model, start with only PSNR loss (50+ epochs, depending on the dataset) and only then introduce GANS and feature loss. This can be controlled by the loss weights argument.
+
+This is just sample, you will need to tune these parameters.
+
+PSNR only:
+```
+loss_weights = {
+  'generator': 1.0,
+  'feature_extractor': 0.0,
+  'discriminator': 0.00
+}
+```
+
+Later:
+```
+loss_weights = {
+  'generator': 0.0,
+  'feature_extractor': 0.0833,
+  'discriminator': 0.01
+}
+```
+### Weights loading
+If you are having trouble loading your own weights or the pre-trained weights (`AttributeError: 'str' object has no attribute 'decode'`), try:
+```bash
+pip install 'h5py==2.10.0' --force-reinstall
+```
+[Issue](https://github.com/idealo/image-super-resolution/issues/197#issue-877826405)
+
 ## Pre-trained networks
 
 The weights used to produced these images are available directly when creating the model object. 
