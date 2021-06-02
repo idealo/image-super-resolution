@@ -1,0 +1,1346 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+        <meta name="author" content="idealo Data Science Team">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.0.2">
+    
+    
+      
+        <title>Image Super-Resolution</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/application.982221ab.css">
+      
+        <link rel="stylesheet" href="assets/stylesheets/application-palette.224b79ff.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#009688">
+      
+    
+    
+      <script src="assets/javascripts/modernizr.1f0bcf2b.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="assets/fonts/material-icons.css">
+    
+    
+    
+      
+        
+<script>
+  window.ga = window.ga || function() {
+    (ga.q = ga.q || []).push(arguments)
+  }
+  ga.l = +new Date
+  /* Setup integration and send page view */
+  ga("create", "UA-137434942-1", "auto")
+  ga("set", "anonymizeIp", true)
+  ga("send", "pageview")
+  /* Register handler to log search on blur */
+  document.addEventListener("DOMContentLoaded", () => {
+    if (document.forms.search) {
+      var query = document.forms.search.query
+      query.addEventListener("blur", function() {
+        if (this.value) {
+          var path = document.location.pathname;
+          ga("send", "pageview", path + "?q=" + this.value)
+        }
+      })
+    }
+  })
+</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="__github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#image-super-resolution-isr" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="." title="Image Super-Resolution" class="md-header-nav__button md-logo">
+          
+            <img src="img/logo.svg" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              Image Super-Resolution
+            </span>
+            <span class="md-header-nav__topic">
+              Home
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/idealo/image-super-resolution/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    idealo/image-super-resolution
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="." title="Image Super-Resolution" class="md-nav__button md-logo">
+      
+        <img src="img/logo.svg" width="48" height="48">
+      
+    </a>
+    Image Super-Resolution
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/idealo/image-super-resolution/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    idealo/image-super-resolution
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Home
+      </label>
+    
+    <a href="." title="Home" class="md-nav__link md-nav__link--active">
+      Home
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contents" title="Contents" class="md-nav__link">
+    Contents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" title="Troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#training-not-delivering-goodpatchy-results" title="Training not delivering good/patchy results" class="md-nav__link">
+    Training not delivering good/patchy results
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weights-loading" title="Weights loading" class="md-nav__link">
+    Weights loading
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-trained-networks" title="Pre-trained networks" class="md-nav__link">
+    Pre-trained networks
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-model" title="Basic model" class="md-nav__link">
+    Basic model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gans-model" title="GANS model" class="md-nav__link">
+    GANS model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#artefact-cancelling-gans-model" title="Artefact Cancelling GANS model" class="md-nav__link">
+    Artefact Cancelling GANS model
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" title="Installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" title="Usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prediction" title="Prediction" class="md-nav__link">
+    Prediction
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#large-image-inference" title="Large image inference" class="md-nav__link">
+    Large image inference
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#training" title="Training" class="md-nav__link">
+    Training
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-information" title="Additional Information" class="md-nav__link">
+    Additional Information
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rdn-pre-trained-weights" title="RDN Pre-trained weights" class="md-nav__link">
+    RDN Pre-trained weights
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rdn-network-architecture" title="RDN Network architecture" class="md-nav__link">
+    RDN Network architecture
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rrdn-network-architecture" title="RRDN Network architecture" class="md-nav__link">
+    RRDN Network architecture
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contribute" title="Contribute" class="md-nav__link">
+    Contribute
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bump-version" title="Bump version" class="md-nav__link">
+    Bump version
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#citation" title="Citation" class="md-nav__link">
+    Citation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintainers" title="Maintainers" class="md-nav__link">
+    Maintainers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copyright" title="Copyright" class="md-nav__link">
+    Copyright
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Tutorials
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="tutorials/training/" title="Training" class="md-nav__link">
+      Training
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="tutorials/prediction/" title="Prediction" class="md-nav__link">
+      Prediction
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="tutorials/docker/" title="Docker" class="md-nav__link">
+      Docker
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Documentation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Documentation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3-1" type="checkbox" id="nav-3-1">
+    
+    <label class="md-nav__link" for="nav-3-1">
+      Models
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-3-1">
+        Models
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="models/cut_vgg19/" title="Cut VGG19" class="md-nav__link">
+      Cut VGG19
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="models/discriminator/" title="Discriminator" class="md-nav__link">
+      Discriminator
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="models/rdn/" title="RDN" class="md-nav__link">
+      RDN
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="models/rrdn/" title="RRDN" class="md-nav__link">
+      RRDN
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="predict/predictor/" title="Predict" class="md-nav__link">
+      Predict
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="train/trainer/" title="Train" class="md-nav__link">
+      Train
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3-4" type="checkbox" id="nav-3-4">
+    
+    <label class="md-nav__link" for="nav-3-4">
+      Utils
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-3-4">
+        Utils
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="utils/datahandler/" title="Data Handler" class="md-nav__link">
+      Data Handler
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="utils/logger/" title="Logger" class="md-nav__link">
+      Logger
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="utils/metrics/" title="Metrics" class="md-nav__link">
+      Metrics
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="utils/train_helper/" title="Train Helper" class="md-nav__link">
+      Train Helper
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="utils/utils/" title="Utils" class="md-nav__link">
+      Utils
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="assistant/" title="Assistant" class="md-nav__link">
+      Assistant
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="CONTRIBUTING/" title="Contribution" class="md-nav__link">
+      Contribution
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="LICENSE/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contents" title="Contents" class="md-nav__link">
+    Contents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" title="Troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#training-not-delivering-goodpatchy-results" title="Training not delivering good/patchy results" class="md-nav__link">
+    Training not delivering good/patchy results
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weights-loading" title="Weights loading" class="md-nav__link">
+    Weights loading
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-trained-networks" title="Pre-trained networks" class="md-nav__link">
+    Pre-trained networks
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-model" title="Basic model" class="md-nav__link">
+    Basic model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gans-model" title="GANS model" class="md-nav__link">
+    GANS model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#artefact-cancelling-gans-model" title="Artefact Cancelling GANS model" class="md-nav__link">
+    Artefact Cancelling GANS model
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" title="Installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" title="Usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prediction" title="Prediction" class="md-nav__link">
+    Prediction
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#large-image-inference" title="Large image inference" class="md-nav__link">
+    Large image inference
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#training" title="Training" class="md-nav__link">
+    Training
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-information" title="Additional Information" class="md-nav__link">
+    Additional Information
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rdn-pre-trained-weights" title="RDN Pre-trained weights" class="md-nav__link">
+    RDN Pre-trained weights
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rdn-network-architecture" title="RDN Network architecture" class="md-nav__link">
+    RDN Network architecture
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rrdn-network-architecture" title="RRDN Network architecture" class="md-nav__link">
+    RRDN Network architecture
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contribute" title="Contribute" class="md-nav__link">
+    Contribute
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bump-version" title="Bump version" class="md-nav__link">
+    Bump version
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#citation" title="Citation" class="md-nav__link">
+    Citation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintainers" title="Maintainers" class="md-nav__link">
+    Maintainers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copyright" title="Copyright" class="md-nav__link">
+    Copyright
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/idealo/image-super-resolution/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="image-super-resolution-isr">Image Super-Resolution (ISR)</h1>
+<p><img src="figures/butterfly.png"></p>
+<p><a href="https://travis-ci.org/idealo/image-super-resolution"><img alt="Build Status" src="https://travis-ci.org/idealo/image-super-resolution.svg?branch=master" /></a>
+<a href="https://idealo.github.io/image-super-resolution/"><img alt="Docs" src="https://img.shields.io/badge/docs-online-brightgreen" /></a>
+<a href="https://github.com/idealo/image-super-resolution/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-orange.svg" /></a></p>
+<p>The goal of this project is to upscale and improve the quality of low resolution images.</p>
+<p>This project contains Keras implementations of different Residual Dense Networks for Single Image Super-Resolution (ISR) as well as scripts to train these networks using content and adversarial loss components.  </p>
+<p>The implemented networks include:</p>
+<ul>
+<li>The super-scaling Residual Dense Network described in <a href="https://arxiv.org/abs/1802.08797">Residual Dense Network for Image Super-Resolution</a> (Zhang et al. 2018)</li>
+<li>The super-scaling Residual in Residual Dense Network described in <a href="https://arxiv.org/abs/1809.00219">ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks</a> (Wang et al. 2018)</li>
+<li>A multi-output version of the Keras VGG19 network for deep features extraction used in the perceptual loss</li>
+<li>A custom discriminator network based on the one described in <a href="https://arxiv.org/abs/1609.04802">Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network</a> (SRGANS, Ledig et al. 2017)</li>
+</ul>
+<p>Read the full documentation at: <a href="https://idealo.github.io/image-super-resolution/">https://idealo.github.io/image-super-resolution/</a>.</p>
+<p><a href="https://idealo.github.io/image-super-resolution/tutorials/docker/">Docker scripts</a> and <a href="https://github.com/idealo/image-super-resolution/tree/master/notebooks">Google Colab notebooks</a> are available to carry training and prediction. Also, we provide scripts to facilitate training on the cloud with AWS and <a href="https://github.com/NVIDIA/nvidia-docker">nvidia-docker</a> with only a few commands.</p>
+<p>ISR is compatible with Python 3.6 and is distributed under the Apache 2.0 license. We welcome any kind of contribution. If you wish to contribute, please see the <a href="#contribute">Contribute</a> section.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="#pre-trained-networks">Pre-trained networks</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#additional-information">Additional Information</a></li>
+<li><a href="#contribute">Contribute</a></li>
+<li><a href="#citation">Citation</a></li>
+<li><a href="#maintainers">Maintainers</a></li>
+<li><a href="#copyright">License</a></li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="training-not-delivering-goodpatchy-results">Training not delivering good/patchy results</h3>
+<p>When training your own model, start with only PSNR loss (50+ epochs, depending on the dataset) and only then introduce GANS and feature loss. This can be controlled by the loss weights argument.</p>
+<p>This is just sample, you will need to tune these parameters.</p>
+<p>PSNR only:</p>
+<div class="codehilite"><pre><span></span><code>loss_weights = {
+  &#39;generator&#39;: 1.0,
+  &#39;feature_extractor&#39;: 0.0,
+  &#39;discriminator&#39;: 0.00
+}
+</code></pre></div>
+
+<p>Later:</p>
+<div class="codehilite"><pre><span></span><code>loss_weights = {
+  &#39;generator&#39;: 0.0,
+  &#39;feature_extractor&#39;: 0.0833,
+  &#39;discriminator&#39;: 0.01
+}
+</code></pre></div>
+
+<h3 id="weights-loading">Weights loading</h3>
+<p>If you are having trouble loading your own weights or the pre-trained weights (<code>AttributeError: 'str' object has no attribute 'decode'</code>), try:</p>
+<div class="codehilite"><pre><span></span><code>pip install <span class="s1">&#39;h5py==2.10.0&#39;</span> --force-reinstall
+</code></pre></div>
+
+<p><a href="https://github.com/idealo/image-super-resolution/issues/197#issue-877826405">Issue</a></p>
+<h2 id="pre-trained-networks">Pre-trained networks</h2>
+<p>The weights used to produced these images are available directly when creating the model object. </p>
+<p>Currently 4 models are available:
+  - RDN: psnr-large, psnr-small, noise-cancel
+  - RRDN: gans</p>
+<p>Example usage:</p>
+<div class="codehilite"><pre><span></span><code>model = RRDN(weights=&#39;gans&#39;)
+</code></pre></div>
+
+<p>The network parameters will be automatically chosen.
+(see <a href="#additional-information">Additional Information</a>).</p>
+<h4 id="basic-model">Basic model</h4>
+<p>RDN model, PSNR driven, choose the option <code>weights='psnr-large'</code> or <code>weights='psnr-small'</code> when creating a RDN model.</p>
+<table>
+<thead>
+<tr>
+<th align="center"><img alt="butterfly-sample" src="figures/butterfly_comparison_SR_baseline.png" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Low resolution image (left), ISR output (center), bicubic scaling (right). Click to zoom.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="gans-model">GANS model</h4>
+<p>RRDN model, trained with Adversarial and VGG features losses, choose the option <code>weights='gans'</code> when creating a RRDN model.</p>
+<p>|<img alt="baboon-comparison" src="figures/baboon-compare.png" />|
+|:--:|
+| RRDN GANS model (left), bicubic upscaling (right). |
+-&gt; <a href="http://www.framecompare.com/screenshotcomparison/PGZPNNNX">more detailed comparison</a></p>
+<h4 id="artefact-cancelling-gans-model">Artefact Cancelling GANS model</h4>
+<p>RDN model, trained with Adversarial and VGG features losses, choose the option <code>weights='noise-cancel'</code> when creating a RDN model.</p>
+<table>
+<thead>
+<tr>
+<th align="center"><img alt="temple-comparison" src="figures/temple_comparison.png" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Standard vs GANS model. Click to zoom.</td>
+</tr>
+</tbody>
+</table>
+<p>|<img alt="sandal-comparison" src="figures/sandal-compare.png" />|
+|:--:|
+| RDN GANS artefact cancelling model (left), RDN standard PSNR driven model (right). |
+-&gt; <a href="http://www.framecompare.com/screenshotcomparison/2ECCNNNU">more detailed comparison</a></p>
+<h2 id="installation">Installation</h2>
+<p>There are two ways to install the Image Super-Resolution package:</p>
+<ul>
+<li>Install ISR from PyPI (recommended):</li>
+</ul>
+<div class="codehilite"><pre><span></span><code>pip install ISR
+</code></pre></div>
+
+<ul>
+<li>Install ISR from the GitHub source:</li>
+</ul>
+<div class="codehilite"><pre><span></span><code>git clone https://github.com/idealo/image-super-resolution
+cd image-super-resolution
+python setup.py install
+</code></pre></div>
+
+<h2 id="usage">Usage</h2>
+<h3 id="prediction">Prediction</h3>
+<p>Load image and prepare it</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;data/input/test_images/sample_image.jpg&#39;</span><span class="p">)</span>
+<span class="n">lr_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Load a pre-trained model and run prediction (check the prediction tutorial under notebooks for more details)</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ISR.models</span> <span class="kn">import</span> <span class="n">RDN</span>
+
+<span class="n">rdn</span> <span class="o">=</span> <span class="n">RDN</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="s1">&#39;psnr-small&#39;</span><span class="p">)</span>
+<span class="n">sr_img</span> <span class="o">=</span> <span class="n">rdn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">lr_img</span><span class="p">)</span>
+<span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">sr_img</span><span class="p">)</span>
+</code></pre></div>
+
+<h4 id="large-image-inference">Large image inference</h4>
+<p>To predict on large images and avoid memory allocation errors, use the <code>by_patch_of_size</code> option for the predict method, for instance</p>
+<div class="codehilite"><pre><span></span><code>sr_img = model.predict(image, by_patch_of_size=50)
+</code></pre></div>
+
+<p>Check the documentation of the <code>ImageModel</code> class for further details.</p>
+<h3 id="training">Training</h3>
+<p>Create the models</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ISR.models</span> <span class="kn">import</span> <span class="n">RRDN</span>
+<span class="kn">from</span> <span class="nn">ISR.models</span> <span class="kn">import</span> <span class="n">Discriminator</span>
+<span class="kn">from</span> <span class="nn">ISR.models</span> <span class="kn">import</span> <span class="n">Cut_VGG19</span>
+
+<span class="n">lr_train_patch_size</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">layers_to_extract</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+<span class="n">scale</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">hr_train_patch_size</span> <span class="o">=</span> <span class="n">lr_train_patch_size</span> <span class="o">*</span> <span class="n">scale</span>
+
+<span class="n">rrdn</span>  <span class="o">=</span> <span class="n">RRDN</span><span class="p">(</span><span class="n">arch_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;G0&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="n">scale</span><span class="p">},</span> <span class="n">patch_size</span><span class="o">=</span><span class="n">lr_train_patch_size</span><span class="p">)</span>
+<span class="n">f_ext</span> <span class="o">=</span> <span class="n">Cut_VGG19</span><span class="p">(</span><span class="n">patch_size</span><span class="o">=</span><span class="n">hr_train_patch_size</span><span class="p">,</span> <span class="n">layers_to_extract</span><span class="o">=</span><span class="n">layers_to_extract</span><span class="p">)</span>
+<span class="n">discr</span> <span class="o">=</span> <span class="n">Discriminator</span><span class="p">(</span><span class="n">patch_size</span><span class="o">=</span><span class="n">hr_train_patch_size</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Create a Trainer object using the desired settings and give it the models (<code>f_ext</code> and <code>discr</code> are optional)</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ISR.train</span> <span class="kn">import</span> <span class="n">Trainer</span>
+<span class="n">loss_weights</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+  <span class="s1">&#39;feature_extractor&#39;</span><span class="p">:</span> <span class="mf">0.0833</span><span class="p">,</span>
+  <span class="s1">&#39;discriminator&#39;</span><span class="p">:</span> <span class="mf">0.01</span>
+<span class="p">}</span>
+<span class="n">losses</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s1">&#39;generator&#39;</span><span class="p">:</span> <span class="s1">&#39;mae&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;feature_extractor&#39;</span><span class="p">:</span> <span class="s1">&#39;mse&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;discriminator&#39;</span><span class="p">:</span> <span class="s1">&#39;binary_crossentropy&#39;</span>
+<span class="p">}</span>
+
+<span class="n">log_dirs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;logs&#39;</span><span class="p">:</span> <span class="s1">&#39;./logs&#39;</span><span class="p">,</span> <span class="s1">&#39;weights&#39;</span><span class="p">:</span> <span class="s1">&#39;./weights&#39;</span><span class="p">}</span>
+
+<span class="n">learning_rate</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;initial_value&#39;</span><span class="p">:</span> <span class="mf">0.0004</span><span class="p">,</span> <span class="s1">&#39;decay_factor&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;decay_frequency&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">}</span>
+
+<span class="n">flatness</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span> <span class="s1">&#39;increase&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;increase_frequency&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span>
+    <span class="n">generator</span><span class="o">=</span><span class="n">rrdn</span><span class="p">,</span>
+    <span class="n">discriminator</span><span class="o">=</span><span class="n">discr</span><span class="p">,</span>
+    <span class="n">feature_extractor</span><span class="o">=</span><span class="n">f_ext</span><span class="p">,</span>
+    <span class="n">lr_train_dir</span><span class="o">=</span><span class="s1">&#39;low_res/training/images&#39;</span><span class="p">,</span>
+    <span class="n">hr_train_dir</span><span class="o">=</span><span class="s1">&#39;high_res/training/images&#39;</span><span class="p">,</span>
+    <span class="n">lr_valid_dir</span><span class="o">=</span><span class="s1">&#39;low_res/validation/images&#39;</span><span class="p">,</span>
+    <span class="n">hr_valid_dir</span><span class="o">=</span><span class="s1">&#39;high_res/validation/images&#39;</span><span class="p">,</span>
+    <span class="n">loss_weights</span><span class="o">=</span><span class="n">loss_weights</span><span class="p">,</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span>
+    <span class="n">flatness</span><span class="o">=</span><span class="n">flatness</span><span class="p">,</span>
+    <span class="n">dataname</span><span class="o">=</span><span class="s1">&#39;image_dataset&#39;</span><span class="p">,</span>
+    <span class="n">log_dirs</span><span class="o">=</span><span class="n">log_dirs</span><span class="p">,</span>
+    <span class="n">weights_generator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">weights_discriminator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">n_validation</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<p>Start training</p>
+<div class="codehilite"><pre><span></span><code><span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+    <span class="n">steps_per_epoch</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">monitored_metrics</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;val_PSNR_Y&#39;</span><span class="p">:</span> <span class="s1">&#39;max&#39;</span><span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h2 id="additional-information">Additional Information</h2>
+<p>You can read about how we trained these network weights in our Medium posts:
+- part 1: <a href="https://medium.com/idealo-tech-blog/a-deep-learning-based-magnifying-glass-dae1f565c359">A deep learning based magnifying glass</a>
+- part 2: <a href="https://medium.com/idealo-tech-blog/zoom-in-enhance-a-deep-learning-based-magnifying-glass-part-2-c021f98ebede">Zoom in... enhance</a></p>
+<h3 id="rdn-pre-trained-weights">RDN Pre-trained weights</h3>
+<p>The weights of the RDN network trained on the <a href="https://data.vision.ee.ethz.ch/cvl/DIV2K">DIV2K dataset</a> are available in <code>weights/sample_weights/rdn-C6-D20-G64-G064-x2/PSNR-driven/rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5</code>. <br>
+The model was trained using <code>C=6, D=20, G=64, G0=64</code> as parameters (see architecture for details) for 86 epochs of 1000 batches of 8 32x32 augmented patches taken from LR images.</p>
+<p>The artefact can cancelling weights obtained with a combination of different training sessions using different datasets and perceptual loss with VGG19 and GAN can be found at <code>weights/sample_weights/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5</code>
+We recommend using these weights only when cancelling compression artefacts is a desirable effect.</p>
+<h3 id="rdn-network-architecture">RDN Network architecture</h3>
+<p>The main parameters of the architecture structure are:
+- D - number of Residual Dense Blocks (RDB)
+- C - number of convolutional layers stacked inside a RDB
+- G - number of feature maps of each convolutional layers inside the RDBs
+- G0 - number of feature maps for convolutions outside of RDBs and of each RBD output</p>
+<p><img src="figures/RDN.png" width="600">
+<br></p>
+<p><img src="figures/RDB.png" width="600"></p>
+<p>source: <a href="https://arxiv.org/abs/1802.08797">Residual Dense Network for Image Super-Resolution</a></p>
+<h3 id="rrdn-network-architecture">RRDN Network architecture</h3>
+<p>The main parameters of the architecture structure are:
+- T - number of Residual in Residual Dense Blocks (RRDB)
+- D - number of Residual Dense Blocks (RDB) insider each RRDB
+- C - number of convolutional layers stacked inside a RDB
+- G - number of feature maps of each convolutional layers inside the RDBs
+- G0 - number of feature maps for convolutions outside of RDBs and of each RBD output</p>
+<p><img src="figures/RRDN.jpg" width="600">
+<br></p>
+<p><img src="figures/RRDB.png" width="600"></p>
+<p>source: <a href="https://arxiv.org/abs/1809.00219">ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks</a></p>
+<h2 id="contribute">Contribute</h2>
+<p>We welcome all kinds of contributions, models trained on different datasets, new model architectures and/or hyperparameters combinations that improve the performance of the currently published model.</p>
+<p>Will publish the performances of new models in this repository.</p>
+<p>See the <a href="CONTRIBUTING/">Contribution</a> guide for more details.</p>
+<h4 id="bump-version">Bump version</h4>
+<p>To bump up the version, use</p>
+<div class="codehilite"><pre><span></span><code>bumpversion {part} setup.py
+</code></pre></div>
+
+<h2 id="citation">Citation</h2>
+<p>Please cite our work in your publications if it helps your research.</p>
+<div class="codehilite"><pre><span></span><code><span class="nc">@misc</span><span class="p">{</span><span class="nl">cardinale2018isr</span><span class="p">,</span>
+  <span class="na">title</span><span class="p">=</span><span class="s">{ISR}</span><span class="p">,</span>
+  <span class="na">author</span><span class="p">=</span><span class="s">{Francesco Cardinale et al.}</span><span class="p">,</span>
+  <span class="na">year</span><span class="p">=</span><span class="s">{2018}</span><span class="p">,</span>
+  <span class="na">howpublished</span><span class="p">=</span><span class="s">{\url{https://github.com/idealo/image-super-resolution}}</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="maintainers">Maintainers</h2>
+<ul>
+<li>Francesco Cardinale, github: <a href="https://github.com/cfrancesco">cfrancesco</a></li>
+<li>Dat Tran, github: <a href="https://github.com/datitran">datitran</a></li>
+</ul>
+<h2 id="copyright">Copyright</h2>
+<p>See <a href="LICENSE">LICENSE</a> for details.</p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+        
+          <a href="tutorials/training/" title="Training" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Training
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="assets/javascripts/application.d9aa80ab.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
+      
+    
+  </body>
+</html>

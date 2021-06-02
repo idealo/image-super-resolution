@@ -1,0 +1,1068 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+        <meta name="author" content="idealo Data Science Team">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.0.2">
+    
+    
+      
+        <title>Prediction - Image Super-Resolution</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.982221ab.css">
+      
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.224b79ff.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#009688">
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.1f0bcf2b.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+        
+<script>
+  window.ga = window.ga || function() {
+    (ga.q = ga.q || []).push(arguments)
+  }
+  ga.l = +new Date
+  /* Setup integration and send page view */
+  ga("create", "UA-137434942-1", "auto")
+  ga("set", "anonymizeIp", true)
+  ga("send", "pageview")
+  /* Register handler to log search on blur */
+  document.addEventListener("DOMContentLoaded", () => {
+    if (document.forms.search) {
+      var query = document.forms.search.query
+      query.addEventListener("blur", function() {
+        if (this.value) {
+          var path = document.location.pathname;
+          ga("send", "pageview", path + "?q=" + this.value)
+        }
+      })
+    }
+  })
+</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="__github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#isr-suite-how-to" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../.." title="Image Super-Resolution" class="md-header-nav__button md-logo">
+          
+            <img src="../../img/logo.svg" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              Image Super-Resolution
+            </span>
+            <span class="md-header-nav__topic">
+              Prediction
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/idealo/image-super-resolution/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    idealo/image-super-resolution
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../.." title="Image Super-Resolution" class="md-nav__button md-logo">
+      
+        <img src="../../img/logo.svg" width="48" height="48">
+      
+    </a>
+    Image Super-Resolution
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/idealo/image-super-resolution/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    idealo/image-super-resolution
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Tutorials
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../training/" title="Training" class="md-nav__link">
+      Training
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Prediction
+      </label>
+    
+    <a href="./" title="Prediction" class="md-nav__link md-nav__link--active">
+      Prediction
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prediction" title="Prediction" class="md-nav__link">
+    Prediction
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-the-pre-trained-weights-and-data" title="Get the pre-trained weights and data" class="md-nav__link">
+    Get the pre-trained weights and data
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-predictions" title="Get predictions" class="md-nav__link">
+    Get predictions
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-the-model-and-run-prediction" title="Create the model and run prediction" class="md-nav__link">
+    Create the model and run prediction
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#large-rdn-model" title="Large RDN model" class="md-nav__link">
+    Large RDN model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#small-rdn-model" title="Small RDN model" class="md-nav__link">
+    Small RDN model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#large-rdn-noise-cancelling-detail-enhancing-model" title="Large RDN noise cancelling, detail enhancing model" class="md-nav__link">
+    Large RDN noise cancelling, detail enhancing model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-prediction" title="Run prediction" class="md-nav__link">
+    Run prediction
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usecase-upscaling-noisy-images" title="Usecase: upscaling noisy images" class="md-nav__link">
+    Usecase: upscaling noisy images
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#baseline" title="Baseline" class="md-nav__link">
+    Baseline
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#large-rdn-model-psnr-trained" title="Large RDN model (PSNR trained)" class="md-nav__link">
+    Large RDN model (PSNR trained)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#small-rdn-model-psnr-trained" title="Small RDN model  (PSNR trained)" class="md-nav__link">
+    Small RDN model  (PSNR trained)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#large-rdn-noise-cancelling-detail-enhancing-model_1" title="Large RDN noise cancelling, detail enhancing model" class="md-nav__link">
+    Large RDN noise cancelling, detail enhancing model
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#predictor-class" title="Predictor Class" class="md-nav__link">
+    Predictor Class
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../docker/" title="Docker" class="md-nav__link">
+      Docker
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Documentation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Documentation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3-1" type="checkbox" id="nav-3-1">
+    
+    <label class="md-nav__link" for="nav-3-1">
+      Models
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-3-1">
+        Models
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../models/cut_vgg19/" title="Cut VGG19" class="md-nav__link">
+      Cut VGG19
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../models/discriminator/" title="Discriminator" class="md-nav__link">
+      Discriminator
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../models/rdn/" title="RDN" class="md-nav__link">
+      RDN
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../models/rrdn/" title="RRDN" class="md-nav__link">
+      RRDN
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../predict/predictor/" title="Predict" class="md-nav__link">
+      Predict
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../train/trainer/" title="Train" class="md-nav__link">
+      Train
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3-4" type="checkbox" id="nav-3-4">
+    
+    <label class="md-nav__link" for="nav-3-4">
+      Utils
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-3-4">
+        Utils
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utils/datahandler/" title="Data Handler" class="md-nav__link">
+      Data Handler
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utils/logger/" title="Logger" class="md-nav__link">
+      Logger
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utils/metrics/" title="Metrics" class="md-nav__link">
+      Metrics
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utils/train_helper/" title="Train Helper" class="md-nav__link">
+      Train Helper
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utils/utils/" title="Utils" class="md-nav__link">
+      Utils
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../assistant/" title="Assistant" class="md-nav__link">
+      Assistant
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../CONTRIBUTING/" title="Contribution" class="md-nav__link">
+      Contribution
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../LICENSE/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prediction" title="Prediction" class="md-nav__link">
+    Prediction
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-the-pre-trained-weights-and-data" title="Get the pre-trained weights and data" class="md-nav__link">
+    Get the pre-trained weights and data
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-predictions" title="Get predictions" class="md-nav__link">
+    Get predictions
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-the-model-and-run-prediction" title="Create the model and run prediction" class="md-nav__link">
+    Create the model and run prediction
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#large-rdn-model" title="Large RDN model" class="md-nav__link">
+    Large RDN model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#small-rdn-model" title="Small RDN model" class="md-nav__link">
+    Small RDN model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#large-rdn-noise-cancelling-detail-enhancing-model" title="Large RDN noise cancelling, detail enhancing model" class="md-nav__link">
+    Large RDN noise cancelling, detail enhancing model
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-prediction" title="Run prediction" class="md-nav__link">
+    Run prediction
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usecase-upscaling-noisy-images" title="Usecase: upscaling noisy images" class="md-nav__link">
+    Usecase: upscaling noisy images
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#baseline" title="Baseline" class="md-nav__link">
+    Baseline
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#large-rdn-model-psnr-trained" title="Large RDN model (PSNR trained)" class="md-nav__link">
+    Large RDN model (PSNR trained)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#small-rdn-model-psnr-trained" title="Small RDN model  (PSNR trained)" class="md-nav__link">
+    Small RDN model  (PSNR trained)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#large-rdn-noise-cancelling-detail-enhancing-model_1" title="Large RDN noise cancelling, detail enhancing model" class="md-nav__link">
+    Large RDN noise cancelling, detail enhancing model
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#predictor-class" title="Predictor Class" class="md-nav__link">
+    Predictor Class
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/idealo/image-super-resolution/edit/master/docs/tutorials/prediction.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="isr-suite-how-to">ISR Suite: HOW-TO</h1>
+<p><a href="https://colab.research.google.com/github/idealo/image-super-resolution/blob/master/notebooks/ISR_Prediction_Tutorial.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<h2 id="prediction">Prediction</h2>
+<h3 id="get-the-pre-trained-weights-and-data">Get the pre-trained weights and data</h3>
+<p>Get the weights with</p>
+<div class="codehilite"><pre><span></span><code>wget https://public-asai-dl-models.s3.eu-central-1.amazonaws.com/ISR/rdn-C6-D20-G64-G064-x2/PSNR-driven/rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5
+wget https://public-asai-dl-models.s3.eu-central-1.amazonaws.com/ISR/rdn-C3-D10-G64-G064-x2/PSNR-driven/rdn-C3-D10-G64-G064-x2_PSNR_epoch134.hdf5
+wget https://public-asai-dl-models.s3.eu-central-1.amazonaws.com/ISR/rdn-C6-D20-G64-G064-x2/ArtefactCancelling/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5
+wget https://public-asai-dl-models.s3.eu-central-1.amazonaws.com/ISR/rrdn-C4-D3-G32-G032-T10-x4-GANS/rrdn-C4-D3-G32-G032-T10-x4_epoch299.hdf5
+</code></pre></div>
+
+<p>Move the weights into the <code>weights</code> folder</p>
+<div class="codehilite"><pre><span></span><code>mv *.hdf5 weights
+</code></pre></div>
+
+<p>Download a sample image, in this case</p>
+<div class="codehilite"><pre><span></span><code>wget http://images.math.cnrs.fr/IMG/png/section8-image.png
+mkdir -p data/input/test_images
+mv *.png data/input/test_images
+</code></pre></div>
+
+<p>Load the image with PIL, scale it and convert it into a format our model can use (it needs the extra dimension)</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;data/input/test_images/section8-image.png&#39;</span><span class="p">)</span>
+<span class="n">lr_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="get-predictions">Get predictions</h3>
+<h4 id="create-the-model-and-run-prediction">Create the model and run prediction</h4>
+<p>Create the RDN model, for which we provide pre-trained weights, and load them.<br>
+Choose amongst the available model weights, compare the output if you wish.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ISR.models</span> <span class="kn">import</span> <span class="n">RDN</span>
+</code></pre></div>
+
+<h5 id="large-rdn-model">Large RDN model</h5>
+<div class="codehilite"><pre><span></span><code><span class="n">rdn</span> <span class="o">=</span> <span class="n">RDN</span><span class="p">(</span><span class="n">arch_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;G0&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
+<span class="n">rdn</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="s1">&#39;weights/rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+<h5 id="small-rdn-model">Small RDN model</h5>
+<div class="codehilite"><pre><span></span><code><span class="n">rdn</span> <span class="o">=</span> <span class="n">RDN</span><span class="p">(</span><span class="n">arch_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;G0&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
+<span class="n">rdn</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="s1">&#39;weights/rdn-C3-D10-G64-G064-x2_PSNR_epoch134.hdf5&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+<h5 id="large-rdn-noise-cancelling-detail-enhancing-model">Large RDN noise cancelling, detail enhancing model</h5>
+<div class="codehilite"><pre><span></span><code><span class="n">rdn</span> <span class="o">=</span> <span class="n">RDN</span><span class="p">(</span><span class="n">arch_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;G0&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
+<span class="n">rdn</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="s1">&#39;weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+<h5 id="run-prediction">Run prediction</h5>
+<div class="codehilite"><pre><span></span><code><span class="n">sr_img</span> <span class="o">=</span> <span class="n">rdn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">lr_img</span><span class="p">)</span>
+<span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">sr_img</span><span class="p">)</span>
+</code></pre></div>
+
+<h4 id="usecase-upscaling-noisy-images">Usecase: upscaling noisy images</h4>
+<p>Now, for science, let's make it harder for the networks.</p>
+<p>We compress the image into the jpeg format to introduce compression artefact and lose some information.</p>
+<p>We will compare:</p>
+<ul>
+<li>the baseline bicubic scaling</li>
+<li>the basic model - Add Hyperlink</li>
+<li>a model trained to remove noise using perceptual loss with deep features and GANs training</li>
+</ul>
+<p>So let's first  compress the image</p>
+<div class="codehilite"><pre><span></span><code><span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;data/input/test_images/compressed.jpeg&#39;</span><span class="p">,</span><span class="s1">&#39;JPEG&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span> <span class="n">quality</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">compressed_img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;data/input/test_images/compressed.jpeg&#39;</span><span class="p">)</span>
+<span class="n">compressed_lr_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">compressed_img</span><span class="p">)</span>
+<span class="n">compressed_img</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+
+<h5 id="baseline">Baseline</h5>
+<p>Bicubic scaling</p>
+<div class="codehilite"><pre><span></span><code><span class="n">compressed_img</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">compressed_img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">compressed_img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">),</span> <span class="n">resample</span><span class="o">=</span><span class="n">Image</span><span class="o">.</span><span class="n">BICUBIC</span><span class="p">)</span>
+</code></pre></div>
+
+<h5 id="large-rdn-model-psnr-trained">Large RDN model (PSNR trained)</h5>
+<div class="codehilite"><pre><span></span><code><span class="n">rdn</span> <span class="o">=</span> <span class="n">RDN</span><span class="p">(</span><span class="n">arch_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;G0&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
+<span class="n">rdn</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="s1">&#39;weights/rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5&#39;</span><span class="p">)</span>
+<span class="n">sr_img</span> <span class="o">=</span> <span class="n">rdn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">compressed_lr_img</span><span class="p">)</span>
+<span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">sr_img</span><span class="p">)</span>
+</code></pre></div>
+
+<h5 id="small-rdn-model-psnr-trained">Small RDN model  (PSNR trained)</h5>
+<div class="codehilite"><pre><span></span><code><span class="n">rdn</span> <span class="o">=</span> <span class="n">RDN</span><span class="p">(</span><span class="n">arch_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;G0&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
+<span class="n">rdn</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="s1">&#39;weights/rdn-C3-D10-G64-G064-x2_PSNR_epoch134.hdf5&#39;</span><span class="p">)</span>
+<span class="n">sr_img</span> <span class="o">=</span> <span class="n">rdn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">compressed_lr_img</span><span class="p">)</span>
+<span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">sr_img</span><span class="p">)</span>
+</code></pre></div>
+
+<h5 id="large-rdn-noise-cancelling-detail-enhancing-model_1">Large RDN noise cancelling, detail enhancing model</h5>
+<div class="codehilite"><pre><span></span><code><span class="n">rdn</span> <span class="o">=</span> <span class="n">RDN</span><span class="p">(</span><span class="n">arch_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;G0&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
+<span class="n">rdn</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="s1">&#39;weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5&#39;</span><span class="p">)</span>
+<span class="n">sr_img</span> <span class="o">=</span> <span class="n">rdn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">compressed_lr_img</span><span class="p">)</span>
+<span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">sr_img</span><span class="p">)</span>
+</code></pre></div>
+
+<h4 id="predictor-class">Predictor Class</h4>
+<p>You can also use the predictor class to run the model on entire folders.  To do so you first need to create an output folder to collect your results, in this case <code>data/output</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ISR.predict</span> <span class="kn">import</span> <span class="n">Predictor</span>
+<span class="n">predictor</span> <span class="o">=</span> <span class="n">Predictor</span><span class="p">(</span><span class="n">input_dir</span><span class="o">=</span><span class="s1">&#39;data/input/test_images/&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;data/output&#39;</span><span class="p">)</span>
+<span class="n">predictor</span><span class="o">.</span><span class="n">get_predictions</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">rdn</span><span class="p">,</span> <span class="n">weights_path</span><span class="o">=</span><span class="s1">&#39;weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5&#39;</span><span class="p">)</span>
+</code></pre></div>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../training/" title="Training" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Training
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../docker/" title="Docker" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Docker
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.d9aa80ab.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+    
+  </body>
+</html>
