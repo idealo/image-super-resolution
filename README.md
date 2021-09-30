@@ -5,6 +5,7 @@
 [![Build Status](https://travis-ci.org/idealo/image-super-resolution.svg?branch=master)](https://travis-ci.org/idealo/image-super-resolution)
 [![Docs](https://img.shields.io/badge/docs-online-brightgreen)](https://idealo.github.io/image-super-resolution/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg)](https://github.com/idealo/image-super-resolution/blob/master/LICENSE)
+<a href="https://replicate.ai/idealo/image-super-resolution"><img src="https://img.shields.io/static/v1?label=Replicate&message=Demo and Docker Image&color=darkgreen" height=20></a>
 
 The goal of this project is to upscale and improve the quality of low resolution images.
 
@@ -65,18 +66,18 @@ pip install 'h5py==2.10.0' --force-reinstall
 
 ## Pre-trained networks
 
-The weights used to produced these images are available directly when creating the model object. 
+The weights used to produced these images are available directly when creating the model object.
 
 Currently 4 models are available:
   - RDN: psnr-large, psnr-small, noise-cancel
   - RRDN: gans
- 
+
 Example usage:
 
 ```
 model = RRDN(weights='gans')
 ```
-  
+
 The network parameters will be automatically chosen.
 (see [Additional Information](#additional-information)).
 

@@ -1,0 +1,8 @@
+build:
+  python_version: "3.7"
+  gpu: false
+  python_packages:
+    - ISR==2.2.0
+    - h5py==2.10.0 --force-reinstall
+
+predict: "predict.py:ISRPredictor"
