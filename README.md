@@ -131,7 +131,7 @@ Load image and prepare it
 import numpy as np
 from PIL import Image
 
-img = Image.open('data/input/test_images/sample_image.jpg')
+img = Image.open('data/input/sample/sandal.jpg')
 lr_img = np.array(img)
 ```
 
