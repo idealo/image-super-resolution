@@ -68,8 +68,8 @@ pip install 'h5py==2.10.0' --force-reinstall
 The weights used to produced these images are available directly when creating the model object. 
 
 Currently 4 models are available:
-  - RDN: psnr-large, psnr-small, noise-cancel
-  - RRDN: gans
+  - RDN: psnr-large, psnr-small, noise-cancel (2x upscaling)
+  - RRDN: gans (4x upscaling)
  
 Example usage:
 
