@@ -5,6 +5,7 @@ default:
   discriminator: false
   training_set: div2k
   test_set: sample
+  output_dir: ./data/output/luxolis
 log_dirs:
   logs: ./logs
   weights: ./weights
@@ -64,7 +65,7 @@ session:
       beta2: 0.999
       epsilon: null
 test_sets:
-  sample: ./data/input/sample
+  sample: ./data/input/
 training_sets:
   custom data:
     lr_train_dir: ./data/custom/lr/train
@@ -80,4 +81,7 @@ training_sets:
     data_name: div2k
 weights_paths:
   discriminator:
-  generator:
+  generator: ./weights/rdn-C3-D10-G64-G064-x2_PSNR_epoch134.hdf5
+  # generator: ./weights/rdn-C6-D20-G64-G064-x2_ArtefactCancelling_epoch219.hdf5
+  # generator: ./weights/rdn-C6-D20-G64-G064-x2_PSNR_epoch086.hdf5
+  # generator: ./weights/rrdn-C4-D3-G32-G032-T10-x4_epoch299.hdf5

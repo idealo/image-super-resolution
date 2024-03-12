@@ -182,6 +182,7 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
     
     if all_default:
         generator = conf['default']['generator']
+        output_dir = conf['default']['output_dir']
         if session_type == 'prediction':
             dataset = conf['default']['test_set']
             conf['generators'][generator] = get_config_from_weights(
@@ -190,7 +191,7 @@ def setup(config_file='config.yml', default=False, training=False, prediction=Fa
         elif session_type == 'training':
             dataset = conf['default']['training_set']
         
-        return session_type, generator, conf, dataset
+        return session_type, generator, conf, dataset, output_dir
     
     logger.info('Select SR (generator) network')
     generators = {}

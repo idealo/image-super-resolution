@@ -36,7 +36,8 @@ class Predictor:
 
         self.input_dir = Path(input_dir)
         self.data_name = self.input_dir.name
-        self.output_dir = Path(output_dir) / self.data_name
+        # self.output_dir = Path(output_dir) / self.data_name
+        self.output_dir = './data/output' / Path(output_dir)
         self.logger = get_logger(__name__)
         if not verbose:
             self.logger.setLevel(40)
@@ -83,7 +84,8 @@ class Predictor:
         self.model = model
         self.weights_path = Path(weights_path)
         weights_conf = self._load_weights()
-        out_folder = self.output_dir / self._make_basename() / get_timestamp()
+        # out_folder = self.output_dir / self._make_basename() / get_timestamp()
+        out_folder = self.output_dir
         self.logger.info('Results in:\n > {}'.format(out_folder))
         if out_folder.exists():
             self.logger.warning('Directory exists, might overwrite files')
